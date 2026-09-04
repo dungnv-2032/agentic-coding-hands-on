@@ -1,0 +1,108 @@
+{
+  "score": 9.2,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "FR-201: /login renders header (logo left, VN selector right), hero, ROOT FURTHER wordmark, subtitle, tagline, Google button and fixed footer \u2014 E2E C1 + visual capture login-desktop-1440x1024.png compared against design/login-screen.png",
+    "FR-202: login button shows disabled + loading state while authentication is in flight, and a shadow on hover \u2014 E2E C5 asserts toBeDisabled after click; useFormStatus pending drives it",
+    "FR-203: language selector defaults to VN, opens on click, and switches page copy to the chosen locale \u2014 E2E C3 asserts the English subtitle renders and NEXT_LOCALE=en is set",
+    "FR-401: successful Google authentication returns the user and redirects to /todo \u2014 callback exchange path implemented; full round-trip untestable per Assumption A1 (no Google credentials)",
+    "FR-402: failed or cancelled authentication shows 'Dang nhap khong thanh cong. Vui long thu lai.' \u2014 E2E C2",
+    "FR-403: signing out redirects to /login \u2014 E2E C9",
+    "FR-101: unauthenticated access to /todo redirects to /login \u2014 E2E C6",
+    "FR-102: authenticated access to /login redirects to /todo \u2014 E2E C7",
+    "FR-601: any valid Google account may sign in, with no domain allow-list \u2014 no domain check exists in signInWithGoogle; C5 asserts provider=google with no hd parameter",
+    "BR-003: an invalid NEXT_LOCALE value falls back to VN without a blank page \u2014 E2E C4",
+    "Rotated Supabase auth cookies survive the guarded redirect (single-use refresh tokens must not be dropped) \u2014 E2E C8 seeds a deliberately expired access token to force a refresh during the guarded /login->/todo redirect",
+    "The OAuth callback never redirects a user off this origin \u2014 E2E C10 plus 7 SEC-* regression cases covering Host, x-forwarded-host, absolute, protocol-relative and backslash next values"
+  ],
+  "regressionChecked": [
+    "proxy.ts runs on every non-asset request: verified /auth/callback and / fall through unguarded, so the OAuth round-trip is not broken by the new guard",
+    "lib/supabase/{client,server,update-session}.ts left untouched; getUser() retained rather than swapped to getClaims()",
+    "supabase/config.toml [auth.external.google] added: local stack restarted cleanly and /auth/v1/health returned 200",
+    "Production build re-run after the security fix: exit 0",
+    "Full E2E suite re-run cold after every correction, including the aria-label and callback-origin changes: exit 0",
+    "No secrets committed: .env is untracked and .env.example carries placeholders only"
+  ],
+  "contractStatus": "HONORED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "high",
+      "category": "security",
+      "location": "app/auth/callback/route.ts:41-42",
+      "summary": "Redirects were built from the client-controlled Host header, making this unauthenticated route an open redirect (CWE-644). Fixed: origin now comes from NEXT_PUBLIC_SITE_URL; Host and x-forwarded-host are no longer read. Verified by probe and 7 regression tests.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "security",
+      "location": "app/auth/callback/route.ts:52-63",
+      "summary": "next-parameter validation used a startsWith check that missed backslash variants like /\\evil.com. Fixed: the candidate is parsed against our origin and URL.origin compared.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "reliability",
+      "location": "app/auth/callback/route.ts:88-99",
+      "summary": "exchangeCodeForSession had no try/catch, so a GoTrue transport failure surfaced as a 500 instead of the specified error screen. Fixed.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "accessibility",
+      "location": "app/todo/page.tsx:31-40",
+      "summary": "An English aria-label sat over Vietnamese visible text (WCAG 2.5.3 Label in Name), added to satisfy a test regex. Fixed: override removed and the test now matches the localized name.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "test-quality",
+      "location": "e2e/authenticated.spec.ts:21-44",
+      "summary": "C8 originally passed vacuously against a 404 and never exercised the guarded redirect it exists to protect. Fixed: it now forces a token refresh with an expired access token.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "test-infrastructure",
+      "location": "e2e/auth.setup.ts:1-40",
+      "summary": "The suite raced next dev's on-demand client-bundle compilation, failing C3/C5 deterministically on a cold start. Fixed with a browser warmup in the setup project.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "low",
+      "category": "accessibility",
+      "location": "app/login/_components/language-selector.tsx:53-56",
+      "summary": "Keyboard focus is not returned to the trigger after choosing an option. Real but minor; left for the user to decide rather than changed after inspection.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "low",
+      "category": "maintainability",
+      "location": "proxy.ts:41-44",
+      "summary": "Route-guard prefix matching is slightly broader than intended (e.g. /todo-archive would match /todo). No such route exists today.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "low",
+      "category": "maintainability",
+      "location": "app/globals.css:1-30",
+      "summary": "Self-referential CSS custom properties work only because of cascade scoping; fragile if reused elsewhere.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "medium",
+      "category": "incomplete-asset",
+      "location": "app/login/_components/hero-background.tsx:1-30",
+      "summary": "RISK-01: hero artwork absent because MoMorph's render endpoint was down all session. Ships the recorded geometry over a #00101A fallback; the real file drops in with zero code change. Accepted by the user as ORCH-05.",
+      "disposition": "Defer"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": true,
+    "humanSignedOff": true
+  }
+}

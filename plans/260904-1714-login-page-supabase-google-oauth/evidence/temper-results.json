@@ -1,0 +1,32 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "19 passed (12 functional C1-C10 + 7 CWE-644 open-redirect regression). Cold start, no pre-warmed server.",
+      "ts": "2026-09-04T14:41:12Z"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "TypeScript clean, no errors.",
+      "ts": "2026-09-04T14:41:12Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "ESLint clean, no errors or warnings.",
+      "ts": "2026-09-04T14:41:12Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Production build succeeded (Turbopack); proxy registered as middleware.",
+      "ts": "2026-09-04T14:41:12Z"
+    }
+  ]
+}

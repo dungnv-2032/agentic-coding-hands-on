@@ -53,3 +53,8 @@ next-env.d.ts
 # machine-local vendored shared libs for headless Chromium on WSL2 without
 # root (see playwright.config.ts) — never committed, machine-specific binaries
 /.playwright-libs/
+
+# Agent toolkit runtime noise — the kit itself is installed locally, not vendored.
+.claude/hooks/.logs/
+**/__pycache__/
+*.pyc

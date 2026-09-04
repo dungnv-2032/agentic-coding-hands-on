@@ -1,0 +1,38 @@
+{
+  "task": "Implement the /login screen (SAA 2025) with Google OAuth against the local Supabase stack, per MoMorph screen GzbNeVGJHz.",
+  "mode": "interactive",
+  "acceptanceCriteria": [
+    "FR-201: /login renders header (logo left, VN selector right), hero, ROOT FURTHER wordmark, subtitle, tagline, Google button and fixed footer",
+    "FR-202: login button shows disabled + loading state while authentication is in flight, and a shadow on hover",
+    "FR-203: language selector defaults to VN, opens on click, and switches page copy to the chosen locale",
+    "FR-401: successful Google authentication returns the user and redirects to /todo",
+    "FR-402: failed or cancelled authentication shows 'Dang nhap khong thanh cong. Vui long thu lai.'",
+    "FR-403: signing out redirects to /login",
+    "FR-101: unauthenticated access to /todo redirects to /login",
+    "FR-102: authenticated access to /login redirects to /todo",
+    "FR-601: any valid Google account may sign in, with no domain allow-list",
+    "BR-003: an invalid NEXT_LOCALE value falls back to VN without a blank page",
+    "Rotated Supabase auth cookies survive the guarded redirect (single-use refresh tokens must not be dropped)",
+    "The OAuth callback never redirects a user off this origin"
+  ],
+  "touchpoints": [
+    "app/login/page.tsx",
+    "app/login/actions.ts",
+    "app/login/_components/*",
+    "app/auth/callback/route.ts",
+    "app/todo/page.tsx",
+    "app/todo/actions.ts",
+    "proxy.ts",
+    "lib/i18n/*",
+    "supabase/config.toml",
+    ".env.example",
+    "playwright.config.ts",
+    "e2e/*"
+  ],
+  "blastRadius": "proxy.ts runs on every non-asset request, so a fault there affects the whole app, not just /login. It now performs route protection in addition to session refresh. Supabase refresh tokens are single-use, so dropping rotated cookies on a redirect would log users out app-wide one request later. supabase/config.toml gained an [auth.external.google] block, which the CLI validates at stack start; a malformed block can stop the local stack from booting. lib/supabase/* was deliberately left untouched.",
+  "contracts": [
+    "Frozen cross-track integration contract in plan.md: resolveLocale, getDictionary, signInWithGoogle, setLocale, signOut signatures plus a closed dictionary-key list",
+    "Supabase OAuth redirect allow-list: NEXT_PUBLIC_SITE_URL must match site_url and additional_redirect_urls exactly",
+    "@supabase/ssr cookie contract: cookie names and chunking are owned by the library, never hand-built"
+  ]
+}
