@@ -32,9 +32,28 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [
+    // Setup project — runs auth.setup.ts once before tests
     {
-      name: "chromium",
+      name: "setup",
+      testMatch: /auth\.setup\.ts/,
       use: { ...devices["Desktop Chrome"] },
+    },
+    // Unauthenticated tests (login screen, error paths, open-redirect, callback security)
+    {
+      name: "anon",
+      testMatch: /(?:smoke|login-screen|route-guard|callback-security)\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
+    },
+    // Authenticated tests (route guard authed, sign-out) — loads storageState from setup
+    {
+      name: "authed",
+      testMatch: /authenticated\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/user.json",
+      },
+      dependencies: ["setup"],
     },
   ],
   webServer: {
