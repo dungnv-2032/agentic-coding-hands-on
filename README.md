@@ -18,6 +18,15 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Login (Google OAuth via local Supabase)
+
+The `/login` screen needs the local Supabase stack plus real Google OAuth credentials before it works —
+see `docs/setup/local-development.md` for the full setup (env files, why everything must be opened at
+`127.0.0.1` and not `localhost`, running `npm run test:e2e`, and the WSL2 headless-Chromium workaround).
+Feature behavior is specified in `docs/features/F001_Login/`; non-obvious implementation traps in
+`proxy.ts` and `app/auth/callback/route.ts` are written up in
+`docs/troubleshooting/login-oauth-gotchas.md`.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More

@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-09-04T14:38:00Z",
+  "plan": "260904-1714-login-page-supabase-google-oauth",
+  "features": [
+    {
+      "fcode": "F001",
+      "name": "Login",
+      "slug": "F001_Login",
+      "priority": "P1",
+      "type": "ui",
+      "related": {
+        "screens": [
+          "SCR001_Login"
+        ],
+        "user_stories": [
+          "US001",
+          "US002",
+          "US003",
+          "US004"
+        ],
+        "routes": [
+          "/login",
+          "/auth/callback",
+          "/todo"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    }
+  ]
+}
