@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase local: keep the checked-in template, ignore real env files
+!.env.example
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/e2e/.auth/
+
+# machine-local vendored shared libs for headless Chromium on WSL2 without
+# root (see playwright.config.ts) — never committed, machine-specific binaries
+/.playwright-libs/
