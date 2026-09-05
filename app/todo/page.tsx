@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { LOCALE_COOKIE, resolveLocale } from "@/lib/i18n/locales";
 
-import { signOut } from "./actions";
+import { signOut } from "@/app/_actions/auth";
 
 /**
  * Minimal authenticated landing page (FR-403, US002, US004). `proxy.ts`

@@ -2,7 +2,7 @@
 
 import { useFormStatus } from "react-dom";
 
-import { IconGoogle } from "./icons";
+import { IconGoogle } from "@/app/_components/icons";
 
 interface GoogleSignInButtonProps {
   label: string;

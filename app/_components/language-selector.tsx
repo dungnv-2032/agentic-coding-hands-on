@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, useTransition } from "react";
 
 import type { Locale } from "@/lib/i18n/locales";
 
-import { setLocale } from "../actions";
+import { setLocale } from "@/app/_actions/locale";
 import { IconChevronDown, IconFlagEn, IconFlagVn } from "./icons";
 
 interface LanguageSelectorProps {

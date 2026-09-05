@@ -3,7 +3,7 @@ import Image from "next/image";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/locales";
 
-import { LanguageSelector } from "./language-selector";
+import { LanguageSelector } from "@/app/_components/language-selector";
 
 interface LoginHeaderProps {
   locale: Locale;

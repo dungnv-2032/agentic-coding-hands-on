@@ -1,11 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { LOCALE_COOKIE, resolveLocale } from "@/lib/i18n/locales";
 
 /**
  * Kicks off the Google OAuth flow (FR-202, FR-601, BR-001 — no domain
@@ -35,22 +32,4 @@ export async function signInWithGoogle(): Promise<void> {
   }
 
   redirect(data.url);
-}
-
-/**
- * Persists the selected UI locale (FR-203 / BR-003). Invalid input falls
- * back to the default locale via `resolveLocale` rather than writing raw
- * user input into the cookie.
- */
-export async function setLocale(locale: string): Promise<void> {
-  const next = resolveLocale(locale);
-  const cookieStore = await cookies();
-  cookieStore.set(LOCALE_COOKIE, next, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-  });
-  // Server Components read the locale on render; without this the /login
-  // segment can keep serving the cached pre-switch copy (plan risk R4).
-  revalidatePath("/login");
 }
