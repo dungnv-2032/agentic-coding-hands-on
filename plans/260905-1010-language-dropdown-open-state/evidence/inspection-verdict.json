@@ -1,0 +1,57 @@
+{
+  "score": 8,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "FR-203.a: the open panel lists both locales, each with its own distinct flag beside the label — E2E C3b — SEALED. E2E C3b asserts exactly 2 options, one svg each, and that the two flags are different artwork; confirmed green after the ul/li -> div[role=listbox] migration.",
+    "FR-203.b: the option for the current locale is distinguished by BACKGROUND rgba(255,234,158,0.2), not by a hidden attribute alone; unselected is transparent; hover on unselected is rgba(255,234,158,0.08) — E2E C3d — SEALED. E2E C3d asserts all three backgrounds via computed style; selected row verified visually in panel-open.png.",
+    "FR-203.c: ArrowDown/ArrowUp wrap through options, Home/End jump to first/last, Enter or Space selects, Escape closes and returns focus to the trigger, and focus lands on the SELECTED option when the panel opens — E2E C3e — SEALED. E2E C3e exercises every gesture including focus landing on the selected option at open and returning to the trigger on Escape; focus ring verified in panel-focus-en.png.",
+    "Visual contract: panel background #00070C, border 1px solid #998C5F, radius 8px, padding 6px; option 108x56 with radius 2px — E2E C3c, measured from design nodes 525:11713 and I525:11713;362:6085 — SEALED. E2E C3c asserts every panel and option token; values traced verbatim to spec-delta.md §3, no re-derivation.",
+    "Panel is a drop-below (absolute top-full) and does NOT overlay the trigger — explicit user decision recorded in clarifications.md — SEALED. header-in-context.png shows the trigger still visible above the panel with its chevron rotated, so the panel drops below rather than overlaying.",
+    "Existing behavior must not regress: C1 render, C3 locale switch + NEXT_LOCALE cookie, C4 invalid-locale fallback to VN — SEALED. Full suite 23/23 green after the post-review fix; C3b re-confirmed as the case most exposed by the container change."
+  ],
+  "regressionChecked": [
+    "C1 render — trigger aria-label selector unchanged by the ul/li -> div[role=listbox] migration",
+    "C3 and C4 — locale switch and invalid-locale fallback still green; NEXT_LOCALE cookie flow untouched",
+    "C3b — the case most exposed by the container change, explicitly re-confirmed green",
+    "setLocale server action and lib/i18n/* not modified (verified by diff)",
+    "Full suite 23/23 re-run after the post-review fix",
+    "File size 186 lines, under the project's 200-line ceiling — no split needed",
+    "Gen gate (rebuild-spec Core/Flow) skipped by explicit user decision — docs/.rebuild-state.json last_rebuild_sha is empty, but a full codebase scan is disproportionate to a one-component diff",
+    "Reviewer report: plans/260905-1010-language-dropdown-open-state/reports/reviewer-260905-1034-language-dropdown-open-state.md"
+  ],
+  "contractStatus": "HONORED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Medium",
+      "category": "Logic",
+      "location": "app/login/_components/language-selector.tsx:129-136",
+      "summary": "setActiveIndex was called as a side effect inside setOpen's functional updater, violating React's pure-updater contract. Harmless in practice (idempotent, absorbed by Object.is bail-out) but fragile and inconsistent with the pure updater in handleListKeyDown. RESOLUTION: fixed by the orchestrator — the click handler now reads `open` directly and calls the two setters separately. Re-verified: typecheck 0, lint 0, build 0, e2e 23/23.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Medium",
+      "category": "Structure",
+      "location": "app/login/_components/language-selector.tsx:86-111",
+      "summary": "Tab out of the open panel is unhandled, so the panel can stay open with focus already outside it (orphaned popup). Not required by FR-203.c and not covered by C3e, so not a contract violation. RESOLUTION: deferred by explicit user decision; recorded as a known limitation in docs/screens/SCR001_Login/spec.md §9 and in plan.md. Not silently dropped.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Structure",
+      "location": "app/login/_components/language-selector.tsx:126",
+      "summary": "aria-controls references a dangling id while the panel is closed, because the listbox is conditionally rendered. Pre-existing; not introduced by this diff. RESOLUTION: deferred; documented in the screen spec known-limitations block.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Structure",
+      "location": "app/login/_components/icons.tsx:79",
+      "summary": "IconFlagEn is a hand-drawn Union Jack with no MoMorph source node, unlike IconFlagVn. Honestly documented in the file's own comment but was not logged in clarifications.md. RESOLUTION: an asset-provenance note was added to docs/screens/SCR001_Login/spec.md §3.",
+      "disposition": "Accept"
+    }
+  ]
+}

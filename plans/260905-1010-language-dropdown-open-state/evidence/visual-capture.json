@@ -1,0 +1,27 @@
+{
+  "capturedBy": "orchestrator (takumi)",
+  "capturedAt": "2026-09-05T11:21:00+07:00",
+  "reason": "tester reported visual validation but produced no images — its capture-dropdown.mjs used browser.createContext() (not a Playwright API; correct call is newContext), so the script failed silently and only CSS assertions ran. Re-captured here with the project's own bundled chromium.",
+  "method": "temporary playwright config (testDir e2e/__tmp, deleted after) against the running dev server on 127.0.0.1:3000, viewport 1440x1024",
+  "screenshots": {
+    "panel-open.png": "open panel, default locale VN — element-tight crop of [role=listbox]",
+    "panel-hover-en.png": "pointer hovering the unselected EN option",
+    "panel-focus-en.png": "keyboard focus ring on EN after ArrowDown",
+    "header-in-context.png": "panel below the trigger in header context, proving drop-below placement (not overlay)"
+  },
+  "verdict": {
+    "panelBackgroundNearBlack": "PASS",
+    "panelGoldBorder1px": "PASS",
+    "panelRadius8px": "PASS",
+    "vnRowPaleYellowHighlight": "PASS",
+    "enRowTransparent": "PASS",
+    "rowsFlagPlusBoldWhiteLabel": "PASS",
+    "dropBelowNotOverlay": "PASS — trigger remains visible above the panel with chevron rotated",
+    "focusRingVisible": "PASS"
+  },
+  "notes": [
+    "hover at rgba(255,234,158,0.08) over a near-black ground is near-invisible in a small PNG; the binding evidence for it is the computed-style assertion in C3d, not the screenshot.",
+    "the focus ring reuses the panel border color #998C5F, so a focused option's ring sits close to the container border. Not a defect, but it reads slightly crowded — worth revisiting if a focus token is ever added to the design system."
+  ],
+  "overall": "PASS"
+}

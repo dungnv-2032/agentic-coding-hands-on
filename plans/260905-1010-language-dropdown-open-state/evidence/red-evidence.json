@@ -1,0 +1,17 @@
+{
+  "redTestFiles": ["e2e/login-screen.spec.ts"],
+  "redCommand": "npx playwright test e2e/login-screen.spec.ts --project=anon",
+  "redExitCode": 1,
+  "redFailure": {
+    "C3c": "Expected: \"rgb(0, 7, 12)\" Received: \"rgb(11, 15, 18)\" (panel background-color)",
+    "C3d": "Expected: \"rgba(255, 234, 158, 0.2)\" Received: \"rgba(0, 0, 0, 0)\" (selected option background)",
+    "C3e": "Expected: focused Received: inactive (VN option not focused on open)"
+  },
+  "existingTestsStill": ["C1", "C2", "C3", "C3b", "C4", "C5", "C10"],
+  "testResultSummary": {
+    "total": 11,
+    "passed": 8,
+    "failed": 3,
+    "skipped": 0
+  }
+}

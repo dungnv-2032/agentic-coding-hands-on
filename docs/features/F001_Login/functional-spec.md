@@ -52,6 +52,9 @@ None — no unresolved domain confirmations.
 - **FR-201** Màn hình `/login` hiển thị header (logo + bộ chọn ngôn ngữ), khối giới thiệu "ROOT FURTHER", nút "LOGIN With Google", và footer bản quyền.
 - **FR-202** Bấm nút đăng nhập Google chuyển nút sang trạng thái loading/disabled và khởi tạo luồng Google OAuth.
 - **FR-203** Bộ chọn ngôn ngữ cho đổi giữa VN và EN, lưu lựa chọn vào cookie `NEXT_LOCALE`; mặc định là VN khi chưa chọn.
+  - **FR-203.a** Panel mở hiển thị đầy đủ danh sách locale (VN, EN), mỗi mục có cờ + nhãn.
+  - **FR-203.b** Mục ứng với locale đang chọn có nền phân biệt rõ so với mục còn lại.
+  - **FR-203.c** Panel thao tác được bằng bàn phím: ArrowDown/ArrowUp di chuyển giữa các mục, Home/End nhảy đầu/cuối, Enter hoặc Space chọn, Escape đóng và trả focus về trigger.
 
 ### Interaction (4xx)
 
@@ -118,6 +121,9 @@ None — no unresolved domain confirmations.
 **Acceptance Criteria:**
 - [ ] Mặc định hiện VN (cờ Việt Nam + "VN" + mũi tên xuống) khi chưa có cookie ngôn ngữ.
 - [ ] Chọn ngôn ngữ khác cập nhật toàn bộ nội dung trang và lưu vào cookie `NEXT_LOCALE`.
+- [ ] Panel mở phân biệt được mục đang chọn bằng nền, không chỉ bằng thuộc tính ẩn.
+- [ ] Mở panel rồi bấm lại trigger thì panel đóng (toggle).
+- [ ] Điều hướng được toàn bộ panel bằng bàn phím, không cần chuột.
 
 ### US004_SignOut — Đăng xuất
 

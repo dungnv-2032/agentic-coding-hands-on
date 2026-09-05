@@ -62,6 +62,8 @@ Bố cục toàn màn hình (canvas thiết kế 1440×1024): header cố địn
 | E07 | Nút "LOGIN With Google" | button | — | Enabled | Always | Khởi tạo luồng Google OAuth (yêu cầu không có input) | — | — | — | N/A |
 | E08 | Footer bản quyền "Bản quyền thuộc về Sun* © 2025" | display field | — | static | Always | — *(không tương tác — xác nhận bởi test case)* | static | raw | — | N/A |
 
+**Ghi chú asset:** `IconFlagEn` (cờ Anh trong E02) không có node MoMorph tương ứng — thiết kế trước nay chỉ vẽ trạng thái mặc định VN. Cờ VN (`IconFlagVn`) có node MoMorph; cờ EN được vẽ tay để khớp hình học với cờ VN — xem comment trong `app/login/_components/icons.tsx`.
+
 ## 4. User Actions
 
 ### Available Actions
@@ -69,8 +71,11 @@ Bố cục toàn màn hình (canvas thiết kế 1440×1024): header cố địn
 | Action | Element | Trigger | Condition | Result on this screen | Source |
 |--------|---------|---------|-----------|------------------------|--------|
 | Đăng nhập Google | E07 | click | — | Nút chuyển sang disabled + hiện loader; sau đó rời màn hình (chuyển hướng ra ngoài) | `TBD (draft)` |
-| Mở dropdown ngôn ngữ | E02 | click | — | Dropdown VN/EN hiện ra | `TBD (draft)` |
-| Chọn ngôn ngữ | E02 | click (mục trong dropdown) | dropdown đang mở | Toàn bộ nội dung màn hình đổi ngôn ngữ, dropdown đóng lại | `TBD (draft)` |
+| Mở/đóng dropdown ngôn ngữ | E02 | click trigger | — | Toggle panel; chevron xoay 180° khi mở | `design 721:4942` |
+| Chọn ngôn ngữ | E02 | click / Enter / Space trên mục | panel đang mở | Đổi ngôn ngữ toàn màn hình, panel đóng, focus về trigger | `design 721:4942` |
+| Di chuyển trong panel | E02 | ArrowDown / ArrowUp / Home / End | panel đang mở | Focus chạy vòng trong danh sách mục (wrap) | `clarifications.md` |
+| Đóng bằng Escape | E02 | Escape | panel đang mở | Panel đóng, locale không đổi, focus về trigger | `clarifications.md` |
+| Đóng bằng click ngoài | E02 | click ngoài panel | panel đang mở | Panel đóng, locale không đổi, KHÔNG trả focus về trigger (cố ý — người dùng đã hướng thao tác ra chỗ khác) | `language-selector.tsx` |
 
 ### Happy Path
 
@@ -132,11 +137,16 @@ Bố cục toàn màn hình (canvas thiết kế 1440×1024): header cố địn
 
 | Aspect | Status | Notes |
 |--------|--------|-------|
-| ARIA roles/labels | [EXPECTED] | Nút đăng nhập và dropdown ngôn ngữ cần `aria-label`/`role` rõ ràng — chưa có code để xác nhận. |
-| Keyboard navigation | [EXPECTED] | Dropdown ngôn ngữ và nút đăng nhập phải thao tác được bằng Tab/Enter/Space. |
-| Focus management | [EXPECTED] | Dropdown ngôn ngữ mở ra cần giữ focus trong danh sách lựa chọn. |
-| Screen reader compatibility | [EXPECTED] | Banner lỗi cần được đọc ra ngay khi xuất hiện. |
-| Error announcement | [EXPECTED] | Banner lỗi nên dùng `aria-live` để trình đọc màn hình thông báo ngay khi xuất hiện. |
+| ARIA roles/labels | [PARTIAL] | Dropdown ngôn ngữ (E02) xác nhận trong code: trigger `aria-haspopup="listbox"` + `aria-expanded` + `aria-controls` + `aria-label` động theo locale hiện tại; panel `role="listbox"` + `aria-label`; mỗi mục `role="option"` + `aria-selected`. Nút đăng nhập Google (E07) vẫn `[EXPECTED]` — chưa có code xác nhận. |
+| Keyboard navigation | [PARTIAL] | Dropdown ngôn ngữ (E02) xác nhận trong code: ArrowDown/ArrowUp (vòng), Home/End, Enter/Space chọn, Escape đóng + trả focus về trigger. Nút đăng nhập Google (E07) vẫn `[EXPECTED]`. |
+| Focus management | [PARTIAL] | Mở panel: focus vào mục đang chọn. Chọn mục hoặc Escape: trả focus về trigger. Click ra ngoài: đóng panel nhưng KHÔNG trả focus về trigger (cố ý — xem known limitations bên dưới). |
+| Screen reader compatibility | [EXPECTED] | Banner lỗi cần được đọc ra ngay khi xuất hiện — chưa có code xác nhận (ngoài phạm vi dropdown ngôn ngữ). |
+| Error announcement | [EXPECTED] | Banner lỗi nên dùng `aria-live` để trình đọc màn hình thông báo ngay khi xuất hiện — chưa có code xác nhận (ngoài phạm vi dropdown ngôn ngữ). |
+
+**Known limitations (dropdown ngôn ngữ, xác nhận từ code):**
+
+- Tab ra khỏi panel đang mở KHÔNG tự đóng panel (popup mồ côi) — user quyết định hoãn xử lý ("để lần sau"), xem `clarifications.md`.
+- `aria-controls` trên trigger trỏ tới id không tồn tại khi panel đang đóng, vì listbox chỉ render khi panel mở (điều kiện render). Tồn tại từ trước, không phải lỗi mới của thay đổi này.
 
 ## 10. Responsive Behavior
 

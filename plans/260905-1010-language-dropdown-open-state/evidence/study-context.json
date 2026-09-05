@@ -1,0 +1,25 @@
+{
+  "task": "Implement the open state of the login page's VN/EN language dropdown from MoMorph screen hUyaaugye2 (\"Dropdown-ngôn ngữ\", figma 721:4942). The dropdown already toggled and switched locale, but its open panel was styled with invented values (bg #0B0F12, no border, no selected-row distinction) because the design had never drawn an open-state variant. The design now exists, so the invented styling is replaced with measured tokens and full listbox keyboard navigation is added.",
+  "mode": "interactive",
+  "acceptanceCriteria": [
+    "FR-203.a: the open panel lists both locales, each with its own distinct flag beside the label — E2E C3b",
+    "FR-203.b: the option for the current locale is distinguished by BACKGROUND rgba(255,234,158,0.2), not by a hidden attribute alone; unselected is transparent; hover on unselected is rgba(255,234,158,0.08) — E2E C3d",
+    "FR-203.c: ArrowDown/ArrowUp wrap through options, Home/End jump to first/last, Enter or Space selects, Escape closes and returns focus to the trigger, and focus lands on the SELECTED option when the panel opens — E2E C3e",
+    "Visual contract: panel background #00070C, border 1px solid #998C5F, radius 8px, padding 6px; option 108x56 with radius 2px — E2E C3c, measured from design nodes 525:11713 and I525:11713;362:6085",
+    "Panel is a drop-below (absolute top-full) and does NOT overlay the trigger — explicit user decision recorded in clarifications.md",
+    "Existing behavior must not regress: C1 render, C3 locale switch + NEXT_LOCALE cookie, C4 invalid-locale fallback to VN"
+  ],
+  "touchpoints": [
+    "app/login/_components/language-selector.tsx",
+    "e2e/login-screen.spec.ts"
+  ],
+  "blastRadius": "Contained. One client component in the login header, plus its e2e spec. The setLocale server action, the NEXT_LOCALE cookie contract, lib/i18n/*, and every other route were deliberately left untouched — verified by diff. The one non-local risk was the ul/li -> div[role=listbox] + button[role=option] markup change, since C3 and C3b select options by ARIA role; both were re-run and hold.",
+  "contracts": [
+    "spec-delta.md §3 is the authoritative visual token table — values are used verbatim, never re-derived or rounded",
+    "clarifications.md records three user decisions that are settled and must not be revisited: drop-below placement (not overlay), hover token rgba(255,234,158,0.08), keyboard navigation in scope",
+    "Cookie NEXT_LOCALE and the setLocale server action signature are unchanged",
+    "Known gap accepted: Tab out of the open panel does not close it (orphaned popup) — deferred by explicit user decision, recorded in docs/screens/SCR001_Login/spec.md §9 and plan.md",
+    "Known gap accepted: aria-controls references an id that does not exist while the panel is closed — pre-existing, not introduced here",
+    "Known gap accepted: IconFlagEn is hand-drawn with no MoMorph source node, unlike IconFlagVn — noted in the screen spec asset row"
+  ]
+}

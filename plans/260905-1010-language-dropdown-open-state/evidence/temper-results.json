@@ -1,0 +1,65 @@
+{
+  "testPolicy": "e2e-red-first",
+  "redBaseline": {
+    "command": "npx playwright test e2e/login-screen.spec.ts --project=anon",
+    "exitCode": 1,
+    "validRed": true,
+    "why": "Failures came from the new screen assertions, not from infrastructure. auth.setup.ts passed and 8 pre-existing tests stayed green.",
+    "failures": {
+      "C3c": "Expected \"rgb(0, 7, 12)\" Received \"rgb(11, 15, 18)\" — panel background still the invented value",
+      "C3d": "Expected \"rgba(255, 234, 158, 0.2)\" Received \"rgba(0, 0, 0, 0)\" — selected option had no background",
+      "C3e": "Expected focused Received inactive — opening the panel moved focus nowhere"
+    },
+    "evidenceFile": "red-evidence.json"
+  },
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "TypeScript clean after the post-review purity fix.",
+      "ts": "2026-09-05T04:36:11Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "ESLint clean. Orchestrator fixed one error the tester left behind: the C3c/C3d/C3e helper declared 'page: any', tripping @typescript-eslint/no-explicit-any; replaced with 'type Page' from @playwright/test.",
+      "ts": "2026-09-05T04:36:11Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Production build clean. Route table renders /, /_not-found, /auth/callback, /login, /todo plus the proxy middleware.",
+      "ts": "2026-09-05T04:36:11Z"
+    },
+    {
+      "command": "npx playwright test e2e/login-screen.spec.ts --project=anon",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "11/11 pass. The three formerly-RED cases C3c, C3d, C3e are green on the identical command that produced the RED.",
+      "ts": "2026-09-05T04:36:11Z"
+    },
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Full suite 23/23 pass across setup + anon + authed, re-run after the post-review fix. No regression in C1, C2, C3, C3b, C4, C5, C10 or the authenticated specs.",
+      "ts": "2026-09-05T04:36:11Z"
+    }
+  ],
+  "visualValidation": {
+    "status": "pass",
+    "capturedBy": "orchestrator",
+    "note": "The tester agent reported visual validation but produced no images — its capture-dropdown.mjs called browser.createContext(), which is not a Playwright API (correct call is newContext), so the script failed silently and only CSS assertions ran. The stray script was removed and screenshots were re-captured with the project's own bundled chromium.",
+    "screenshots": [
+      "panel-open.png",
+      "panel-hover-en.png",
+      "panel-focus-en.png",
+      "header-in-context.png"
+    ],
+    "evidenceFile": "visual-capture.json"
+  },
+  "overall": "pass"
+}

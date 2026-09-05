@@ -66,6 +66,42 @@ export function IconFlagVn(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+/**
+ * Union Jack for the EN locale.
+ *
+ * No MoMorph counterpart — the design only ever shows the VN default state, so
+ * there is no `MM_MEDIA_*` node to pull from. Hand-drawn here to match
+ * IconFlagVn's geometry exactly (a 20x15 field at translate(2,5) inside a 24x24
+ * box) so the two sit identically in the header. Stroke widths are halved on
+ * the red overlays to produce the fimbriation, rather than tracing every
+ * counterchanged polygon.
+ */
+export function IconFlagEn(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g clipPath="url(#login-flag-en-clip)">
+        <rect width="20" height="15" transform="translate(2 5)" fill="#012169" />
+        <path d="M2 5L22 20M22 5L2 20" stroke="#F7FCFF" strokeWidth="4" />
+        <path d="M2 5L22 20M22 5L2 20" stroke="#C8102E" strokeWidth="2" />
+        <path d="M12 5V20M2 12.5H22" stroke="#F7FCFF" strokeWidth="6" />
+        <path d="M12 5V20M2 12.5H22" stroke="#C8102E" strokeWidth="3.5" />
+      </g>
+      <defs>
+        <clipPath id="login-flag-en-clip">
+          <rect width="20" height="15" fill="white" transform="translate(2 5)" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
 // mm:I662:14391;186:1696;186:1821;186:1441
 export function IconChevronDown(props: SVGProps<SVGSVGElement>) {
   return (
