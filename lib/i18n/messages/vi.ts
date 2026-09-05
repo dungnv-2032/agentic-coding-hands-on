@@ -1,28 +1,7 @@
-/**
- * Shape of a locale's message set. Fields are plain `string` (not literal
- * types via `as const`) so `en.ts` can satisfy the same type with different
- * copy while a missing/misspelled key is still a compile error.
- */
-export interface Dictionary {
-  login: {
-    logoAlt: string;
-    wordmarkAlt: string;
-    subtitle: string;
-    tagline: string;
-    signInButton: string;
-    errorOauthFailed: string;
-    languageLabel: string;
-    languageVi: string;
-    languageEn: string;
-  };
-  footer: {
-    copyright: string;
-  };
-  todo: {
-    title: string;
-    signOut: string;
-  };
-}
+import type { Dictionary } from "./dictionary";
+import { viHome } from "./vi-home";
+
+export type { Dictionary };
 
 /**
  * Vietnamese copy — the default locale (BR-003) and the authoritative source
@@ -43,9 +22,27 @@ export const vi: Dictionary = {
   },
   footer: {
     copyright: "Bản quyền thuộc về Sun* © 2025",
+    standards: "Tiêu chuẩn chung",
   },
   todo: {
     title: "Việc cần làm",
     signOut: "Đăng xuất",
+  },
+  header: {
+    logoAlt: "Sun* Annual Awards 2025",
+    about: "About SAA 2025",
+    awardInformation: "Award Information",
+    kudos: "Sun* Kudos",
+    notificationsLabel: "Thông báo",
+    notificationsEmpty: "Không có thông báo mới",
+    accountLabel: "Tài khoản",
+    profile: "Hồ sơ",
+    signOut: "Đăng xuất",
+    adminDashboard: "Trang quản trị",
+  },
+  home: viHome,
+  comingSoon: {
+    title: "Coming soon",
+    body: "Nội dung đang được cập nhật. Vui lòng quay lại sau.",
   },
 };

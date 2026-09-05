@@ -1,6 +1,7 @@
 import type { Locale } from "./locales";
+import type { Dictionary } from "./messages/dictionary";
 import { en } from "./messages/en";
-import { vi, type Dictionary } from "./messages/vi";
+import { vi } from "./messages/vi";
 
 export type { Dictionary };
 

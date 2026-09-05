@@ -1,11 +1,14 @@
-import type { Dictionary } from "./vi";
+import type { Dictionary } from "./dictionary";
+import { enHome } from "./en-home";
 
 /**
- * English copy, typed against the `vi` module's shape so a missing or
+ * English copy, typed against the shared `Dictionary` shape so a missing or
  * mistyped key is a compile error rather than a silent runtime fallback.
  *
  * `login.signInButton` intentionally stays "LOGIN With Google" in both
  * locales — it is design copy (a fixed brand string), not prose to translate.
+ * The same applies to `header.about`/`header.awardInformation`/`header.kudos`:
+ * the design shows the nav labels in English in both locales.
  */
 export const en: Dictionary = {
   login: {
@@ -21,9 +24,27 @@ export const en: Dictionary = {
   },
   footer: {
     copyright: "Copyright belongs to Sun* © 2025",
+    standards: "General Standards",
   },
   todo: {
     title: "To-do",
     signOut: "Sign out",
+  },
+  header: {
+    logoAlt: "Sun* Annual Awards 2025",
+    about: "About SAA 2025",
+    awardInformation: "Award Information",
+    kudos: "Sun* Kudos",
+    notificationsLabel: "Notifications",
+    notificationsEmpty: "No new notifications",
+    accountLabel: "Account",
+    profile: "Profile",
+    signOut: "Sign out",
+    adminDashboard: "Admin Dashboard",
+  },
+  home: enHome,
+  comingSoon: {
+    title: "Coming soon",
+    body: "This content is being updated. Please check back soon.",
   },
 };
