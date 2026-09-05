@@ -1,0 +1,19 @@
+{
+  "note": "Acceptance criteria from study-context.json that this delivery cannot honestly prove. Moved out of study-context.json because the evidence-gate schema rejects extra keys — NOT deleted. Each entry states the blocker, what IS proven, and the condition that closes it. Cross-referenced by ORCH-03/17/18 in clarifications.md.",
+  "deferred": [
+    {
+      "criterion": "ID-37: an admin (app_metadata.role === 'admin') additionally sees Admin Dashboard",
+      "reason": "Not honestly provable in this repo. `app_metadata` is server-written and requires the `service_role` key, which this project deliberately does not carry (.env.example states this explicitly). signUp's options.data writes user_metadata, not app_metadata, so there is no path to seed an admin session without weakening the test or inventing state.",
+      "whatIsProven": "The negative direction IS covered: ID-38 passes, proving a non-admin sees no Admin Dashboard. The role gate itself is implemented at app/_page-context.ts (app_metadata.role === 'admin') and app/_components/account-menu.tsx. What is unproven is only the positive direction — that an actual admin session renders the link.",
+      "sanctionedBy": "ORCH-03 in clarifications.md",
+      "closesWhen": "A service_role key is available to the E2E harness, or an admin-provisioning path exists in the repo."
+    },
+    {
+      "criterion": "ID-56 / ID-57 / ID-60: the countdown target comes from NEXT_PUBLIC_EVENT_START_AT (ISO-8601); an unparseable value falls back to 00/00/00 without crashing",
+      "reason": "Partly proven, partly blocked. ID-56/ID-57 (a valid ISO-8601 value drives the countdown) IS exercised: playwright.config.ts pins NEXT_PUBLIC_EVENT_START_AT via webServer.env and ID-12/39/40 assert the resulting live values. ID-60 (an UNPARSEABLE value degrades to 00/00/00 without crashing) is not: NEXT_PUBLIC_* is inlined when the dev server starts, so no per-test override reaches it, and a second server carrying a bad value cannot be started — Next.js 16 refuses to run two `next dev` instances from the same directory ('Another next dev server is already running'). This was attempted and reverted rather than left half-wired.",
+      "whatIsProven": "The fallback logic itself is implemented and readable at app/_components/countdown-timer.tsx (invalid or missing value -> ZERO_UNITS, 'Coming soon' hidden, one console warning, never throws). What is unproven is only that it behaves so end-to-end in a served page.",
+      "sanctionedBy": "ORCH-17 in clarifications.md",
+      "closesWhen": "The error path is covered by a unit test (the repo has no unit runner today), or the E2E harness gains a production build served from a separate distDir/working copy with the malformed value baked in."
+    }
+  ]
+}

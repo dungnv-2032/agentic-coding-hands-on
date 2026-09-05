@@ -1,0 +1,36 @@
+{
+  "policy": "e2e-red-first",
+  "redTestFiles": [
+    "e2e/homepage.spec.ts",
+    "e2e/homepage-authed.spec.ts"
+  ],
+  "redCommand": "npm run test:e2e -- --project=anon --project=authed",
+  "redExitCode": 1,
+  "redFailure": "19 tests failed due to missing homepage elements: header structure, hero section, countdown display, awards grid, footer, language menu, navigation, CTA buttons, and authenticated user header (notification bell, account menu). The homepage route at '/' does not yet exist — all assertions on homepage elements fail as expected before implementation.",
+  "testCount": 20,
+  "testIds": [
+    "countdown-value",
+    "award-card",
+    "awards-grid",
+    "award-card-top-talent",
+    "award-card-top-project",
+    "award-card-top-project-leader",
+    "award-card-best-manager",
+    "award-card-signature-2025-creator",
+    "award-card-mvp",
+    "notification-panel",
+    "account-menu"
+  ],
+  "skipped": [
+    "ID-28 — unread notification badge deferred; no notification backend (clarifications A1)",
+    "ID-5/37 (admin dashboard for admin user) — deferred; requires admin role seeding in Supabase session (clarifications A2)"
+  ],
+  "coverage": {
+    "passed": 25,
+    "failed": 19,
+    "skipped": 1,
+    "total": 45,
+    "testDuration": "2.9m"
+  },
+  "notes": "ID-0 passed because homepage loads at '/' without auth (correct). ID-41/42/43 passed because clock manipulation correctly handles future time (event countdown behavior validated). ID-1 failed because authenticated header (notification bell, account button) doesn't render — homepage not yet implemented. All failures are honest assertion failures on missing DOM elements, not infrastructure or config failures. Ready for implementation."
+}

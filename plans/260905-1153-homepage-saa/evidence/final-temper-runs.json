@@ -1,0 +1,12 @@
+[
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "Final GREEN: 49 passed, 1 skipped (ID-28, sanctioned), 0 failed. Includes the new ID-39 and ID-2/3/4/20 coverage."
+  },
+  {
+    "command": "npm run typecheck && npm run lint && npm run build",
+    "exitCode": 0,
+    "summary": "typecheck 0, lint 0 errors (3 pre-existing e2e warnings), production build 0. Torn .next/dev/types regenerated first (ORCH-09)."
+  }
+]

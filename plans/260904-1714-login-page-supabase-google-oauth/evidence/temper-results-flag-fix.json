@@ -1,0 +1,32 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "20 passed from a cold start (19 existing + new C3b regression). Warmup now throws on failure instead of printing a false success line.",
+      "ts": "2026-09-05T03:07:46Z"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "TypeScript clean.",
+      "ts": "2026-09-05T03:07:46Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "ESLint clean.",
+      "ts": "2026-09-05T03:07:46Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Production build clean.",
+      "ts": "2026-09-05T03:07:46Z"
+    }
+  ]
+}

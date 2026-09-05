@@ -1,0 +1,66 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "ID-0: / renders publicly for an unauthenticated visitor; proxy.ts does not guard it",
+    "ID-7: page structure is header / hero / countdown / awards grid / Kudos section / floating widget / footer, in that order",
+    "ID-9: the About SAA 2025 nav item renders in the selected state on /",
+    "ID-12 / ID-40: the countdown renders three zero-padded 2-digit units labelled DAYS, HOURS, MINUTES",
+    "ID-13 / ID-41 / ID-42 / ID-43: 'Coming soon' shows while the event is in the future and is hidden once it passes, with the counter held at 00",
+    "ID-14: the event info block shows 26/12/2025, Au Co Art Center and the livestream note",
+    "ID-15 / ID-16: six award cards, 3 columns at desktop and 2 columns at tablet and mobile",
+    "ID-47 to ID-52: image, title and 'Chi tiet' on each award card all navigate to /awards-information#<slug>",
+    "ID-44 / ID-45: the ABOUT AWARDS and ABOUT KUDOS CTAs navigate to the awards and kudos routes",
+    "ID-53: the Sun* Kudos block's 'Chi tiet' button navigates to the Kudos route",
+    "ID-17 / ID-55 / ID-59: the footer shows logo, nav links and the copyright line, and no link 404s",
+    "ID-24 / ID-30 to ID-35: the language menu opens on click, Enter and Space; closes on a second click, an outside click and Esc",
+    "ID-25 / ID-26: choosing EN switches the interface to English and choosing VN switches it back",
+    "ID-1 / ID-27: an authenticated visitor sees the notification bell, and clicking it opens the panel",
+    "ID-36 / ID-38: the account menu opens with Profile and Sign out, and a regular user sees no Admin Dashboard",
+    "ID-18 / ID-19: clicking the header or footer logo returns to / and scrolls to top",
+    "ID-39: countdown values decrease in real time without a page reload",
+    "ID-2 / ID-3 / ID-4 / ID-20: nav items reach the homepage; clicking the already-selected item scrolls to top instead of navigating",
+    "Visual contract: the implemented screen matches design/homepage-saa.png; no visual value is invented"
+  ],
+  "regressionChecked": [
+    "F001 login suite (login-screen.spec.ts, callback-security.spec.ts, auth.setup.ts) still green after the shared-hook extraction and supabase-session.ts fixture change",
+    "authed project (authenticated.spec.ts C7/C8/C9) unaffected by ORCH-12's session-isolation split",
+    "capture-homepage-visual.spec.ts confirmed unreachable from anon/authed/homepage-authed via regex trace, not just inspection",
+    "No other importer of HomeHeader/SiteFooter/HomeNav/use-scroll-to-top-if-current besides page.tsx and coming-soon.tsx"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Medium",
+      "category": "Accessibility",
+      "location": "app/_components/account-menu.tsx:88",
+      "summary": "role=\"menu\" on account/notification panels (also notification-bell.tsx:74) with plain <Link>/<button> children and no menuitem roles, roving tabindex, or arrow-key nav — an incomplete ARIA menu widget. Round 1's own debugger tried adding role=\"menuitem\" and it broke getByRole locators by overriding native link/button roles. Recommendation for next round: drop role=\"menu\"/aria-haspopup=\"menu\" entirely (plain aria-label on the popover, no menu semantics) rather than complete the widget — a screen reader that announces \"menu\" but gets no arrow-key navigation is worse than no menu role at all, and this codebase already has the correct full pattern to imitate if a real menu is wanted later (language-selector.tsx's role=\"listbox\"/role=\"option\"/ArrowUp/ArrowDown at :153-180).",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Medium",
+      "category": "Performance",
+      "location": "app/_page-context.ts:31",
+      "summary": "getPageContext() calls supabase.auth.getUser() a second time per request, after proxy.ts's middleware (lib/supabase/update-session.ts:43) already called it once for token refresh — an extra round trip to the Supabase auth server on every request to a homepage that is otherwise public. Deliberately left unchanged this round; it mirrors the pre-existing /todo pattern exactly, so it's not a regression this feature introduced. Defensible to defer since a real fix (request-scoped memoization, e.g. React cache()) is an app-wide auth-plumbing change, not a homepage-scoped one.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Medium",
+      "category": "Performance",
+      "location": "public/images/home/keyvisual-hero-bg.png",
+      "summary": "4.47MB source PNG, not recompressed. next/image re-encodes per requested size/format at request time so browser payload is bounded, but the origin file still bloats the repo and the build's image-optimization cache. Acceptable to defer since it is the design's own export and no smaller source exists without re-exporting from Figma.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "Low",
+      "category": "Maintainability",
+      "location": "e2e/homepage-authed.spec.ts:4",
+      "summary": "The describe() title string still reads \"Homepage SAA — Authenticated User (authed project)\" even though playwright.config.ts routes this file to the homepage-authed project (ORCH-12) — the leading comment at line 2 was corrected to say so, but the title string itself wasn't. Cosmetic only: test IDs and routing are correct, only the printed describe label is stale.",
+      "disposition": "Accept"
+    }
+  ]
+}

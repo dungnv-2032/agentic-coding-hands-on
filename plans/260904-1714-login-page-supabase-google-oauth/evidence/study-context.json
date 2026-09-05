@@ -1,5 +1,5 @@
 {
-  "task": "Implement the /login screen (SAA 2025) with Google OAuth against the local Supabase stack, per MoMorph screen GzbNeVGJHz.",
+  "task": "Fix: the open Language dropdown listed VN/EN as bare text while the trigger beside it showed a flag. Root cause at app/login/_components/language-selector.tsx:101 \u2014 the option row rendered only the label and the OPTIONS array carried no icon reference. RED baseline proved before the fix: with the change stashed, C3b failed at login-screen.spec.ts:100 with toHaveCount(1) receiving 0 (exit 1) \u2014 the defect itself, not infrastructure. Original task: implement the /login screen (SAA 2025) with Google OAuth against local Supabase.",
   "mode": "interactive",
   "acceptanceCriteria": [
     "FR-201: /login renders header (logo left, VN selector right), hero, ROOT FURTHER wordmark, subtitle, tagline, Google button and fixed footer",
@@ -13,7 +13,8 @@
     "FR-601: any valid Google account may sign in, with no domain allow-list",
     "BR-003: an invalid NEXT_LOCALE value falls back to VN without a blank page",
     "Rotated Supabase auth cookies survive the guarded redirect (single-use refresh tokens must not be dropped)",
-    "The OAuth callback never redirects a user off this origin"
+    "The OAuth callback never redirects a user off this origin",
+    "FR-203: every option in the open language dropdown shows its own distinct flag beside the label, matching the flag+label rule the closed trigger establishes \u2014 E2E C3b"
   ],
   "touchpoints": [
     "app/login/page.tsx",

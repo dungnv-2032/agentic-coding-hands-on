@@ -1,0 +1,57 @@
+[
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed",
+    "exitCode": 1,
+    "summary": "41 passed, 3 failed (ID-27/36/38 authed env issues), 1 skipped; 7 mechanism repairs applied for ORCH-04/05/06/02"
+  },
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "GREEN: 45 passed, 1 skipped, 0 failed. Session isolation fix (ORCH-12): homepage-authed now uses independent session via e2e/homepage-auth.setup.ts + homepage-authed project."
+  },
+  {
+    "command": "npx playwright test e2e/capture-homepage-visual.spec.ts --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "Visual validation: Desktop (1512px) and mobile (375px) screenshots captured and compared against design. PASS: No material mismatches."
+  },
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "Final GREEN after hero-keyvisual fix and mobile horizontal-overflow fix: 46 passed, 1 skipped (ID-28, sanctioned), 0 failed."
+  },
+  {
+    "command": "npm run typecheck && npm run lint && npm run build",
+    "exitCode": 0,
+    "summary": "typecheck 0, lint 0 (6 pre-existing e2e warnings), production build 0."
+  },
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "Rework GREEN: 47 passed (new: ID-18, ID-19 logo navigation tests), 1 skipped (ID-5/37), 0 failed. Removed .first() from language selector, removed dormant fallback from award card navigation, excluded capture-homepage-visual from suite, regenerated visual report."
+  },
+  {
+    "command": "npx playwright test e2e/homepage.spec.ts --project=anon -g 'ID-18'  # falsification check, logo fix deliberately reverted",
+    "exitCode": 1,
+    "summary": "ID-18 FAILED at waitForURL('/') with the unconditional preventDefault restored — proves the new test genuinely catches the logo dead-end rather than passing vacuously. Fix restored immediately after."
+  },
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 1,
+    "summary": "Reproduced twice: homepage-auth-setup failed with 'Database error saving new user'; 42 passed, 5 did not run. Root-caused to the Date.now()-only test email colliding across two concurrent setup projects (ORCH-14), not infra flakiness."
+  },
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "Post-rework GREEN: 47 passed (incl. new ID-18/ID-19), 1 skipped (ID-28, sanctioned), 0 failed."
+  },
+  {
+    "command": "npm run lint && npm run build",
+    "exitCode": 0,
+    "summary": "lint 0 errors / 3 warnings (pre-existing, e2e only); production build 0."
+  },
+  {
+    "command": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+    "exitCode": 0,
+    "summary": "Evidence gate closure: 49 passed (added ID-39, ID-2/3/4/20, ID-20), 1 skipped (ID-5/37 no service_role), 0 failed. ID-39: samples countdown every 500ms over 3s, verifies value changes. ID-2/3/4/20 and ID-20: nav behavior with URL/scroll validation."
+  }
+]

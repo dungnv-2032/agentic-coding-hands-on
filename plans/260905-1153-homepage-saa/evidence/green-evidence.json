@@ -1,0 +1,89 @@
+{
+  "policy": "e2e-red-first",
+  "greenCommand": "npm run test:e2e -- --project=anon --project=authed --project=homepage-authed",
+  "greenExitCode": 0,
+  "passed": 49,
+  "failed": 0,
+  "skipped": 1,
+  "repairs": [
+    {
+      "testId": "ID-16",
+      "kind": "mechanism",
+      "before": "expect(gridColsDesktop).toContain('repeat(3')",
+      "after": "const cols = style.gridTemplateColumns.trim().split(/\\s+/).length; expect(cols).toBe(3)",
+      "provesSame": "Both assert 3-column grid at desktop; repair counts space-separated tokens in rendered value (336px 336px 336px) instead of expecting literal repeat() syntax which never appears in computed style"
+    },
+    {
+      "testId": "ID-7",
+      "kind": "mechanism",
+      "before": "const hero = page.getByText(/root.*further/i); // matches multiple regions",
+      "after": "const mainContent = page.locator('main'); const heroSection = mainContent.locator('[data-testid=\"home-hero\"]'); // scoped to main element",
+      "provesSame": "Both locate the hero region; repair scopes the search to avoid multi-match of 'root' and 'further' text appearing separately"
+    },
+    {
+      "testId": "ID-15",
+      "kind": "mechanism",
+      "before": "awardGrid.getByText(/talent|project|manager|mvp|signature/i) in strict mode throws multi-match",
+      "after": "awardGrid.locator('[data-testid^=\"award-card-\"]'); const cardCount = await awardCards.count(); expect(cardCount).toBe(6)",
+      "provesSame": "Both assert 6 award cards exist; repair uses testid prefix selector to avoid strict-mode multi-match on text regex"
+    },
+    {
+      "testId": "ID-25/26",
+      "kind": "mechanism",
+      "before": "page.getByRole('button', { name: /language|vn|en|vi/i }) resolves to 2 elements (language button + Next.js dev tools)",
+      "after": "page.locator('button[aria-haspopup=\"listbox\"]').first()",
+      "provesSame": "Both locate the language selector button; repair uses aria-haspopup='listbox' to uniquely identify the language menu trigger without matching dev tools button"
+    },
+    {
+      "testId": "ID-41/42/43",
+      "kind": "mechanism",
+      "before": "page.clock.setFixedTime(new Date('2026-01-01T00:00:00Z')) — hardcoded to past date, conflicts with ORCH-01 future pin",
+      "after": "await page.clock.install(); await page.clock.setFixedTime(now); reload; then setFixedTime(futureTime = now + 50 days); reload and assert expired state",
+      "provesSame": "Both test the 'Coming soon' label toggle; repair derives fake clock time from pinned event target (ORCH-06) instead of hardcoded past date, and asserts LIVE state before faking time forward"
+    },
+    {
+      "testId": "ID-9",
+      "kind": "mechanism",
+      "before": "aboutLink.evaluate() to check class names for selected state — fragile, no standard class names",
+      "after": "header.getByRole('link', { name: 'About SAA 2025' }); evaluate for border-b and FFEA9E classes which form the SELECTED_CLASS",
+      "provesSame": "Both check that About SAA 2025 is marked selected; repair checks the exact CSS classes defined in home-nav.tsx SELECTED_CLASS instead of guessing class names"
+    },
+    {
+      "testId": "ID-24/30-35",
+      "kind": "mechanism",
+      "before": "page.getByRole('button', { name: /language|vn|en|vi/i })",
+      "after": "page.locator('button[aria-haspopup=\"listbox\"]').first()",
+      "provesSame": "Both locate the language selector; same repair as ID-25/26 to avoid multi-match strict mode violation"
+    },
+    {
+      "testId": "ID-1, ID-27, ID-36, ID-38",
+      "kind": "fixture",
+      "before": "homepage-authed.spec.ts runs in 'authed' project, shares e2e/.auth/user.json with authenticated.spec.ts; C9's signOut(scope:'global') revokes session for all concurrent tests",
+      "after": "Created e2e/homepage-auth.setup.ts + homepage-authed project in playwright.config.ts with independent e2e/.auth/homepage-user.json; homepage-authed tests depend on homepage-auth-setup instead of shared 'setup' project; removed homepage-authed.spec.ts from 'authed' project testMatch",
+      "provesSame": "Both test the authenticated header (bell, account button, menu interaction); repair isolates session so C9's global sign-out in authed project cannot race and revoke the homepage-authed session"
+    },
+    {
+      "testId": "ID-24/30-35 and ID-25/26",
+      "kind": "locator",
+      "before": "page.locator('button[aria-haspopup=\"listbox\"]').first() at lines 295 and 341",
+      "after": "page.locator('button[aria-haspopup=\"listbox\"]') — removed .first() since the locator is unique",
+      "provesSame": "Both locate the language selector button; repair removes redundant .first() call per ORCH-05 (strict mode: no papering over ambiguity with .first())"
+    },
+    {
+      "testId": "ID-47/48/49/50/52",
+      "kind": "mechanism",
+      "before": "Fallback path at lines 418-427: if data-testid not found, use loose text regex match with .first()",
+      "after": "Removed fallback; rely only on data-testid selector: const card = page.locator(`[data-testid='award-card-${slug}']`); await card.click();",
+      "provesSame": "Both navigate to /awards-information#<slug>; repair removes the dormant anti-pattern fallback (text regex + .first()) that was forbidden by ORCH-05 and never meant to run"
+    }
+  ],
+  "behaviourFailures": [],
+  "visualMismatches": [],
+  "visualValidationNotes": "2026-09-05: Captured desktop (1512px) and mobile (375px) screenshots. Compared against design/homepage-saa.png. PASS: No material mismatches. All regions match design — header (authenticated bell + account button), hero + countdown (45:02:10), Root Further block, awards grid (6 cards, 3×2 layout), Kudos promo, footer. Mobile responsive behavior correct. See visual-validation-report.md for detailed region-by-region analysis.",
+  "skipped_sanctioned": [
+    "ID-5/37 — admin role not seeded (ORCH-03: no service_role key available)",
+    "ID-28 — notification badge deferred pending backend (A1: no notification unread source)"
+  ],
+  "remainingFailures": [],
+  "notes": "Evidence gate closure (rework round 2): EXIT CODE 0. Closed three acceptance criteria with real, testable assertions: ID-39 (countdown decreases in real time without reload — samples countdown every 500ms for 3 seconds, verifies at least 2 distinct states), ID-2/3/4/20 (header nav items navigate home from non-home routes; clicking already-selected item scrolls to top instead of navigating; tests header nav behavior), ID-20 (footer logo scrolls to top when clicked on homepage). All three PASS. Test mechanism: ID-39 uses robust sampling to avoid flaky timing-dependent assertions; ID-2/3/4/20 and ID-20 verify behavior through URL unchanged checks and scroll position assertions. Result: 49 passed (+2 new tests, replacing old ID-39/40 zeropad test), 1 skipped (ID-5/37). ID-60 (unparseable EVENT_START_AT) remains untestable in default suite; requires separate Playwright project with different port and env var override — documented as deferred. Deferred criteria: ID-37 (admin role needs service_role key, deliberately absent), ID-28 (notification backend not available). All tests verified stable across multiple runs."
+}

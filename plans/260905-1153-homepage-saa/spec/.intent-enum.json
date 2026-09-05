@@ -1,0 +1,7 @@
+{
+  "mode": "single",
+  "intents": [
+    "(visitor, browse the SAA 2025 landing screen, understands the Root Further theme + award system + Kudos and navigates onward)"
+  ],
+  "justification": "One screen, one user-facing outcome. The countdown, awards grid and Kudos block are SECTIONS of that single landing outcome, not separate screen-groups or API boundaries. The header account/notification menus are app-shell affordances rendered on this screen; sign-out and the language selector already belong to the implemented F001_Login feature and are reused, not re-specified. No conjunction in the task text ('Implement màn hình Homepage SAA') — neither smell list fires."
+}
