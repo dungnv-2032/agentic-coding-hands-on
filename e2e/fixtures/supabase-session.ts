@@ -67,8 +67,15 @@ export async function createTestSession() {
     },
   });
 
-  // Create a unique user with a timestamped email
-  const email = `e2e-${Date.now()}@example.com`;
+  // Create a unique user. The timestamp alone is NOT unique: since the
+  // homepage suite got its own setup project (clarifications.md ORCH-12),
+  // two setup projects call this fixture concurrently, and when both land in
+  // the same millisecond they request the same email — GoTrue then reports
+  // the duplicate-key rejection as the opaque "Database error saving new
+  // user", which reads like a flake and is not. The pid and random suffix
+  // make collisions impossible regardless of how many setups run in parallel.
+  const unique = `${Date.now()}-${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
+  const email = `e2e-${unique}@example.com`;
   const password = "Test123456!";
 
   const { data, error } = await client.auth.signUp({

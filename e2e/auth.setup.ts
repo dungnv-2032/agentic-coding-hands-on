@@ -29,13 +29,16 @@ async function warmupClientBundles() {
     await page.goto("http://127.0.0.1:3000/login", {
       waitUntil: "networkidle",
     });
-    // Wait for the language selector button to respond to clicks (hydration complete)
-    const langSelector = page.getByRole("button", {
-      name: /VN|EN|language/i,
-    });
+    // Target by aria-haspopup, not an accessible-name regex: /VN|EN|language/i
+    // also matches the Next dev-tools button, and the resulting strict-mode
+    // violation was being swallowed by the catch below — so this "warmup" was
+    // only ever warming by side effect of goto(), never verifying hydration.
+    const langSelector = page.locator('button[aria-haspopup="listbox"]');
     await expect(langSelector).toBeVisible();
-    // Verify the button responds (can be clicked) — proof of hydration
-    await langSelector.focus();
+    // Opening the listbox needs a React handler, so this proves hydration
+    // rather than merely proving the markup arrived.
+    await langSelector.click();
+    await expect(page.getByRole("listbox")).toBeVisible();
 
     // /todo deliberately is NOT warmed here. Its sign-out control is a plain
     // form submit inside a server component, so it needs no hydration to work
@@ -43,7 +46,12 @@ async function warmupClientBundles() {
 
     await page.close();
   } catch (error) {
-    console.warn("Client bundle warmup encountered an issue (non-fatal):", error);
+    // Deliberately rethrown. A silent warmup failure re-opens the exact
+    // cold-start race this function exists to close, and the caller used to
+    // print "hydration complete" straight after swallowing it.
+    throw new Error(
+      `Client bundle warmup failed — the cold-start race is not closed: ${error}`,
+    );
   } finally {
     await browser.close();
   }
