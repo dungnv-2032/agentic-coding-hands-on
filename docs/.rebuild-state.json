@@ -1,10 +1,29 @@
 {
   "primary_lang": "vi",
-  "last_rebuild_sha": "",
+  "last_rebuild_sha": "bcb31cb24ad6499e659c751197dedc6a23eb515c",
   "last_feature_spec_run_sha": "da38e48af25b54363d2dddd1bdf414e2f3cd0d80",
   "fcode_index_sha": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
-  "doc_shas": {},
+  "doc_shas": {
+    "docs/generated/api-map.md": "84c0c4301460ab3dc1c0756ba7d583c5e8df0c485f32ef6a9d298cee52a006f5",
+    "docs/generated/behavior-logic.md": "cb9516920166d4f474143b8d67a549f2ab536cec2ac3c080718be871cbf06f2a",
+    "docs/generated/entities.md": "5f4bc5d2125f81bc60730dc50f50dd746f6919df881d8ba3b163da526330fe7b",
+    "docs/generated/feature-list.md": "f83764b5837c102faf17ee6b7dd15aac34483229f134f9e6365fc52faba2a26e",
+    "docs/generated/permissions-matrix.md": "8206835e7a03ed132ae691024f1176df9ec103c6fbd71155e9f90e4b9842d1bc",
+    "docs/generated/route-list.md": "44cccc340af6e5e629611ac70956f109c7bd7639ddcdfc3ee868bb8463c6b6d0",
+    "docs/generated/screen-list.md": "45f21a525976fc9c0705f08c4f46959617e664f045ea6dc8cddd4af7a7e5dacf",
+    "docs/generated/user-stories.md": "ada0ef385be520b87d36dd9daf985fd70e51efdb11ebd4997016506eca3b162e",
+    "docs/system/architecture.md": "147fa658b696cb4af03005e1079e805e3e9a31b8395e41f3a13f1fd7cc7dfb60",
+    "docs/system/glossary.md": "bab49798bcad5d96c9ae4147ed6a3beae13045ef9c4e73450d83709bbf44032e",
+    "docs/system/overview.md": "fe2c0c7a7101a1d0e755b7928f35a6788265cdd99f15158959cc693ea6aaf27d",
+    "docs/system/permissions.md": "9a64688c033c6623136342038362c58519dd835c958a7e314d11eabdb4f3157c",
+    "docs/flows/google-oauth-sign-in.md": "aa4f685404ef0c6480656730b853c7eccfdc43fe988b68d587686289a90e2093",
+    "docs/flows/homepage-browse-and-navigate.md": "b2deb75f8d93822adcbf15d9f342368b67e72216abb029c4eef52ec592ebca29",
+    "docs/flows/locale-switching.md": "b990c50249c2d0e3742c4d86052c25ac7c706cb331e3d9a305f2816abb95200c",
+    "docs/flows/session-refresh-and-route-guarding.md": "24a84d99a36e380e68291c039ed3c3332bc5d6c874d86669789e6f7132b3ca7d",
+    "docs/flows/sign-out.md": "b69fb3188bf87ab10464a8c97395b69e386767ab268277c76eedbad740dba8f0"
+  },
   "screen_spec_shas": {
-    "SCR001": "f793ea184cb488b998adadff98023259c760cf6c576765146a2ff95349a99b21"
+    "SCR001": "09232088dd8cf7dccf4b1e42a4fcbb330ef11e6da24a11b3f60d2a7b35a37e13",
+    "SCR002": "a3152ab2b9fa7558f17aeea6f6cfae66a6a0de33615c691564729af4419aec80"
   }
 }

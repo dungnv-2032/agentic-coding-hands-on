@@ -26,7 +26,7 @@ lang: vi
 
 | ID | Capability | What the user can do | User Stories | Requirements | Business Rules | Screens |
 |----|------------|------------------------|-----------------|---------------|-------------------|---------|
-| CAP-01 | Đăng nhập bằng Google | Bấm một nút để xác thực qua Google và vào ứng dụng | US001 | FR-001, FR-002, FR-201, FR-202, FR-401, FR-402, FR-601 | BR-001, DEC-001, DEC-002, SM-001 | SCR-login |
+| CAP-01 | Đăng nhập bằng Google | Bấm một nút để xác thực qua Google và vào ứng dụng | US001 | FR-001, FR-002, FR-201, FR-202, FR-401, FR-402, FR-601 | BR-001, DEC-001, DEC-002, SM-001 | SCR001_Login |
 | CAP-02 | Kiểm soát truy cập theo trạng thái đăng nhập | Được tự động điều hướng đúng màn hình theo việc đã đăng nhập hay chưa | US002 | FR-101, FR-102, FR-602 | BR-002 | — |
 | CAP-03 | Chọn ngôn ngữ hiển thị | Đổi giao diện giữa Tiếng Việt và English | US003 | FR-203 | BR-003 | — |
 | CAP-04 | Đăng xuất | Kết thúc phiên đăng nhập | US004 | FR-403 | — | — |
@@ -80,7 +80,7 @@ None — no unresolved domain confirmations.
 
 | Screen Name | SCR### | What User Sees | What User Can Do |
 |-------------|--------|-----------------|-------------------|
-| Login | SCR-login *(draft — mã chính thức cấp khi promote)* | Header (logo + bộ chọn ngôn ngữ VN mặc định), hero nền trừu tượng, wordmark "ROOT FURTHER", dòng giới thiệu SAA 2025, nút "LOGIN With Google", footer bản quyền cố định | Bấm đăng nhập Google; đổi ngôn ngữ VN/EN |
+| Login | SCR001_Login | Header (logo + bộ chọn ngôn ngữ VN mặc định), hero nền trừu tượng, wordmark "ROOT FURTHER", dòng giới thiệu SAA 2025, nút "LOGIN With Google", footer bản quyền cố định | Bấm đăng nhập Google; đổi ngôn ngữ VN/EN |
 
 ### User Journey
 

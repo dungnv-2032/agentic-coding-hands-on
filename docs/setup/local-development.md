@@ -35,9 +35,12 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL` | field "API URL" trong output `supabase status` (mặc định `http://127.0.0.1:54321`) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | field "Publishable key" (định dạng mới `sb_publishable_...`) |
 | `NEXT_PUBLIC_SITE_URL` | `http://127.0.0.1:3000` — xem mục 4 vì sao phải đúng y hệt |
+| `NEXT_PUBLIC_EVENT_START_AT` | Thời điểm sự kiện SAA 2025 (ISO-8601) dùng cho bộ đếm ngược trên trang chủ `/` (F002_HomepageSaa). Mặc định trong `.env.example` (`2025-12-26T18:30:00+07:00`) đã ở quá khứ — muốn thấy đếm ngược đang chạy khi dev local thì đặt một ngày tương lai trong `.env.local`. Thiếu hoặc sai định dạng thì trang không lỗi — chỉ hiện `00/00/00` và ẩn "Coming soon" (FR-402) |
 
 `service_role` key **không** đưa vào đây — key đó bỏ qua Row Level Security nên không được lộ ra
-browser, không được commit.
+browser, không được commit. Đây là biến build-time (Next.js inline vào bundle client lúc khởi động dev
+server/build, không đọc lại theo từng request) nên không mang giá trị bí mật, an toàn để commit
+`.env.example`.
 
 ## 3. Google OAuth cần credentials thật
 
@@ -86,11 +89,21 @@ npm run dev -- --hostname 127.0.0.1 --port 3000
 npm run test:e2e
 ```
 
-Chạy `playwright test` — 19 test case trong `e2e/*.spec.ts`, chia 3 project trong
-`playwright.config.ts`: `setup` (seed session thẳng vào Supabase local, không qua Google thật — xem
-Assumption A1 trong `docs/features/F001_Login/technical-spec.md`), `anon` (màn hình login, route guard,
-bảo mật callback), `authed` (dùng `storageState` đã seed). `webServer` tự chạy `npm run dev` cho bạn,
-không cần mở server tay trước.
+Chạy `playwright test` — chia 6 project trong `playwright.config.ts` (`npx playwright test --list` để
+xem số test case và danh sách đầy đủ hiện tại, vì bộ test đang được bổ sung thường xuyên):
+
+| Project | Vai trò | Phụ thuộc |
+|---|---|---|
+| `setup` | Seed session F001_Login thẳng vào Supabase local, không qua Google thật (Assumption A1, `docs/features/F001_Login/technical-spec.md`) | — |
+| `anon` | Màn hình login, route guard, bảo mật callback, homepage (chưa đăng nhập) | `setup` |
+| `authed` | `authenticated.spec.ts` — route guard đã đăng nhập + sign-out (C9 là **global** sign-out, dùng `storageState` seed riêng) | `setup` |
+| `homepage-auth-setup` | Seed một session **độc lập** cho các test homepage-authed, tách khỏi session của `authed` để không bị ảnh hưởng bởi test sign-out C9 | — |
+| `homepage-authed` | Chuông thông báo, menu tài khoản, gating Admin Dashboard trên `/` | `homepage-auth-setup` |
+| `visual-capture` | Chụp ảnh màn hình desktop/mobile của `/` — chạy theo yêu cầu, **không** nằm trong bộ mặc định | `homepage-auth-setup` |
+
+`webServer` tự chạy `npm run dev` cho bạn trên `127.0.0.1:3000`, ghim `NEXT_PUBLIC_EVENT_START_AT` vào
+một ngày tương lai cố định (45 ngày kể từ lúc chạy) qua `webServer.env` để bộ test luôn thấy đếm ngược
+đang chạy, bất kể `.env.local` đặt gì — không cần mở server tay trước.
 
 ### Riêng máy WSL2 thiếu thư viện hệ thống
 

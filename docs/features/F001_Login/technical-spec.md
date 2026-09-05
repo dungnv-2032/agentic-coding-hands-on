@@ -17,73 +17,73 @@ lang: vi
 | # | Action (handler) | Method · Path | Codes | Writes | Detail |
 |---|---|---|---|---|---|
 | **A0** | *cross-cutting — route guard + session refresh* | — | FR-101, FR-102, FR-602, BR-002 | — | § 4.4 |
-| **A1** | `LoginPage#render` (planned) | `GET` `/login` | FR-201, FR-202, FR-203, DEC-001, US001, US003 | — *(read-only)* | § 3.1 |
-| **A2** | `signInWithGoogle` (planned) | Server Action · `/login` | FR-202, FR-601, BR-001, US001, SM-001 | — *(external redirect, no local write)* | § 3.1 |
-| **A3** | `GET /auth/callback` (planned) | `GET` `/auth/callback` | FR-401, FR-402, DEC-002, US001, SM-001 | — *(session held by Supabase Auth, not an app-owned table)* | § 3.1 |
-| **A4** | `setLocale` (planned) | Server Action · `/login` | FR-203, BR-003, US003 | — *(cookie only)* | § 3.2 |
-| **A5** | `TodoPage#render` (planned) | `GET` `/todo` | US004 | — *(read-only)* | § 3.3 |
-| **A6** | `signOut` (planned) | Server Action · `/todo` | FR-403, US004 | — *(session cleared, not an app-owned table)* | § 3.3 |
+| **A1** | `LoginPage#render` | `GET` `/login` | FR-201, FR-202, FR-203, DEC-001, US001, US003 | — *(read-only)* | § 3.1 |
+| **A2** | `signInWithGoogle` | Server Action · `/login` | FR-202, FR-601, BR-001, US001, SM-001 | — *(external redirect, no local write)* | § 3.1 |
+| **A3** | `GET /auth/callback` | `GET` `/auth/callback` | FR-401, FR-402, DEC-002, US001, SM-001 | — *(session held by Supabase Auth, not an app-owned table)* | § 3.1 |
+| **A4** | `setLocale` | Server Action · `/login` | FR-203, BR-003, US003 | — *(cookie only, plus `revalidatePath("/", "layout")`)* | § 3.2 |
+| **A5** | `TodoPage#render` | `GET` `/todo` | US004 | — *(read-only)* | § 3.3 |
+| **A6** | `signOut` | Server Action · `/todo` | FR-403, US004 | — *(session cleared, not an app-owned table)* | § 3.3 |
 
 ## 3. Actions
 
 ### 3.1 CAP-01 — Đăng nhập bằng Google
 
 #### A1 · Hiển thị màn hình Login
-`GET` `/login` → `` `LoginPage#render` `` (planned)
-`FR-201` `FR-202` `FR-203` `DEC-001` `US001` `US003` · `SCR-login`
+`GET` `/login` → `` `LoginPage#render` ``
+`FR-201` `FR-202` `FR-203` `DEC-001` `US001` `US003` · `SCR001_Login`
 
 **Who** · Khách truy cập chưa đăng nhập
-**FE** · Server Component (planned `app/login/page.tsx`) đọc cookie `NEXT_LOCALE` để chọn từ điển VN/EN, đọc query `error` để quyết định hiện banner lỗi, render header (logo + bộ chọn ngôn ngữ), khối wordmark "ROOT FURTHER" + mô tả, nút "LOGIN With Google", và footer.
+**FE** · Server Component (`app/login/page.tsx`) đọc cookie `NEXT_LOCALE` để chọn từ điển VN/EN qua `resolveLocale`, đọc `searchParams.error` (`PageProps<"/login">`, có thể là string hoặc string[]) để quyết định `hasError`, render `HeroBackground` + `LoginHeader` (logo + bộ chọn ngôn ngữ) + `LoginContent` (wordmark, mô tả, banner lỗi điều kiện, nút "LOGIN With Google") + `LoginFooter`.
 **Request** · query `error` *(tuỳ chọn — chỉ có khi quay về từ Google với lỗi)*
 **BE** · không có — thuần render phía server, không gọi service riêng.
 **Rule** · Quyết định hiện banner lỗi khi có tham số `error`:
 
 | DEC | subtype | Condition | What the user sees | Source |
 |---|---|---|---|---|
-| **DEC-001** | render | `searchParams.error` tồn tại | Hiện dòng "Đăng nhập không thành công. Vui lòng thử lại." phía trên nút đăng nhập | `TBD (draft)` |
+| **DEC-001** | render | `searchParams.error` tồn tại (string không rỗng hoặc mảng không rỗng) | Hiện `ErrorBanner` "Đăng nhập không thành công. Vui lòng thử lại." phía trên nút đăng nhập | `app/login/page.tsx:40-43` |
 
 **Result** · Chỉ render — không ghi dữ liệu. Không có `DISC-###` nào chi phối màn hình này.
-**Source:** `TBD (draft)`
+**Source:** `app/login/page.tsx:31-59`
 
 <!-- Không cần sequence diagram: dưới ngưỡng — read-only, một hop, đồng bộ. -->
 
 ---
 
 #### A2 · Bấm "LOGIN With Google"
-Server Action · `/login` → `` `signInWithGoogle` `` (planned)
+Server Action · `/login` → `` `signInWithGoogle` ``
 `FR-202` `FR-601` `BR-001` `US001` · `SM-001` · `INT-001`
 
 **Who** · Khách truy cập chưa đăng nhập
-**FE** · Nút đăng nhập (Client Component) submit Server Action; ngay khi bấm, nút chuyển sang disabled + hiện loader (SM-001: `idle` → `loading`).
+**FE** · `GoogleSignInButton` (Client Component, `useFormStatus`) submit Server Action bên trong `<form action={signInWithGoogle}>`; ngay khi bấm, nút chuyển sang `disabled` + hiện loader (SM-001: `idle` → `loading`).
 **Request** · không có tham số — hành động không nhận input từ người dùng.
-**BE** · `` `signInWithGoogle` `` (planned) gọi `supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: '{origin}/auth/callback' } })`, sau đó `redirect(data.url)` ra ngoài ứng dụng.
+**BE** · `` `signInWithGoogle` `` báo lỗi ngay (throw) nếu thiếu `NEXT_PUBLIC_SITE_URL` (fail-fast, tránh redirectTo `undefined/auth/callback`); ngược lại gọi `supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: '{NEXT_PUBLIC_SITE_URL}/auth/callback' } })`. Nếu có `error` hoặc thiếu `data.url`, redirect về `/login?error=oauth_failed` thay vì crash; ngược lại `redirect(data.url)` ra ngoài ứng dụng.
 **Rule** · **BR-001 — Mọi tài khoản Google hợp lệ đều được phép đăng nhập, không áp dụng domain allow-list.** Không có bước kiểm tra domain nào được thêm trước hay sau khi gọi `signInWithOAuth`.
-**Result** · Không ghi dữ liệu cục bộ — trình duyệt được chuyển hướng toàn trang sang trang xác thực của Google qua `INT-001` (Supabase Auth phát hành URL authorize) *(§ 4.5)*.
+**Result** · Không ghi dữ liệu cục bộ — trình duyệt được chuyển hướng toàn trang sang trang xác thực của Google qua `INT-001` (Supabase Auth phát hành URL authorize) *(§ 4.5)*, hoặc về `/login?error=oauth_failed` nếu bước phát hành URL thất bại.
 **State** · `SM-001`: `idle` → `loading` *(§ 4.3)*
-**Source:** `TBD (draft)`
+**Source:** `app/login/actions.ts:16-35`
 
 <!-- Không cần sequence diagram: một action, redirect ra ngoài, không ghi ≥2 bảng. -->
 
 ---
 
 #### A3 · Xử lý callback OAuth *(background, no FE)*
-`GET` `/auth/callback` → `` `GET /auth/callback` `` (planned)
-`FR-401` `FR-402` `US001` · `SM-001` · `INT-001`
+`GET` `/auth/callback` → `` `GET /auth/callback` ``
+`FR-401` `FR-402` `DEC-002` `US001` · `SM-001` · `INT-001`
 
 **Who** · *không có thao tác trực tiếp — do Google chuyển hướng về sau khi người dùng xác nhận hoặc huỷ ở màn hình của Google*
 **FE** · *không có* — route handler thuần phía server.
-**Request** · query `code` *(thành công)* hoặc `error` *(thất bại/huỷ)*
-**BE** · `` `GET /auth/callback` `` (planned) đọc `request.nextUrl.searchParams`; có `code` thì gọi `supabase.auth.exchangeCodeForSession(code)`; có `error` thì bỏ qua bước exchange.
+**Request** · query `code` *(thành công)*, `error` *(thất bại/huỷ)*, `next` *(tuỳ chọn — đích chuyển hướng sau khi thành công, mặc định `/todo`)*
+**BE** · Đọc `request.nextUrl.searchParams`. Origin dùng để build mọi redirect luôn lấy từ `NEXT_PUBLIC_SITE_URL` (`resolveSiteOrigin()`), **không bao giờ** từ `request.nextUrl.origin`/header `Host` — hai lý do bảo mật ghi rõ trong code: (1) Next 16 viết lại hostname loopback (`127.0.0.1`) thành `"localhost"` trong `NextURL`, làm lệch cookie session đã pin vào `127.0.0.1`; (2) `Host`/`x-forwarded-host` do client kiểm soát, dùng trực tiếp là open-redirect (CWE-644). Có `error` → bỏ qua exchange, redirect thẳng lỗi. Có `code` → gọi `supabase.auth.exchangeCodeForSession(code)` trong `try/catch` (lỗi mạng throw thay vì trả `error`, nên phải bọc để không lộ 500 thô). `next` được resolve qua `resolveNextPath()` — parse lại bằng `new URL(next, origin)` và so khớp `origin` để chặn URL tuyệt đối, `//evil.com`, và biến thể backslash.
 **Rule** · Quyết định điều hướng theo kết quả OAuth:
 
 | DEC | subtype | Condition | What the user sees | Source |
 |---|---|---|---|---|
-| **DEC-002** | flow | `searchParams.code` tồn tại và exchange thành công | Điều hướng tới `/todo` | `TBD (draft)` |
-| **DEC-002** | flow | `searchParams.error` tồn tại, hoặc exchange thất bại | Điều hướng về `/login?error=oauth_failed` | `TBD (draft)` |
+| **DEC-002** | flow | `code` tồn tại và exchange thành công | Điều hướng tới `next` (mặc định `/todo`) | `app/auth/callback/route.ts:87-100` |
+| **DEC-002** | flow | `error` tồn tại, hoặc thiếu cả `code`/`error`, hoặc exchange thất bại (kể cả throw) | Điều hướng về `/login?error=oauth_failed` (mã lỗi cố định, không phản chiếu lỗi thô của Google) | `app/auth/callback/route.ts:74-107` |
 
-**Result** · Không ghi bảng do ứng dụng sở hữu — phiên đăng nhập do Supabase Auth quản lý nội bộ. Nhánh thành công: redirect `/todo`. Nhánh thất bại: redirect `/login?error=oauth_failed`, khiến A1 render lại với `DEC-001` bật, đồng thời đưa nút đăng nhập về trạng thái sẵn sàng.
+**Result** · Không ghi bảng do ứng dụng sở hữu — phiên đăng nhập do Supabase Auth quản lý nội bộ. Nhánh thành công: redirect `next`. Nhánh thất bại: redirect `/login?error=oauth_failed`, khiến A1 render lại với `DEC-001` bật, đồng thời đưa nút đăng nhập về trạng thái sẵn sàng.
 **State** · `SM-001`: `loading` → `idle` *(chỉ ở nhánh thất bại)* *(§ 4.3)*
-**Source:** `TBD (draft)`
+**Source:** `app/auth/callback/route.ts:74-107`
 
 <!-- Không cần sequence diagram: hai nhánh nhưng chỉ một bảng DEC, không ghi ≥2 bảng, không phải background job dạng queue/cron. -->
 
@@ -94,42 +94,42 @@ Toàn bộ hành vi của capability này nằm ở hàng cross-cutting **A0** t
 ### 3.3 CAP-03 — Chọn ngôn ngữ hiển thị
 
 #### A4 · Đổi ngôn ngữ VN/EN
-Server Action · `/login` → `` `setLocale` `` (planned)
+Server Action · `/login` → `` `setLocale` ``
 `FR-203` `BR-003` `US003`
 
 **Who** · Khách truy cập
-**FE** · Dropdown ngôn ngữ (Client Component) ở header; chọn VN hoặc EN submit Server Action với giá trị đã chọn.
-**Request** · `locale` = `vi` \| `en`
-**BE** · `` `setLocale` `` (planned) ghi cookie `NEXT_LOCALE` qua `cookies().set(...)`.
+**FE** · `LanguageSelector` (Client Component, đã promote lên `app/_components/`, dùng chung với F002) submit `setLocale(value)` trong `startTransition` khi chọn một option khác locale hiện tại.
+**Request** · `locale` = `vi` \| `en` (chuỗi bất kỳ khác cũng được chấp nhận làm tham số — xử lý ở BE)
+**BE** · `` `setLocale` `` chuẩn hoá input qua `resolveLocale()` (giá trị lạ/rỗng rơi về `DEFAULT_LOCALE`, không ghi thẳng input người dùng vào cookie), ghi cookie `NEXT_LOCALE` qua `cookieStore.set(..., { path: "/", maxAge: 1 năm, sameSite: "lax" })`, rồi gọi **`revalidatePath("/", "layout")`** — bắt buộc, không phải tự động: action này giờ dùng chung cho cả `/login` và `/` (F002), nên phạm vi revalidate phải phủ toàn bộ layout, không chỉ `/login`.
 **Rule** · **BR-003 — Khi chưa có cookie `NEXT_LOCALE`, ngôn ngữ mặc định là `vi` (VN).** Sau khi người dùng chọn, giá trị đã chọn ghi đè mặc định ở các lần render sau.
-**Result** · Ghi cookie `NEXT_LOCALE` ← giá trị người dùng chọn. Đặt cookie trong Server Action tự động render lại `/login` theo ngôn ngữ mới, không cần gọi `revalidatePath` thủ công.
-**Source:** `TBD (draft)`
+**Result** · Ghi cookie `NEXT_LOCALE` ← giá trị đã chuẩn hoá, cộng một lời gọi `revalidatePath("/", "layout")` tường minh để mọi route render theo ngôn ngữ mới ngay, không đợi tới lần điều hướng kế tiếp.
+**Source:** `app/_actions/locale.ts:13-27`
 
 ### 3.4 CAP-04 — Đăng xuất
 
 #### A5 · Hiển thị trang /todo (placeholder)
-`GET` `/todo` → `` `TodoPage#render` `` (planned)
+`GET` `/todo` → `` `TodoPage#render` ``
 `US004`
 
 **Who** · Người dùng đã đăng nhập
-**FE** · Trang placeholder tối thiểu (planned `app/todo/page.tsx`) với một điều khiển đăng xuất, chỉ để chứng minh luồng `logout → /login`; không thuộc phạm vi tính năng to-do thật.
+**FE** · Trang placeholder tối thiểu (`app/todo/page.tsx`), cố ý không có style, với một điều khiển đăng xuất, chỉ để chứng minh luồng `logout → /login`; không thuộc phạm vi tính năng to-do thật. `proxy.ts` đã guard route này — trang chỉ gọi lại `getUser()` để hiển thị email đã đăng nhập, không dùng để tái xác thực (một nguồn thẩm quyền duy nhất).
 **Request** · không có
 **BE** · không có
 **Result** · Chỉ render — không ghi dữ liệu.
-**Source:** `TBD (draft)`
+**Source:** `app/todo/page.tsx:18-48`
 
 ---
 
 #### A6 · Đăng xuất
-Server Action · `/todo` → `` `signOut` `` (planned)
+Server Action · `/todo` → `` `signOut` ``
 `FR-403` `US004`
 
 **Who** · Người dùng đã đăng nhập
-**FE** · Điều khiển đăng xuất trên `/todo` submit Server Action.
+**FE** · Điều khiển đăng xuất trên `/todo` submit Server Action; cũng được F002 tái dùng cho mục "Sign out" trong menu tài khoản trên `/` (xem `docs/flows/sign-out.md`).
 **Request** · không có
-**BE** · `` `signOut` `` (planned) gọi `supabase.auth.signOut()`.
-**Result** · Không ghi bảng do ứng dụng sở hữu — phiên bị Supabase Auth thu hồi. Điều hướng về `/login`.
-**Source:** `TBD (draft)`
+**BE** · `` `signOut` `` gọi `supabase.auth.signOut()` **không truyền `options`** — GoTrue áp dụng default của chính SDK, `{ scope: 'global' }` (`node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:3402`), nên đây là sign-out toàn bộ thiết bị/phiên, không chỉ phiên hiện tại. Lỗi `{ error }` trả về bị bỏ qua có chủ đích — một phiên đã hết hạn vẫn phải về `/login` thay vì kẹt ở màn hình lỗi.
+**Result** · Không ghi bảng do ứng dụng sở hữu — phiên bị Supabase Auth thu hồi (global scope). Điều hướng về `/login`.
+**Source:** `app/_actions/auth.ts:17-21`
 
 ### 3.5 Edge cases
 
@@ -147,10 +147,13 @@ Server Action · `/todo` → `` `signOut` `` (planned)
 
 | Component | Responsibility | Used in | File |
 |---|---|---|---|
-| `LoginPage` (planned) | Render màn hình đăng nhập, đọc cookie ngôn ngữ + query lỗi | A1 | `app/login/page.tsx` (planned) |
-| `GoogleSignInButton` (planned) | Client Component quản lý trạng thái loading/disabled của nút | A2 | `app/login/_components/google-sign-in-button.tsx` (planned) |
-| `LanguageSelector` (planned) | Dropdown chọn ngôn ngữ, submit `setLocale` | A4 | `app/login/_components/language-selector.tsx` (planned) |
-| `TodoPage` (planned) | Placeholder trang đích sau đăng nhập | A5, A6 | `app/todo/page.tsx` (planned) |
+| `LoginPage` | Render màn hình đăng nhập, đọc cookie ngôn ngữ + query lỗi | A1 | `app/login/page.tsx` |
+| `HeroBackground` | Lớp nền hero full-bleed (fallback màu đặc, chờ export `hero.png` — RISK-01) | A1 | `app/login/_components/hero-background.tsx` |
+| `LoginHeader` / `LoginContent` / `LoginFooter` | 3 vùng còn lại của màn hình (logo+selector / wordmark+form+banner lỗi / copyright) | A1 | `app/login/_components/{login-header,login-content,login-footer}.tsx` |
+| `GoogleSignInButton` | Client Component quản lý trạng thái loading/disabled của nút (`useFormStatus`) | A2 | `app/login/_components/google-sign-in-button.tsx` |
+| `ErrorBanner` | Banner lỗi `role="alert"` khi `hasError` (DEC-001) | A1 | `app/login/_components/error-banner.tsx` |
+| `LanguageSelector` (đã promote — dùng chung với F002) | Dropdown chọn ngôn ngữ, submit `setLocale` | A1, A4 | `app/_components/language-selector.tsx` |
+| `TodoPage` | Placeholder trang đích sau đăng nhập | A5, A6 | `app/todo/page.tsx` |
 
 ### 4.2 Data Model
 
@@ -176,7 +179,7 @@ N/A — no discriminator fields in Key Entities.
 ### Trạng thái nút đăng nhập Google (SM-001)
 **kind:** ui
 **Linked FR:** FR-202
-**Source:** `TBD (draft)`
+**Source:** `app/login/_components/google-sign-in-button.tsx:17-18` (`useFormStatus().pending`)
 
 ```mermaid
 stateDiagram-v2
@@ -193,14 +196,14 @@ stateDiagram-v2
 
 **A0 · FR-101 / FR-102 / FR-602 / BR-002 — Điều hướng theo trạng thái đăng nhập áp dụng cho mọi request, không riêng một action nào.**
 `proxy.ts` (mở rộng từ `updateSession` hiện có) kiểm tra: (1) request tới `/todo` mà không có session hợp lệ → redirect `/login`; (2) request tới `/login` mà đã có session hợp lệ → redirect `/todo`. Áp dụng cho toàn bộ route khớp `matcher` hiện tại của `proxy.ts`, không riêng A1 hay A5.
-**Source:** `TBD (draft)`
+**Source:** `proxy.ts:41-46`
 
 ### 4.5 Algorithms & Integrations
 
 ### Google OAuth qua Supabase Auth (INT-001)
 **Linked FR:** FR-202
 **Used in:** A2 → A3
-**Source:** `TBD (draft)`
+**Source:** `app/login/actions.ts:16-34`, `app/auth/callback/route.ts:74-107`
 **Type:** api-call
 **Target:** Supabase Auth local (`{SUPABASE_URL}/auth/v1/authorize?provider=google`) → màn hình consent của Google → `/auth/callback`
 **Payload:** `provider=google`, `redirectTo={origin}/auth/callback`
@@ -245,28 +248,38 @@ SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET      # Google OAuth client secret — khôn
 ### 5.2 Assumptions
 
 - *(A1, A2, A3)* Theo Assumption A1 trong `clarifications.md`: E2E không thể hoàn thành round-trip Google thật (màn hình consent không tự động hoá được, local Supabase không có mock provider). RED/GREEN chỉ xác nhận: màn hình render đúng spec, redirect hướng tới endpoint authorize của Supabase với `provider=google`, và điều hướng theo trạng thái phiên được seed trực tiếp vào Supabase local.
-- *(A0)* Logic route-guard được thêm trực tiếp vào `proxy.ts` hiện có (cùng file với `updateSession`), không tách middleware riêng — theo quyết định trong `clarifications.md`.
-- *(A2, A3)* Tên hàm/route handler ở trên (`signInWithGoogle`, `setLocale`, `signOut`, `GET /auth/callback`) là dự kiến — chưa có source code thật để xác nhận. Riêng phần API `@supabase/ssr` thì đã chốt: báo cáo `researcher-02-supabase-google-oauth.md` xác nhận đúng hai lời gọi ghi ở § 2 (`signInWithOAuth` trả `data.url`, caller tự `redirect`; `exchangeCodeForSession(code)` ở route callback).
+- *(A0)* Logic route-guard được thêm trực tiếp vào `proxy.ts` hiện có (cùng file với `updateSession`), không tách middleware riêng — đúng như quyết định trong `clarifications.md`.
+- *(A2, A3)* API `@supabase/ssr` đã chốt và xác nhận khớp code thật: `signInWithOAuth` trả `data.url`, caller tự `redirect`; `exchangeCodeForSession(code)` ở route callback (`researcher-02-supabase-google-oauth.md`).
 
 ### 5.3 Unresolved Questions
 
 1. ~~**API chính xác của `@supabase/ssr` cho `signInWithOAuth`/`exchangeCodeForSession`**~~ — **ĐÃ ĐÓNG (2026-09-04).** `researcher-02-supabase-google-oauth.md` đã có và xác nhận cả hai chữ ký khớp với những gì spec này viết. Chốt thêm: dùng **Server Action** (không phải Client Component) để giữ đúng một cookie adapter `lib/supabase/server.ts`; trong `proxy.ts` response redirect **phải** kế thừa `response.cookies.getAll()`, nếu không token vừa xoay bị mất và user bị đăng xuất ở request kế tiếp.
-2. **Vị trí file Server Action/Route Handler** *(A2, A3, A4, A6)*: tên file dự kiến ở trên có thể đổi khi implement, do chưa có source code.
-3. **Asset nền hero (`public/images/login/hero.png`)** *(A1)*: chưa export được từ MoMorph (xem RISK-01 trong `functional-spec.md`) — chưa rõ khi nào sẵn sàng để A1 dùng.
+2. ~~**Vị trí file Server Action/Route Handler**~~ — **ĐÃ ĐÓNG.** Toàn bộ tên file đã xác nhận trực tiếp trong code (§ 3, § 4.1): `app/login/actions.ts` (`signInWithGoogle`), `app/auth/callback/route.ts` (`GET`), `app/_actions/locale.ts` (`setLocale`), `app/_actions/auth.ts` (`signOut` — đã chuyển ra khỏi `/todo`-only, dùng chung với F002).
+3. **Asset nền hero (`public/images/login/hero.png`)** *(A1)*: vẫn **chưa tồn tại** trong `public/images/login/` — xác nhận lại bằng `ls`, RISK-01 ở `functional-spec.md` vẫn đúng. `HeroBackground` (`app/login/_components/hero-background.tsx:11-24`) đã có fallback màu đặc, không lỗi khi ảnh còn thiếu.
 
 ### 5.4 Source References
 
-Chưa có source code — xem `## 7. User Stories` trong `functional-spec.md` để biết hành vi dự kiến.
+| Action | File | Lines |
+|---|---|---|
+| A1 | `app/login/page.tsx` | 31-59 |
+| A1 | `app/login/_components/{hero-background,login-header,login-content,login-footer,error-banner,google-sign-in-button}.tsx` | toàn file |
+| A2 | `app/login/actions.ts` | 16-35 |
+| A3 | `app/auth/callback/route.ts` | 1-108 |
+| A0 | `proxy.ts` | 1-56 |
+| A4 | `app/_actions/locale.ts` | 13-27 |
+| A4 | `app/_components/language-selector.tsx` | 77-84 (gọi `setLocale`) |
+| A5 | `app/todo/page.tsx` | 18-48 |
+| A6 | `app/_actions/auth.ts` | 17-21 |
 
 #### Data Flow
 
-N/A — chưa có luồng dữ liệu triển khai để mô tả (giai đoạn draft).
+N/A — A1/A5 chỉ render, A2/A3 điều hướng ra ngoài/callback (không ghi bảng do app sở hữu), A4/A6 chỉ ghi cookie/thu hồi phiên (xem § 4.2, § 4.3).
 
 ### 5.5 Artifact References
 
 | Artifact | File | Codes Used | Reviewed |
 |----------|------|------------|----------|
-| Feature List | feature-list.md *(chưa tạo — kỷ luật single-feature)* | F000 | [ ] |
-| Architecture | [architecture.md](../system/architecture.md) | TBD (draft) | [ ] |
-| Permissions | [permissions.md](../system/permissions.md) | TBD (draft) | [ ] |
-| Screens | [functional-spec.md § 6](./functional-spec.md#6-screens) | TBD (draft) | [ ] |
+| Feature List | [feature-list.md](../../generated/feature-list.md) | F001 | [x] |
+| Architecture | [architecture.md](../system/architecture.md) | — (narrative, no per-code cite) | [x] |
+| Permissions | [permissions.md](../system/permissions.md) | — (narrative, no per-code cite) | [x] |
+| Screens | [functional-spec.md § 6](./functional-spec.md#6-screens) | SCR001_Login | [x] |

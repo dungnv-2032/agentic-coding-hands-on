@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-04T14:38:00Z",
-  "plan": "260904-1714-login-page-supabase-google-oauth",
+  "generated_at": "2026-09-05T05:30:05Z",
+  "plan": "260905-1153-homepage-saa",
   "features": [
     {
       "fcode": "F001",
@@ -22,6 +22,34 @@
           "/login",
           "/auth/callback",
           "/todo"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    },
+    {
+      "fcode": "F002",
+      "name": "Homepage SAA",
+      "slug": "F002_HomepageSaa",
+      "priority": "P1",
+      "type": "ui",
+      "related": {
+        "screens": [
+          "SCR002_Homepage"
+        ],
+        "user_stories": [
+          "US001",
+          "US002",
+          "US003",
+          "US004"
+        ],
+        "routes": [
+          "/",
+          "/awards-information",
+          "/kudos",
+          "/standards",
+          "/profile"
         ],
         "models": [],
         "bl": [],
