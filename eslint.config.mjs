@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent tooling, not application code. Type-aware linting across these
+    // exhausts the Node heap and makes `npm run lint` unrunnable.
+    ".claude/**",
+    "supabase/.temp/**",
   ]),
 ]);
 

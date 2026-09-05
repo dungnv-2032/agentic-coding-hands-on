@@ -14,9 +14,13 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) with your browser to see the result — **not**
+`localhost:3000`: the Supabase session cookie is pinned to `127.0.0.1`, and browsers treat the two
+hosts as different origins, so opening `localhost` looks logged-out even after a successful login. See
+`docs/setup/local-development.md` § 4 for why.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`app/page.tsx` is the public SAA 2025 homepage (`/`), not the original `create-next-app` starter page —
+see the "Homepage" section below. `app/login/page.tsx` is the Google OAuth login screen.
 
 ## Login (Google OAuth via local Supabase)
 
@@ -26,6 +30,16 @@ see `docs/setup/local-development.md` for the full setup (env files, why everyth
 Feature behavior is specified in `docs/features/F001_Login/`; non-obvious implementation traps in
 `proxy.ts` and `app/auth/callback/route.ts` are written up in
 `docs/troubleshooting/login-oauth-gotchas.md`.
+
+## Homepage (SAA 2025 landing page)
+
+`/` is the public SAA 2025 homepage — header, hero with an event countdown, awards grid, Sun\* Kudos
+promo, and (when signed in) a notification bell and account menu. It shares its header/language
+selector and sign-out action with `/login` (`app/_components/`, `app/_actions/`). Five placeholder
+routes (`/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin`) exist only so every link
+resolves — none has real destination content yet. Feature behavior is specified in
+`docs/features/F002_HomepageSaa/`; the countdown reads `NEXT_PUBLIC_EVENT_START_AT` (see
+`docs/setup/local-development.md` § 2).
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
