@@ -182,12 +182,42 @@ cross join lateral (
 ) as senders;
 
 -- ---------------------------------------------------------------------------
+-- kudos — Group C: 7 rows, one per spotlight name as RECEIVER, so the
+-- Phòng ban filter is alive (clarifications.md assumption A5). The frame
+-- never states these seven's departments — only the viewer/receiver pair is
+-- CEVC10 — so assigning them the canonical department already on their
+-- `sunners` row (seeded above) fills a blank the frame leaves rather than
+-- overriding one it states. Sender is the frame's own receiver
+-- (`Huỳnh Dương Xuân`, already a corpus person) reused, not invented.
+-- heart_baseline stays well under Group A's floor (52) so the verified
+-- top-5 ordering is untouched. Group A's viewer→receiver pair (including
+-- the frame's own 1.000-heart card) is unmodified by this group.
+-- ---------------------------------------------------------------------------
+insert into public.kudos (sender_id, receiver_id, campaign, message, sent_at, heart_baseline)
+select
+  (select id from public.sunners where full_name = 'Huỳnh Dương Xuân'),
+  (select id from public.sunners where full_name = recipients.name),
+  'IDOL GIỚI TRẺ',
+  'Cảm ơn người em bình thường nhưng phi thường :D Cảm ơn sự chăm chỉ, cần mẫn của em đã tạo động lực rất nhiều cho team, để luôn nhắc mình luôn phải nỗ lực hơn nữa trong công việc. <3 và cuộc sống...',
+  timestamptz '2025-10-30 10:00:00+07' - (60 + recipients.rank) * interval '6 hours',
+  10 + (recipients.rank * 5)
+from (values
+  ('Đỗ hoàng Hiệp', 0),
+  ('Dương thúy An', 1),
+  ('Mai phương Thúy', 2),
+  ('Nguyễn Văn Quy', 3),
+  ('Lê Kiều Trang', 4),
+  ('Nguyễn Bá Chức', 5),
+  ('Nguyễn Hoàng Linh', 6)
+) as recipients(name, rank);
+
+-- ---------------------------------------------------------------------------
 -- kudos_hashtags — generated, not 150 hand-written literal rows (phase-03
 -- plan § Risk Assessment: keeps the file readable and the pattern DRY).
 -- Each kudos gets 1-3 tags; tag_position cycles by kudos.id so every one of
--- the 13 hashtags is used at least once across the 50 rows, and 'Toàn diện'
--- (hashtag position 1) lands on more than the 3 rows Key Insight 8 requires
--- (verified below in the verification queries).
+-- the 13 hashtags is used at least once across all seeded kudos, and
+-- 'Toàn diện' (hashtag position 1) lands on more than the 3 rows Key
+-- Insight 8 requires (verified below in the verification queries).
 -- ---------------------------------------------------------------------------
 insert into public.kudos_hashtags (kudos_id, hashtag_id, position)
 select k.id, h.id, gs.pos
@@ -223,7 +253,9 @@ from generate_series(1, 10) as n;
 -- ---------------------------------------------------------------------------
 -- spotlight_ticker_events — one row per spotlight name (clarifications.md
 -- § "SPOTLIGHT BOARD"), each pointing at a real kudos_id where that sunner
--- is the sender (Group B above), occurred_at descending with
+-- is the RECEIVER (Group C above) — the ticker line reads "... đã nhận
+-- được một Kudos mới" (received a new kudos), so the referenced row should
+-- be the one where they received, not sent. occurred_at descending with
 -- `Nguyễn Bá Chức` as the most recent — the frame's red just-updated node.
 -- ---------------------------------------------------------------------------
 insert into public.spotlight_ticker_events (sunner_id, kudos_id, occurred_at)
@@ -232,7 +264,7 @@ select
   (
     select k.id
     from public.kudos k
-    join public.sunners sk on sk.id = k.sender_id
+    join public.sunners sk on sk.id = k.receiver_id
     where sk.full_name = names.name
     order by k.id
     limit 1
@@ -252,6 +284,6 @@ join public.sunners s on s.full_name = names.name;
 -- ---------------------------------------------------------------------------
 -- board_stats — the frame's `388 KUDOS` Spotlight canvas heading
 -- (test-contract.md § "Blueprint ratification" > "Overridden"): data, not
--- i18n copy, and not a live count(*) (count(*) from kudos is 50).
+-- i18n copy, and not a live count(*) over the seeded kudos rows.
 -- ---------------------------------------------------------------------------
 insert into public.board_stats (id, spotlight_kudos_total) values (1, 388);
