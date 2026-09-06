@@ -21,6 +21,30 @@ Lệnh này khởi động Postgres + GoTrue (Supabase Auth) trong Docker và in
 chạy xong rồi mới sang bước 2 — các biến môi trường ở bước 2 lấy trực tiếp từ output này (hoặc chạy lại
 `npx supabase status` để xem lại).
 
+## 1.1. Áp dụng schema + seed cho Kudos Live Board
+
+Từ F004, repo có schema Postgres riêng (`supabase/migrations/`) và dữ liệu mẫu chép nguyên văn từ
+frame Figma (`supabase/seed.sql`) — không có cả hai thì `/kudos` không có gì để đọc và mọi bảng
+(`kudos`, `sunners`, `kudos_likes`, ...) chưa tồn tại. `supabase start` chỉ tự áp dụng migration +
+seed trên một Docker volume **mới tinh**; nếu bạn đã chạy `supabase start` trước khi pull tính năng
+này, chạy thêm:
+
+```bash
+npx supabase db reset
+```
+
+Lệnh này apply lại toàn bộ `supabase/migrations/` rồi chạy `supabase/seed.sql` — **luôn chạy trước
+khi mở `/kudos` hoặc chạy `npm run test:e2e`, không bao giờ giữa lúc dev server/test đang chạy**: nó
+truncate cả schema `auth`, nên chạy giữa phiên sẽ đá một session đã đăng nhập về `/login`.
+
+Kiểu dữ liệu TypeScript sinh từ schema (`lib/supabase/database.types.ts`) đã được commit sẵn, nên
+`npm run build`/`npm run typecheck` không cần database sống. Chỉ cần sinh lại khi bạn tự sửa
+migration:
+
+```bash
+npm run db:types
+```
+
 ## 2. Tạo `.env.local`
 
 Copy `.env.example` thành `.env.local` (đã có trong `.gitignore`, không commit) rồi điền theo output ở
@@ -89,14 +113,16 @@ npm run dev -- --hostname 127.0.0.1 --port 3000
 npm run test:e2e
 ```
 
-Chạy `playwright test` — chia 6 project trong `playwright.config.ts` (`npx playwright test --list` để
-xem số test case và danh sách đầy đủ hiện tại, vì bộ test đang được bổ sung thường xuyên):
+Chạy `playwright test` — chia 7 project trong `playwright.config.ts` (`npx playwright test --list` để
+xem số test case và danh sách đầy đủ hiện tại, vì bộ test đang được bổ sung thường xuyên). Nhớ chạy
+bước 1.1 (`supabase db reset`) trước — bộ test Kudos cần schema + seed đã áp dụng:
 
 | Project | Vai trò | Phụ thuộc |
 |---|---|---|
 | `setup` | Seed session F001_Login thẳng vào Supabase local, không qua Google thật (Assumption A1, `docs/features/F001_Login/technical-spec.md`) | — |
-| `anon` | Màn hình login, route guard, bảo mật callback, homepage (chưa đăng nhập) | `setup` |
+| `anon` | Màn hình login, route guard, bảo mật callback, homepage, Kudos Live Board (chưa đăng nhập, `kudos-live-board.spec.ts`) | `setup` |
 | `authed` | `authenticated.spec.ts` — route guard đã đăng nhập + sign-out (C9 là **global** sign-out, dùng `storageState` seed riêng) | `setup` |
+| `kudos-authed` | `kudos-live-board-authed.spec.ts` — thả tim khi đã đăng nhập, số đếm/`aria-pressed` giữ nguyên sau khi tải lại trang (F004) | `setup` |
 | `homepage-auth-setup` | Seed một session **độc lập** cho các test homepage-authed, tách khỏi session của `authed` để không bị ảnh hưởng bởi test sign-out C9 | — |
 | `homepage-authed` | Chuông thông báo, menu tài khoản, gating Admin Dashboard trên `/` | `homepage-auth-setup` |
 | `visual-capture` | Chụp ảnh màn hình desktop/mobile của `/` — chạy theo yêu cầu, **không** nằm trong bộ mặc định | `homepage-auth-setup` |

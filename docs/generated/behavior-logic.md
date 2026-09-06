@@ -332,7 +332,55 @@ the frozen slug list before `getElementById`, then `scrollIntoView({ behavior: "
 item catches up when the observer first delivers, a measured ~290ms after load. Accepted
 deliberately — see `docs/features/F003_AwardSystem/functional-spec.md` § 11 RISK-04.
 
+### Kudos filter + Highlight recompute (F004)
+
+**Source**: `lib/kudos/derive.ts:96-104` (`matchesFilters`), `:84-88` (`pickHighlight`);
+called from `app/kudos/_components/kudos-board.tsx:110-116` (`useMemo` on filter state) and
+`highlight-carousel.tsx:42` (`useMemo` on the filtered array)
+**Trigger**: Hashtag/Phòng ban selection in `KudosFilterBar`, or re-render after any filter change
+
+Pure, no I/O — `KudosBoard` (`"use client"`, the screen's single client boundary) memoizes
+`board.kudos.filter(card => matchesFilters(card, {hashtag, department}))` on every filter-id
+change; `HighlightCarousel` re-derives its own `[...filtered].sort(hearts desc).slice(0,5)` from
+that already-filtered array (`FR-202`, `FR-203`, `DEC-001`, `DEC-002`). AND-combined: a card must
+match both the selected hashtag and the selected department when both are set. Re-selecting the
+currently-active option toggles the corresponding id back to `null` (clear). Neither function
+reaches the server — the full unfiltered dataset is fetched once per page load in
+`KudosPage`/`getKudosBoard()`, and every filter interaction re-slices client state only. Selecting
+any filter also resets carousel paging to slide 1 (`resetPaging()`, `kudos-board.tsx:68-71`).
+
+### Kudos infinite-feed paging (F004)
+
+**Source**: `app/kudos/_components/use-infinite-feed.ts:14-41`
+**Trigger**: The `feed-sentinel` element entering the viewport (`IntersectionObserver`,
+`rootMargin: "200px"`)
+
+Client-side paging over data already fetched in one request (assumption A4,
+`clarifications.md`) — there is no paginated re-fetch. `KudosBoard` tracks a `pages` counter
+(`kudos-board.tsx:64`); `AllKudosSection` renders `cards.slice(0, pages * FEED_PAGE_SIZE)`
+(`FEED_PAGE_SIZE = 10`, `lib/kudos/derive.ts:13`) and mounts the sentinel only while more rows
+remain. The hook unmounts (and so stops observing) the sentinel once `hasMore` is false, which
+both halts the effect and guards against firing past the end of the already-filtered list
+(`FR-206`).
+
+### Spotlight deterministic word-cloud layout (F004)
+
+**Source**: `app/kudos/_components/spotlight-layout.ts:34-64` (`layoutSpotlightNodes`, ALG-002 in
+`docs/features/F004_KudosLiveBoard/technical-spec.md` § 4.5), called from
+`spotlight-board.tsx:50` inside `useMemo`
+**Trigger**: Spotlight node id list changing (in practice: once per page load — the id list is
+static per request)
+
+A pure function of the sorted node-id array: a fixed-constant LCG (`SEED = 1988`, Numerical
+Recipes multiplier, `spotlight-layout.ts:24-26`) seeded per-id — never `Math.random`, `Date.now`,
+or `window` — places each name on a coarse grid sized to `sqrt(count * 1.6)` columns, then jitters
+the cell and picks one of three size tiers (`lg`/`md`/`sm`) from further LCG draws. Same input,
+byte-identical output on the server's first render and the browser's first client render, so
+hydration never mismatches (`FR-205`). `SpotlightWordCloud` itself takes pre-computed positions as
+a prop and holds no hooks of its own.
+
 ### Debounce / Throttle, Optimistic UI, Polling, Upload Progress, Realtime
 
 N/A — no debounce/throttle, optimistic UI, polling, upload-progress, or realtime (WebSocket/SSE)
-patterns detected anywhere in `app/` or `lib/`.
+patterns detected anywhere in `app/` or `lib/`. (F004's heart toggle updates via a Server Action +
+`refresh()`, not client-side optimistic state — see `api-map.md`'s `toggleKudosLike` entry.)

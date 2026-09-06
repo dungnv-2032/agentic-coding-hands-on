@@ -20,3 +20,10 @@
 **Route:** /awards-information
 **Description:** Màn hình công khai hệ thống giải thưởng SAA 2025 — hero tiêu đề mùa giải, menu danh mục sáu mục dính bên trái, sáu thẻ chi tiết giải thưởng, khối Sun* Kudos.
 **States:** default, hash-seeded, hash-unmatched, reduced-motion, pre-hydration
+
+## SCR004_KudosLiveBoard
+
+**Feature:** F004 — Kudos Live Board
+**Route:** /kudos
+**Description:** Live board Sun* Kudos công khai: highlight, bộ lọc, spotlight, feed và sidebar.
+**States:** loading, empty, error, success

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T03:30:23Z",
+  "generated_at": "2026-09-06T13:56:23Z",
   "plan": "260906-0719-award-system-screen",
   "features": [
     {
@@ -71,6 +71,25 @@
         ],
         "routes": [
           "/awards-information"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    },
+    {
+      "fcode": "F004",
+      "name": "Kudos Live Board",
+      "slug": "F004_KudosLiveBoard",
+      "priority": "P1",
+      "type": "mixed",
+      "related": {
+        "screens": [
+          "SCR004_KudosLiveBoard"
+        ],
+        "user_stories": [],
+        "routes": [
+          "/kudos"
         ],
         "models": [],
         "bl": [],

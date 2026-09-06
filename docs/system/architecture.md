@@ -1,12 +1,24 @@
+---
+status: implemented
+authored_by: takumi
+created: 2026-09-06
+lang: vi
+---
+
 # Architecture
 
-**Project**: my-app (SAA 2025) — Core pass draft, reconciled từ `scout-report.md`.
+**Project**: my-app (SAA 2025) — forward-draft cho Kudos Live Board, viết trước khi code (SDD).
 
 ## System Architecture
 
 Next.js 16 App Router, mọi route render động (`ƒ`) vì đụng `cookies()` — không route nào
-prerender tĩnh (`scout-report.md § 2`). Không có API layer riêng của ứng dụng ngoài một route
-handler OAuth callback; không có database do repo tự quản (§ Data Model bên dưới nói rõ).
+prerender tĩnh. Không có API layer riêng của ứng dụng ngoài route handler OAuth callback.
+
+**Thay đổi lớn nhất so với bản trước:** repo giờ **có** database do mình quản. Trước Kudos Live
+Board, Supabase chỉ được dùng cho `auth.*` — không schema, không migration, không SQL. Màn hình
+này mang vào lớp Postgres đầu tiên: migration trong `supabase/migrations/`, seed
+`supabase/seed.sql`, và RLS policy đầu tiên của dự án. Từ đây, "không có database" không còn
+đúng, và mọi tính năng sau đều thừa hưởng tiền lệ RLS mà nó đặt ra.
 
 ```mermaid
 graph TB
@@ -14,18 +26,22 @@ graph TB
         BR[Trình duyệt]
     end
     subgraph "Next.js App Router (my-app)"
-        PX["proxy.ts — session refresh + route guard (Next 16 rename của middleware)"]
+        PX["proxy.ts — session refresh + route guard"]
         PC["app/_page-context.ts — điểm đọc duy nhất: locale + dictionary + isAuthenticated + isAdmin"]
-        SC["Server Components — app/page.tsx, app/awards-information/page.tsx, app/login/page.tsx, app/todo/page.tsx, 4 placeholder pages"]
-        SA["Server Actions — signOut(), setLocale(), signInWithGoogle()"]
-        CB["app/auth/callback/route.ts — Route Handler GET (OAuth callback, route duy nhất của app)"]
-        CC["Client Components — home-header, language-selector, account-menu, notification-bell, countdown-timer..."]
+        SC["Server Components — app/page.tsx, /awards-information, /kudos, /login, /todo, placeholder pages"]
+        SA["Server Actions — signOut(), setLocale(), signInWithGoogle(), toggleKudosLike()"]
+        CB["app/auth/callback/route.ts — Route Handler GET (OAuth callback)"]
+        CC["Client Components — home-header, language-selector, account-menu, countdown-timer, kudos filters/carousel/heart/spotlight"]
         DICT["lib/i18n — dictionaries tĩnh (vi/en), không dùng thư viện i18n nào"]
+        KQ["lib/kudos — query layer + logic thuần (badge, filter, top-N)"]
+        DT["lib/supabase/database.types.ts — type sinh từ schema (supabase gen types)"]
     end
     subgraph Supabase
         SSR["@supabase/ssr — createServerClient / createBrowserClient"]
         AUTH["GoTrue Auth — auth.users, session, refresh token"]
-        GOOGLE["Google OAuth (qua GoTrue, không gọi Google API trực tiếp)"]
+        PG["Postgres — public schema: sunners, kudos, kudos_likes, hashtags, departments, gift_awards, spotlight_events"]
+        RLS["RLS — select cho anon+authenticated; insert/delete kudos_likes chỉ auth.uid()"]
+        GOOGLE["Google OAuth (qua GoTrue)"]
     end
 
     BR -->|request| PX
@@ -34,87 +50,101 @@ graph TB
     SC --> PC
     PC --> SSR
     SC --> DICT
-    SC -->|props tối thiểu: locale, dictionary, isAuthenticated, isAdmin| CC
+    SC --> KQ
+    KQ --> DT
+    KQ -->|read qua server client| SSR
+    SC -->|props tối thiểu| CC
     CC -->|form action / startTransition| SA
     SA --> SSR
     SSR --> AUTH
+    SSR -->|PostgREST| PG
+    PG --- RLS
     AUTH --> GOOGLE
     BR -->|OAuth redirect| CB
     CB --> SSR
 ```
 
-**Không có API layer riêng của ứng dụng** ngoài `app/auth/callback/route.ts` — xác nhận tại
-`scout-report.md § 4, § 9`; không có REST/GraphQL endpoint nào khác trong repo.
+**Vẫn không có API layer riêng của ứng dụng** ngoài `app/auth/callback/route.ts`. Kudos không
+thêm REST endpoint nào: Server Component đọc thẳng qua `lib/supabase/server.ts`, và thao tác ghi
+duy nhất (thả tim) đi qua Server Action. Không có `/api/kudos`.
 
 ## Tech Stack
 
 | Layer | Technology | Version | Nguồn |
 |-------|------------|---------|-------|
-| Frontend framework | Next.js (App Router) | 16.3.4 | `package.json:14-29` |
-| UI runtime | React | 19.2.8 | `package.json:14-29` |
+| Frontend framework | Next.js (App Router) | 16.3.4 | `package.json` |
+| UI runtime | React | 19.2.8 | `package.json` |
 | Ngôn ngữ | TypeScript (strict) | theo `tsconfig.json` | `tsconfig.json` |
 | Styling | Tailwind CSS v4 (`@tailwindcss/postcss`) | v4 | `postcss.config.mjs` |
-| Auth / session | `@supabase/ssr` + `@supabase/supabase-js` (GoTrue) | 0.12.5 | `package.json:14-20` |
-| i18n | Tự viết — cookie `NEXT_LOCALE` + dictionary tĩnh, **không dùng thư viện** (không next-intl, không next-i18next) | — | `lib/i18n/locales.ts`, `lib/i18n/dictionaries.ts` |
-| E2E test | Playwright | 1.62 | `package.json:14-29` |
-| Database | **Không có** — không schema, không migration, không SQL nào của app | N/A | `scout-report.md § 4` |
-| Cache | **Không có** cache layer riêng | N/A | — |
+| Auth / session | `@supabase/ssr` + `@supabase/supabase-js` (GoTrue) | 0.12.5 | `package.json` |
+| **Database** | **Postgres qua Supabase local stack** — migration + seed + RLS do repo quản | theo `supabase/config.toml` | `supabase/config.toml`, `supabase/migrations/` |
+| **DB types** | **Sinh bằng `supabase gen types typescript --local`**, commit vào repo | — | `lib/supabase/database.types.ts` |
+| i18n | Tự viết — cookie `NEXT_LOCALE` + dictionary tĩnh, **không dùng thư viện** | — | `lib/i18n/locales.ts` |
+| E2E test | Playwright | 1.62 | `package.json` |
+| Cache | **Không có** cache layer riêng — route động, đọc mỗi request | N/A | — |
 | Queue | **Không có** | N/A | — |
-| State/data-fetching lib | **Không có** (không Redux/Zustand/Jotai, không SWR/TanStack Query) — state là `useState` cục bộ ở 5 client component | N/A | `scout-report.md § 4` |
-| Validation lib | **Không có** (không Zod/Yup) | N/A | `scout-report.md § 4` |
-| Unit test runner | **Không có** — Playwright E2E là harness kiểm thử duy nhất | N/A | `package.json:5-12` |
+| ORM / query builder | **Không có** — dùng trực tiếp `supabase-js` (PostgREST), không Prisma/Drizzle | N/A | `lib/kudos/` |
+| State/data-fetching lib | **Không có** (không Redux/Zustand, không SWR/TanStack Query) — state là `useState` cục bộ | N/A | — |
+| Validation lib | **Không có** (không Zod/Yup) — ràng buộc nằm ở schema + `maxLength` trên input | N/A | — |
+| Unit test runner | **Không có** — Playwright E2E là harness kiểm thử duy nhất | N/A | `package.json` |
 
 ## Data Flow
 
-Sơ đồ dưới minh hoạ một request điển hình vào route được guard (`/todo`), gồm cả nhánh xác
-thực Google qua callback. `proxy.ts` chạy trên mọi request trừ asset tĩnh (`proxy.ts:52-56`).
+Luồng auth và route-guard **không đổi**: `proxy.ts` chạy trên mọi request trừ asset tĩnh, gọi
+`updateSession()`, guard đúng hai route `/todo` và `/login`. `/kudos` nằm ngoài guard — công khai
+có chủ đích.
+
+Sơ đồ dưới là luồng riêng của Kudos Live Board: đọc khi render, và ghi khi thả tim.
 
 ```mermaid
 sequenceDiagram
     participant B as Browser
-    participant P as "proxy.ts"
-    participant U as "updateSession() (lib/supabase/update-session.ts)"
-    participant S as "Supabase GoTrue"
-    participant PG as "Server Component (page.tsx)"
+    participant PG2 as "app/kudos/page.tsx (Server Component)"
     participant PC as "_page-context.ts"
+    participant KQ as "lib/kudos (query layer)"
+    participant S as "Supabase server client"
+    participant DB as "Postgres + RLS"
+    participant SA as "Server Action toggleKudosLike()"
 
-    B->>P: GET /todo (kèm cookie sb-*-auth-token)
-    P->>U: updateSession(request)
-    U->>S: auth.getUser() — thực hiện refresh nếu cần
-    S-->>U: user hoặc null + (nếu rotate) cookie mới
-    U-->>P: { response, user }
-    alt user null và pathname bắt đầu bằng /todo
-        P-->>B: 307 redirect /login (copy toàn bộ Set-Cookie sang response redirect)
-    else user hợp lệ
-        P->>PG: cho request đi tiếp (response.next())
-        PG->>PC: getPageContext()
-        PC->>S: createServerClient().auth.getUser() (lần đọc cookie thứ hai, độc lập với proxy)
-        S-->>PC: user
-        PC-->>PG: { locale, dictionary, isAuthenticated, isAdmin }
-        PG-->>B: HTML render (ƒ dynamic, không prerender)
+    B->>PG2: GET /kudos (không bị guard)
+    PG2->>PC: getPageContext()
+    PC-->>PG2: { locale, dictionary, isAuthenticated, isAdmin }
+    PG2->>KQ: đọc kudos + hashtags + departments + sidebar + spotlight
+    KQ->>S: createClient() rồi .from(...).select(...)
+    S->>DB: PostgREST query, mang JWT (hoặc anon key nếu chưa đăng nhập)
+    DB-->>S: chỉ những row RLS cho phép select
+    S-->>KQ: rows
+    KQ-->>PG2: view model (đã cộng heart_baseline + count(likes))
+    PG2-->>B: HTML (ƒ dynamic, không cache)
+
+    B->>SA: thả tim (startTransition)
+    alt chưa đăng nhập
+        SA-->>B: nút heart disabled — không có request nào được gửi
+    else đã đăng nhập
+        SA->>S: insert/delete kudos_likes
+        S->>DB: ghi — RLS with check (select auth.uid()) = user_id
+        DB-->>S: ok hoặc bị từ chối ở tầng DB
+        SA-->>B: revalidate, count đọc lại từ DB
     end
 ```
 
-**Luồng OAuth** (tách biệt, không đi qua sơ đồ trên): `/login` → server action
-`signInWithGoogle()` → `supabase.auth.signInWithOAuth(...)` → redirect Google → Google trả về
-`/auth/callback` (route handler, **cố ý không bị `proxy.ts` guard** vì guard nó sẽ làm vòng
-OAuth không thể hoàn tất — `proxy.ts:11-13`) → `exchangeCodeForSession(code)` → redirect tới
-`next` (mặc định `/todo`) hoặc `/login?error=oauth_failed` khi thất bại
-(`scout-report.md § 6`, BL-07).
-
 **Ghi chú kiến trúc quan trọng**:
-- `_page-context.ts` là **điểm đọc duy nhất** cho locale + dictionary + hai cờ suy ra
-  (`isAuthenticated`, `isAdmin`) — object `user` gốc của Supabase **không bao giờ** vượt biên
-  sang Client Component, chỉ hai boolean suy ra từ nó đi qua (`scout-report.md § 3`).
-- `proxy.ts` và `_page-context.ts` gọi `getUser()` **độc lập** — proxy đọc để quyết định
-  redirect, page context đọc lại để dựng props hiển thị. Không có cache chia sẻ giữa hai lần
-  đọc này trong request hiện tại.
-- Redirect của guard phải copy `response.cookies.getAll()` sang response redirect
-  (`proxy.ts:30-39`) — bỏ qua bước này làm mất cookie rotate vừa ghi, và vì refresh token của
-  Supabase dùng một lần, người dùng sẽ bị đăng xuất ngầm ở request kế tiếp.
-- i18n không dùng middleware/URL segment — cookie `NEXT_LOCALE` đọc trực tiếp trong từng
-  Server Component (`_page-context.ts:33`, `login/page.tsx:37`, `todo/page.tsx:24`), không có
-  bước negotiation nào ở tầng proxy.
+- `_page-context.ts` vẫn là **điểm đọc duy nhất** cho locale + dictionary + hai cờ suy ra. Object
+  `user` gốc của Supabase **không bao giờ** vượt biên sang Client Component. Kudos không phá lệ
+  này: sidebar và trạng thái tim được Server Component giải quyết xong rồi mới truyền xuống dưới
+  dạng dữ liệu thuần.
+- **Số tim = `kudos.heart_baseline` + `count(kudos_likes)`.** Seed không được ghi vào
+  `auth.users` (GoTrue sở hữu schema đó), nên số `1.000` trên frame sống ở cột baseline, còn
+  `kudos_likes` chỉ chứa like thật của người dùng thật. Nhờ vậy ràng buộc "một người một like
+  trên mỗi kudos" vẫn cưỡng chế được ở tầng DB.
+- **Sunner ẩn danh đọc được hết, ghi thì không.** RLS mở `select` cho `anon` và `authenticated`;
+  `insert`/`delete` trên `kudos_likes` chỉ mở cho `authenticated` và khớp `auth.uid()`. Nút tim
+  disabled ở UI chỉ là lớp thứ hai — chặn thật nằm ở DB.
+- **Không cache.** Route đụng `cookies()` nên render động mỗi request; trạng thái tim theo từng
+  người xem, nên cache trang sẽ sai. Đây là lý do không dùng `use cache` ở đây.
+- **`db reset` là bước trước khi chạy test, không bao giờ giữa phiên.** Nó truncate cả schema
+  `auth`, nên gọi giữa lúc suite đang chạy sẽ làm `getUser()` trả null và đẩy browser đã đăng
+  nhập về `/login`.
 
 ## Deployment View
 
@@ -122,13 +152,12 @@ OAuth không thể hoàn tất — `proxy.ts:11-13`) → `exchangeCodeForSession
 
 **N/A — không tìm thấy infrastructure-as-code nào trong repo.**
 
-Đã kiểm tra và xác nhận không tồn tại: không `Dockerfile`, không `docker-compose.yml`, không
-manifest Kubernetes, không thư mục Terraform, không unit `systemd`, không `Procfile`, không
-cấu hình nginx, không manifest PaaS nào (`vercel.json`, `netlify.toml`) —
-(`scout-report.md § 9`: "no CI workflow (`.github/` absent), no Dockerfile, no deployment
-config (`vercel.json`/`netlify.toml` absent)"). `supabase/config.toml` chỉ mô tả **local dev
-stack** của Supabase CLI, không phải hạ tầng triển khai production — không dùng để suy ra
-deployment topology.
+Không `Dockerfile`, không `docker-compose.yml`, không manifest Kubernetes, không Terraform, không
+`vercel.json`/`netlify.toml`, không CI workflow. `supabase/config.toml` chỉ mô tả **local dev
+stack** của Supabase CLI, không phải hạ tầng production — không dùng để suy ra deployment
+topology.
 
-Không dựng sơ đồ hay bảng node/edge thay cho phần này — không có nguồn `file:line` nào để
-trích dẫn cho một topology, và bịa ra hạ tầng ở đây là sai nghiêm trọng hơn để trống.
+Một điểm mới cần ghi lại: từ nay việc triển khai **có** bước schema. `supabase/migrations/` phải
+được apply vào database đích trước khi bản build đọc được gì, và `supabase/seed.sql` là dữ liệu
+dev/test, **không** phải dữ liệu production. Repo hiện chưa có nơi nào mô tả bước đó cho môi
+trường thật — vẫn là khoảng trống, không suy diễn thêm ở đây.

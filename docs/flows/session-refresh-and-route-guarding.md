@@ -9,7 +9,7 @@ lang: vi
 
 Chạy trên **mọi** request không phải asset tĩnh — không riêng một action hay một feature nào.
 Ba nhánh: `/todo` không có session, `/login` đã có session, và phần còn lại (bao gồm `/`,
-`/auth/callback`, 5 route placeholder) đi qua nguyên trạng.
+`/auth/callback`, 6 route placeholder) đi qua nguyên trạng.
 
 ### Trigger Sequence
 
@@ -46,7 +46,7 @@ sequenceDiagram
 5. Nhánh chưa đăng nhập cố vào `/todo` → gọi `redirectWithSessionCookies("/login")`. `proxy.ts:41-43`. `PERM001`
 6. Nhánh đã đăng nhập cố vào `/login` → gọi `redirectWithSessionCookies("/todo")`. `proxy.ts:44-46`. `PERM002`
 7. **Bước bắt buộc trong cả hai nhánh redirect ở trên**: hàm `redirectWithSessionCookies` copy toàn bộ `response.cookies.getAll()` (kết quả refresh ở bước 4) sang response redirect vừa dựng — một `NextResponse.redirect()` trần sẽ là response **thứ ba** chưa từng thấy cookie rotate đó; vì refresh token của Supabase dùng một lần, người dùng sẽ bị đăng xuất ngầm ở request kế tiếp. `proxy.ts:30-39`. `BL003`
-8. Mọi trường hợp còn lại — `/`, `/auth/callback`, 5 route placeholder — trả thẳng `response` (đã refresh session) mà không rẽ nhánh redirect nào; guard hai route trên không đụng tới các route này. `proxy.ts:48`. `PERM003`
+8. Mọi trường hợp còn lại — `/`, `/auth/callback`, 6 route placeholder — trả thẳng `response` (đã refresh session) mà không rẽ nhánh redirect nào; guard hai route trên không đụng tới các route này. `proxy.ts:48`. `PERM003`
 
 ### Failure / Edge Branches
 

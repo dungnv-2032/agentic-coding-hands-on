@@ -1,27 +1,35 @@
+---
+status: implemented
+authored_by: takumi
+created: 2026-09-06
+lang: vi
+---
+
 # Permissions
 
 **Project**: my-app (SAA 2025)
-**Generated**: 2026-09-05 (Core pass draft — reconciled against as-built code)
-**Analysis Scope**: Toàn bộ route + Server Action trong `app/`, cộng `proxy.ts`.
+**Analysis Scope**: Toàn bộ route + Server Action trong `app/`, `proxy.ts`, và — mới — RLS policy
+trong `supabase/migrations/`.
 
-> **Curated, plain-language view.** Tài liệu này đối chiếu bản forward-draft
-> `docs/system/permissions.md` (viết trước khi code, SDD) với code thật sau khi build xong
-> F001_Login và F002_HomepageSaa. Mã `PERM###` chính thức nay đã có ở
-> [`docs/generated/permissions-matrix.md`](../generated/permissions-matrix.md) (PERM001-PERM005,
-> Core pass 2026-09-05) — trang này dùng lại đúng 5 mã đó, không tự cấp phát mã riêng.
+> **Curated, plain-language view.** Mã `PERM###` chính thức nằm ở
+> [`docs/generated/permissions-matrix.md`](../generated/permissions-matrix.md); trang này dùng lại
+> mã đã có. Hai policy RLS của Kudos Live Board đã được gán mã thật: `PERM006` (đọc công khai) và
+> `PERM007` (ghi like, có chủ sở hữu).
 
 ## Reconciliation Note
 
-Bản draft `docs/system/permissions.md` (2026-09-05) mô tả đúng với as-built ở **hầu hết mọi
-điểm** — không phát hiện sai lệch giữa dự định và code. Điểm cần nói rõ thêm so với bản draft:
-draft đã ghi đúng rằng `/admin` "chưa tồn tại trong phạm vi" tại thời điểm viết trước, nhưng
-**route `/admin` hiện đã tồn tại** trong code (`app/admin/page.tsx`) — dưới dạng placeholder
-`ComingSoon`, **không có kiểm tra vai trò phía server nào được thêm vào nó**
-(`app/admin/page.tsx:8-12`). Bản curated dưới đây phản ánh trạng thái as-built này.
+Thay đổi đáng kể nhất của vòng này: **hệ thống có ranh giới phân quyền ở tầng database lần đầu
+tiên.** Trước Kudos Live Board, toàn bộ access control của dự án là một câu hỏi duy nhất — "có
+session hay không" — do `proxy.ts` thực thi trên đúng hai route. Mọi thứ khác là hiển thị UI.
+
+Kudos Live Board thêm một tầng thật: RLS trên `public.*`. Từ nay có những row mà người xem ẩn
+danh đọc được nhưng không ghi được, và việc chặn đó **không** phụ thuộc vào UI — Postgres từ chối
+ở tầng dưới. Đây là tiền lệ mọi bảng sau sẽ đi theo.
 
 ## Authorization System Type
 
-**System Type**: `role-based` (nhưng rất mỏng — chỉ một vai trò được kiểm tra, ở đúng một nơi)
+**System Type**: `hybrid` — role-based rất mỏng ở tầng app (một vai trò, kiểm ở đúng một nơi),
+cộng ownership thật ở tầng database (RLS khớp `auth.uid()`).
 
 | System Type | Description |
 |-------------|-------------|
@@ -32,58 +40,70 @@ draft đã ghi đúng rằng `/admin` "chưa tồn tại trong phạm vi" tại 
 | `hybrid` | Mixed — roles combined with ownership checks |
 | `other` | Custom permission logic |
 
+Trước đây trang này ghi `role-based`. Đổi sang `hybrid` vì `kudos_likes` là ownership thật:
+policy so `(select auth.uid())` với `user_id` của row, không so vai trò.
+
 **Identified Roles**:
-- Khách vãng lai (anonymous) — không có session Supabase.
-- Người dùng đã đăng nhập (authenticated) — session Supabase hợp lệ qua Google OAuth.
+- Khách vãng lai (anonymous) — không có session Supabase. Ở tầng DB là Postgres role `anon`.
+- Người dùng đã đăng nhập (authenticated) — session Supabase hợp lệ qua Google OAuth. Ở tầng DB
+  là role `authenticated`, JWT mang `sub` = `auth.uid()`.
 - Quản trị viên (admin) — `user.app_metadata.role === "admin"` (`app/_page-context.ts:40`); giá
-  trị này **không được ghi bởi bất kỳ code nào trong repo** — được cho là cấp phát ngoài băng
-  trong Supabase (`scout-report.md § 4`).
+  trị này **không được ghi bởi bất kỳ code nào trong repo**. Vai trò này **không** xuất hiện
+  trong RLS policy nào của Kudos — nó vẫn thuần là điều kiện hiển thị.
 
 ## Curated View
 
 - **Khách vãng lai** xem được toàn bộ trang chủ (`/`), màn hình hệ thống giải
-  (`/awards-information` — F003, công khai có chủ đích, không có guard nào được thêm) và mọi
-  route placeholder còn lại (`/kudos`, `/standards`, `/profile`, `/admin`); đăng nhập được qua
-  `/login`; **không** xem được `/todo` — bị điều hướng về `/login`.
-- **Người dùng đã đăng nhập** xem được mọi thứ khách vãng lai xem được, cộng `/todo`; nếu vào
-  lại `/login` sẽ bị điều hướng ngay về `/todo`. Trên trang chủ, người dùng này còn thấy thêm
-  chuông thông báo (panel rỗng) và menu tài khoản (Profile, Sign out).
-- **Quản trị viên** thấy mọi thứ người dùng đã đăng nhập thấy được, cộng một mục "Admin
-  Dashboard" xuất hiện thêm trong menu tài khoản — **nhưng bấm vào đó chỉ dẫn tới `/admin`, vốn
-  vẫn là route công khai không có kiểm tra vai trò**. Vai trò admin ở đây không mở khoá thêm
-  bất kỳ dữ liệu hay hành động nào ngoài một liên kết hiển thị.
+  (`/awards-information`), **màn hình Kudos Live Board (`/kudos`) đầy đủ** — highlight, feed,
+  spotlight, sidebar, số tim — và mọi route placeholder còn lại (`/kudos/new`,
+  `/kudos/secret-box`, `/kudos/[id]`, `/standards`, `/profile`, `/admin`); đăng nhập được qua
+  `/login`; **không** xem được `/todo`.
+  Trên `/kudos`, khách vãng lai **không thả tim được**: nút heart render ở trạng thái `disabled`.
+- **Người dùng đã đăng nhập** xem được mọi thứ khách vãng lai xem được, cộng `/todo`, và **thả
+  tim được** — like được lưu thành row, tồn tại qua reload. Không thả tim được trên kudos do
+  chính mình gửi (nút `disabled`).
+- **Quản trị viên** thấy thêm đúng một mục "Admin Dashboard" trong menu tài khoản. Trên `/kudos`
+  vai trò admin **không mở khoá gì cả** — không moderation, không xoá, không cấu hình ngày đặc
+  biệt. Những thứ đó thuộc commission khác (`Admin - Review content`, `Admin - Setting`).
 
 ## Access Boundaries
 
-Ranh giới truy cập thật sự trong hệ thống này rất hẹp:
+Giờ có hai loại ranh giới, và cần phân biệt rõ:
 
-- Ranh giới duy nhất được `proxy.ts` thực thi (route-guard, chạy trên mọi request trừ asset
-  tĩnh) là **có session hay không** — chia đúng hai route: `/todo` (cần session, `PERM001`) và
-  `/login` (bounce khi đã có session, `PERM002`). Đây là ranh giới thật, có kiểm tra ở
-  edge/server (`proxy.ts:41-46`); `/auth/callback` được loại trừ có chủ đích khỏi cả hai
-  (`PERM003`, `proxy.ts:11-13`).
-- Mọi route khác — `/`, cả 5 placeholder, và `/auth/callback` — **công khai như nhau**, không
-  phân biệt vai trò. `/profile` và `/admin` công khai là chủ ý (chưa có nội dung cần bảo vệ),
-  không phải lỗ hổng bị bỏ sót.
-- Ranh giới "admin" **không phải** một ranh giới truy cập theo nghĩa hệ thống access-control —
-  nó là một điều kiện hiển thị UI (`PERM004`: `app_metadata.role === "admin"` quyết định một
-  `<Link>` có render hay không trong `account-menu.tsx:99-107`). Không có route, Server Action,
-  hay lần đọc dữ liệu nào kiểm tra lại điều kiện này. Bất kỳ ai gõ thẳng URL `/admin` đều vào
-  được, có session hay không, có role admin hay không.
-- Ẩn/hiện chuông thông báo và biểu tượng tài khoản theo trạng thái đăng nhập (`PERM005`,
-  `home-header.tsx:66,75`) cũng là hiển thị, không phải bảo vệ dữ liệu — panel thông báo hiện
-  tại rỗng do chưa có nguồn dữ liệu thông báo nào.
+**Ranh giới ở tầng route (`proxy.ts`)** — không đổi. Chỉ xét có session hay không, trên đúng hai
+route: `/todo` cần session (`PERM001`), `/login` bounce khi đã có session (`PERM002`),
+`/auth/callback` loại trừ có chủ đích (`PERM003`). `/kudos` và mọi route Kudos con **không** được
+thêm guard — công khai có chủ đích, vì lối vào duy nhất tới nó (nav trang chủ, CTA `KudosPromo`)
+đều công khai; gác một đích đến mà cửa vào để mở là vô nghĩa.
+
+**Ranh giới ở tầng database (RLS — mới)**:
+- `select` trên toàn bộ bảng Kudos mở cho `anon` và `authenticated` (`PERM006`). Dữ liệu trên màn
+  hình này là lời cảm ơn công khai trong nội bộ Sun*; không có row nào riêng tư theo người xem.
+- `insert` / `delete` trên `kudos_likes` chỉ mở cho `authenticated`, và `with check` /
+  `using` bắt buộc `(select auth.uid()) = user_id`; `insert` còn chặn thêm trường hợp người xem
+  chính là người gửi kudos đó (`PERM007`, BR-003). Người dùng không tạo hay xoá được like của
+  người khác — Postgres từ chối, không phải UI từ chối.
+- **Không có** policy `update` nào trên `kudos_likes`: bỏ tim là `delete`, không phải cập nhật cờ.
+- Mọi bảng bật RLS. Một bảng `public` không bật RLS sẽ đọc được không giới hạn qua PostgREST —
+  đó là lỗi cấu hình, không phải mặc định chấp nhận được.
+
+**Điểm cần nói thẳng:** nút heart `disabled` ở UI **không** phải ranh giới bảo vệ. Nó là chỉ dẫn
+cho người dùng. Ranh giới thật là policy RLS. Hai lớp này phải cùng đúng, và nếu chỉ một lớp
+đúng thì lớp phải đúng là RLS.
 
 ## Special Conditions
 
-- **`/admin` không có authorization boundary — chỉ có menu-link gating.** Đây là giới hạn quan
-  trọng nhất cần nói thẳng: nếu một tính năng admin thật được xây ở `/admin` trong tương lai, nó
-  **phải tự kiểm tra vai trò phía server**; việc ẩn liên kết trong menu hiện tại không bảo vệ gì
-  cả và không được mô tả (ở bất kỳ tài liệu nào khác) như một ranh giới phân quyền đã có sẵn.
-- Không có domain allow-list cho đăng nhập Google — mọi tài khoản Google hợp lệ đều được phép
-  (`app/login/actions.ts:8-9`).
-- Không có time-based, IP-based, hay feature-flag nào chi phối quyền truy cập trong repo hiện
-  tại.
+- **`/admin` vẫn không có authorization boundary — chỉ có menu-link gating.** Không đổi, và Kudos
+  không sửa. Nếu một tính năng admin thật được xây ở `/admin`, nó **phải tự kiểm tra vai trò phía
+  server**; ẩn liên kết trong menu không bảo vệ gì cả.
+- **Cộng tim vào tài khoản người gửi (+1, hoặc +2 ngày đặc biệt) chưa được xây.** Spec `C.4.1` mô
+  tả nó, nhưng nó cần persistence cho số dư cộng bề mặt cấu hình `Admin - Setting` — cả hai đều
+  chưa có. Biểu tượng `x2` trên sidebar là **hiển thị theo frame, không phải mô phỏng logic**.
+  Đây là khoảng trống đã ghi nhận, không phải lỗ hổng bị bỏ sót.
+- **Test case `71b3ef43` yêu cầu người chưa đăng nhập bị đẩy về `/login`** — trái với thiết kế
+  route công khai ở trên. Ghi nhận, không cài đặt; cần một quyết định sản phẩm về việc toàn bộ bề
+  mặt Kudos có phải members-only hay không.
+- Không có domain allow-list cho đăng nhập Google — mọi tài khoản Google hợp lệ đều được phép.
+- Không có time-based, IP-based, hay feature-flag nào chi phối quyền truy cập.
 - `app_metadata.role` không có quy trình provisioning nào trong code — câu hỏi "admin được cấp
-  bằng cách nào" không trả lời được từ repo (giữ nguyên trong
-  `scout-report.md § Unresolved questions`, không được suy diễn thêm ở đây).
+  bằng cách nào" vẫn không trả lời được từ repo.

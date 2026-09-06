@@ -10,9 +10,11 @@ lang: vi
 Trang chủ (`/`) là điểm vào công khai duy nhất không cần đăng nhập. Luồng này gồm: render tĩnh
 theo trạng thái phiên, bộ đếm ngược tick client-side với hai nhánh (còn/hết hạn), và các đường
 điều hướng ra các route đích: `/awards-information` (từ 2026-09-06 là màn hình Hệ thống giải
-thật — F003, không còn placeholder) cùng 4 route placeholder dùng chung `ComingSoon` (`/kudos`,
-`/standards`, `/profile`, `/admin`) — thẻ giải thưởng thêm một anchor (`#<slug>`) vào route
-`/awards-information` có sẵn, không phải một route thứ 6.
+thật — F003) và `/kudos` (từ 2026-09-07 là màn hình Kudos Live Board thật — F004, xem
+`kudos-live-board-view-and-heart.md`), không route nào trong hai route này còn là placeholder,
+cùng 3 route placeholder dùng chung `ComingSoon` (`/standards`, `/profile`, `/admin`) — thẻ giải
+thưởng thêm một anchor (`#<slug>`) vào route `/awards-information` có sẵn, không phải một route
+thứ 6.
 
 ### Trigger Sequence
 
@@ -55,8 +57,8 @@ sequenceDiagram
 7. Nhánh đã qua thời điểm sự kiện (`diffMs <= 0`): giữ `00/00/00` ở cả 3 ô, ẩn "Coming soon", không có cờ lỗi nào khác. `app/_components/countdown-timer.tsx:51-53`.
 8. Bấm một thẻ giải thưởng (ảnh, tên, hoặc "Chi tiết" đều nằm trong cùng một `<Link>`) điều hướng `/awards-information#<slug>` theo đúng 1-1 mapping tĩnh từ `lib/awards.ts`. Đích là màn hình Hệ thống giải thật (F003): trang dừng ở đúng thẻ hạng mục đó và mục menu tương ứng sáng lên sau khi hydrate. `app/_components/award-card.tsx:32-59`, `lib/awards.ts:27-42`, `app/awards-information/_components/use-award-scroll-spy.ts:143-147`. `F003` `US008`
 9. Bấm mục nav đang chọn ("About SAA 2025" khi đang ở `/`) chặn điều hướng lại, cuộn mượt lên đầu trang thay vì reload; mục khác điều hướng route tương ứng bình thường. `app/_components/home-nav.tsx:58-71`, `app/_components/use-scroll-to-top-if-current.ts:18-21`.
-10. Nút widget nổi và khối quảng bá Kudos điều hướng tĩnh tới `/kudos`/`/standards` — hai liên kết cố định, không có decision logic. `app/_components/floating-widget.tsx:20,28`, `app/_components/kudos-promo.tsx:46-48`.
-11. `/awards-information` render màn hình thật của F003; 4 route đích còn lại (`/kudos`, `/standards`, `/profile`, `/admin` — mục "Admin Dashboard" role-gated trong menu tài khoản trỏ tới đây) render chung shell `ComingSoon` — có header/footer thật, không phải trang tĩnh cô lập. Cả hai nhóm đều tồn tại, nên điều hướng ra khỏi trang chủ không bao giờ gãy liên kết. `app/awards-information/page.tsx:55`, `app/_components/coming-soon.tsx:17-38`, `app/_components/account-menu.tsx:99-107`.
+10. Nút widget nổi và khối quảng bá Kudos điều hướng tĩnh tới `/kudos`/`/standards` — hai liên kết cố định, không có decision logic. `/kudos` từ 2026-09-07 render màn hình Kudos Live Board thật (F004) thay vì `ComingSoon`. `app/_components/floating-widget.tsx:20,28`, `app/_components/kudos-promo.tsx:46-48`.
+11. `/awards-information` (F003) và `/kudos` (F004) render màn hình thật; 3 route đích còn lại (`/standards`, `/profile`, `/admin` — mục "Admin Dashboard" role-gated trong menu tài khoản trỏ tới đây) render chung shell `ComingSoon` — có header/footer thật, không phải trang tĩnh cô lập. Cả ba nhóm đều tồn tại, nên điều hướng ra khỏi trang chủ không bao giờ gãy liên kết. `app/awards-information/page.tsx:55`, `app/kudos/page.tsx:48`, `app/_components/coming-soon.tsx:17-38`, `app/_components/account-menu.tsx:99-107`.
 
 ### Edge Cases
 

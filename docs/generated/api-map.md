@@ -14,6 +14,13 @@ One route handler exists in the whole codebase, and it is the OAuth callback. Th
 as a "users API" or "awards API" would be invented — the awards grid and dictionaries are
 static TypeScript literals (`lib/awards.ts`, `lib/i18n/messages/*.ts`), never fetched.
 
+**Update (F004, Kudos Live Board):** the app now reads and writes its first real database, but
+still through no HTTP endpoint of its own — `lib/kudos/queries.ts` calls Supabase's PostgREST
+layer via the `supabase-js` client library (`.from(table).select(...)`), and the one write path
+(`toggleKudosLike`) is a Server Action, not a route. See `entities.md`
+(regeneration advised — flagged stale below) for the schema and `permissions-matrix.md`
+PERM006/PERM007 for the RLS boundary that now gates it.
+
 ## Endpoints by Domain
 
 ### Auth (Route Handler)
@@ -30,6 +37,12 @@ static TypeScript literals (`lib/awards.ts`, `lib/i18n/messages/*.ts`), never fe
 | `setLocale(locale)` | `app/_actions/locale.ts:13` | Resolves the candidate locale (BL001), writes the `NEXT_LOCALE` cookie, then `revalidatePath("/", "layout")` (`:26`) so the whole layout subtree re-renders in the new locale. |
 | `signOut()` | `app/_actions/auth.ts:17` | `supabase.auth.signOut()` then `redirect("/login")`. The `signOut()` error is deliberately discarded (`:17-21`) so an already-invalid session still lands on `/login`. |
 
+### Kudos (Server Actions — F004, the app's only write path into Postgres)
+
+| Action | File:line | Description |
+|--------|-----------|--------------|
+| `toggleKudosLike(kudosId)` | `app/kudos/_actions/toggle-kudos-like.ts:59` | The only writer on `/kudos`. Resolves the acting user from the session (never from an argument), returns the unchanged `{liked, hearts}` read for an anonymous caller or a self-like attempt (BR-003, re-enforced by RLS `with check`), else inserts/deletes the one `kudos_likes` row matching `(kudos_id, user_id)` (toggle), swallows a `23505` unique-violation race, and always returns the database's real post-write `{liked, hearts}` — `hearts = kudos.heart_baseline + count(kudos_likes)` (BR-001). Calls `refresh()` (`next/cache`) rather than `revalidatePath`. |
+
 ## Background Jobs
 
 None. There is no cron, no queue worker, no scheduled task anywhere in the repo — confirmed by
@@ -39,7 +52,8 @@ absence of any `scheduled-job`/`queue-worker` pattern in `app/` or `lib/` (scout
 
 | Direction | Target / Source | Event / Endpoint | Description |
 |-----------|------------------|-------------------|--------------|
-| outgoing | Supabase Auth (GoTrue) | `signInWithOAuth`, `exchangeCodeForSession`, `getUser`, `signOut` | Every Supabase call in the repo is `auth.*` — no Storage/Realtime/DB call, even though those surfaces are enabled in the local `config.toml` (unused). |
+| outgoing | Supabase Auth (GoTrue) | `signInWithOAuth`, `exchangeCodeForSession`, `getUser`, `signOut` | Every Supabase call outside `lib/kudos/` is `auth.*`. |
+| outgoing | Supabase Postgres (PostgREST, F004) | `.from(table).select/insert/delete` on 10 `public.*` tables via `supabase-js` | Added by the Kudos Live Board — `lib/kudos/queries.ts` (reads), `toggle-kudos-like.ts` (the one write). Bound by RLS, never `service_role`; see `permissions-matrix.md` PERM006/PERM007. |
 | outgoing (transitive) | Google OAuth | consent screen + token exchange | Reached **only through** Supabase — no Google SDK, no direct Google API call anywhere in the codebase (`config.toml:336-338`). |
 | incoming | none | — | No incoming webhook exists — `/auth/callback` is a browser redirect target (302 round-trip via the user's browser), not a server-to-server webhook receiver. |
 
@@ -48,7 +62,7 @@ absence of any `scheduled-job`/`queue-worker` pattern in `app/` or `lib/` (scout
 | Category | Count |
 |----------|-------|
 | Route handlers (app's own API surface) | 1 |
-| Server actions | 3 |
+| Server actions | 4 |
 | Background jobs | 0 |
-| Outgoing integrations | 2 (Supabase Auth direct, Google OAuth transitive) |
+| Outgoing integrations | 3 (Supabase Auth direct, Supabase Postgres/PostgREST direct, Google OAuth transitive) |
 | Incoming webhooks | 0 |
