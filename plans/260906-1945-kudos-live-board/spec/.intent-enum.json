@@ -1,0 +1,12 @@
+{
+  "mode": "single",
+  "intents": [
+    {
+      "actor": "Sunner",
+      "action_domain": "browse and react on the Sun* Kudos live board",
+      "outcome": "sees the recognition happening across Sun* right now — highlighted kudos, the full feed, the spotlight map and their own standing — and reacts to it (heart, share, filter)"
+    }
+  ],
+  "justification": "Check B (conjunction smell): the task text names one artifact, 'màn hình Sun* Kudos - Live board', with no conjunction and no ALWAYS-fire phrase. Check A (enumeration): the screen's parts — HIGHLIGHT carousel, filters, SPOTLIGHT board, ALL KUDOS feed, personal sidebar — are components of ONE user-facing outcome (see the live board and react to it), not distinct (actor, action-domain, outcome) triples; none of them is reachable or meaningful on its own. Count = 1 confirmed -> SINGLE. This also matches the three shipped precedents in this repo, where one MoMorph screen maps to one feature code (F001 Login, F002 Homepage SAA, F003 Award System).",
+  "resolved_by": "takumi orchestrator (--auto), 2026-09-06"
+}

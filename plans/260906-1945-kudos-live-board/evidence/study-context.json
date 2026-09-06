@@ -1,0 +1,47 @@
+{
+  "task": "Implement the Sun* Kudos - Live board screen (MoMorph screen MaZUn5xHXZ, file 9ypp4enmFmdK3YAFJLIu6C) at the public route /kudos, backed by the Supabase local project as the user explicitly directed. Replaces the ComingSoon placeholder at app/kudos/page.tsx. Adds the repo's first Postgres schema: migrations, RLS, and a seed transcribed verbatim from the Figma frame.",
+  "mode": "takumi --auto (e2e-red-first)",
+  "acceptanceCriteria": [
+    "Route /kudos loads publicly without redirect and renders h1 'He thong ghi nhan va cam on'",
+    "HIGHLIGHT KUDOS, SPOTLIGHT BOARD and ALL KUDOS sections all render with the eyebrow 'Sun* Annual Awards 2025'",
+    "Hashtag filter menu offers exactly 13 options and department filter menu exactly 48, verbatim from the dropdown frames",
+    "Selecting a filter re-filters both the highlight carousel and the all-kudos feed, AND-combines, and resets the carousel to slide 1",
+    "Highlight carousel shows at most 5 slides ordered by heart count descending, with arrows disabled at each end and pagination text current/total",
+    "Kudos card renders sender, receiver, badge with its hoa-thi tooltip, timestamp, campaign label, hashtags, heart and Copy Link",
+    "Heart is disabled for an anon viewer and for the sender's own kudos; for a signed-in viewer it toggles aria-pressed and moves the count by exactly 1",
+    "Heart state persists across a page reload, proving the Supabase data layer is real rather than client state",
+    "Copy Link writes the kudos URL to the clipboard and shows the toast 'Link copied - ready to share!'",
+    "Spotlight board renders 388 KUDOS, the seven seeded recipient names, the ticker, and its search narrows the nodes",
+    "Sidebar renders the five stat rows in the exact recorded order plus the Mo Secret Box button and the gift leaderboard",
+    "Every screen string ships in both vi and en, compile-time enforced by the Dictionary interface",
+    "All new schema is reachable only per RLS: select for anon and authenticated, insert and delete on kudos_likes restricted to auth.uid()",
+    "npm run typecheck, npm run lint and the kudos Playwright suite all exit 0",
+    "Every new code file stays under the repo's 200-line cap"
+  ],
+  "touchpoints": [
+    "app/kudos/page.tsx (replace ComingSoon body in place)",
+    "app/kudos/_components/ (new screen-local components, server by default, use client only where interactive)",
+    "app/kudos/new/page.tsx, app/kudos/secret-box/page.tsx, app/kudos/[id]/page.tsx (new declared ComingSoon placeholders)",
+    "supabase/migrations/ (net-new: first migration in the repo)",
+    "supabase/seed.sql (net-new: frame corpus transcribed verbatim)",
+    "lib/kudos/ (new typed query layer + pure badge/filter logic)",
+    "lib/i18n/messages/dictionary.ts plus new vi-kudos.ts and en-kudos.ts, wired into vi.ts and en.ts",
+    "e2e/kudos-live-board.spec.ts and playwright.config.ts (new kudos-authed project)",
+    "public/images/kudos/ (KV background and spotlight canvas background exports)"
+  ],
+  "blastRadius": [
+    "lib/i18n/messages/dictionary.ts is shared by every screen: a malformed kudos namespace breaks typecheck for login, homepage and award-system alike",
+    "playwright.config.ts is shared by the whole E2E suite: a bad project entry can silently stop other specs from matching",
+    "supabase/seed.sql runs on db reset and the e2e auth setup creates real auth users, so a seed that collides with auth.users or that reset wipes can break the existing authenticated specs",
+    "app/kudos/page.tsx is the destination of the homepage nav and the KudosPromo CTA, both already shipped and asserted by homepage specs",
+    "getPageContext and HomeHeader are shared chrome: changing them to serve this screen would affect every route",
+    "The first RLS policies in the repo set the precedent every later table follows"
+  ],
+  "contracts": [
+    "plans/260906-1945-kudos-live-board/test-contract.md — every data-testid, role, aria attribute and copy string, plus the Supabase amendment overriding the heart and sidebar hooks and adding K-24 and K-25",
+    "plans/260906-1945-kudos-live-board/clarifications.md — authoritative resolved decisions, the verbatim frame corpus, the 13 hashtags and 48 departments; not re-openable",
+    "MoMorph frame MaZUn5xHXZ at revision 904fca587cc5bbddf4075c207e680277 — the visual source of truth; no visual value may be guessed",
+    "lib/i18n/messages/dictionary.ts Dictionary interface — adding a namespace obliges both vi and en at compile time",
+    "Existing public routes / and /awards-information and their shipped e2e specs must stay green"
+  ]
+}

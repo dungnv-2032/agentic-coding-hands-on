@@ -1,0 +1,46 @@
+{
+  "commands": [
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 type errors repo-wide, including the two kudos e2e specs that were red earlier in the session.",
+      "ts": "2026-09-06T18:39:05Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors; 21 pre-existing unused-locator warnings remain in e2e specs outside this feature.",
+      "ts": "2026-09-06T18:39:05Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Production build succeeds; /kudos compiles as a dynamic route, which is correct for per-viewer like state read through cookies().",
+      "ts": "2026-09-06T18:39:05Z"
+    },
+    {
+      "command": "npx supabase db reset",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Migration plus seed apply cleanly; 13 hashtags, 50 filterable departments, 57 kudos, 0 likes, board_stats 388, kudos id=1 heart_baseline 1000.",
+      "ts": "2026-09-06T18:39:05Z"
+    },
+    {
+      "command": "npx playwright test e2e/kudos-live-board.spec.ts e2e/kudos-live-board-authed.spec.ts --reporter=list",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "27 passed (24 anon + K-10/K-25 authed + auth setup) from a valid assertion-caused RED of 26 failed. Run three times consecutively plus once more with no db reset in between: green every time, and kudos_likes returns to 0, so the suite is idempotent.",
+      "ts": "2026-09-06T18:39:05Z"
+    },
+    {
+      "command": "npx playwright test e2e/homepage.spec.ts e2e/award-system.spec.ts e2e/login-screen.spec.ts e2e/authenticated.spec.ts e2e/smoke.spec.ts e2e/route-guard.spec.ts e2e/callback-security.spec.ts --reporter=list",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "57 passed across every shipped suite: no regression in login, homepage, award-system, auth, route guard or callback security.",
+      "ts": "2026-09-06T18:39:05Z"
+    }
+  ]
+}
