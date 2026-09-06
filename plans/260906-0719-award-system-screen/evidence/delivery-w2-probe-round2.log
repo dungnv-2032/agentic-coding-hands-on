@@ -1,0 +1,5 @@
+W2_A_keyboard_interrupt={"msFromClickToStop":73,"inBand":["top-talent"],"scrollY":378,"active":"top-talent","count":1,"expected":"top-talent"}
+W2_B_keyboard_interrupt_mid={"msFromClickToStop":70,"inBand":["top-project"],"scrollY":1746,"active":"top-project","count":1,"expected":"top-project-leader"}
+W2_C_wheel_releases_lock_early={"inBand":["top-project-leader"],"scrollY":2202,"active":"top-project-leader","count":1,"expected":"top-project-leader","note":"sampled 250ms after click, i.e. inside the settle window"}
+W2_D_control_no_interrupt={"at250ms":"mvp","after1150ms":"top-project-leader","count":1}
+W2_E_touchstart_releases={"inBand":["top-project"],"scrollY":1502,"active":"top-project","count":1,"expected":"top-project"}

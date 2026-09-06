@@ -1,0 +1,82 @@
+{
+  "method": "Project Chromium (Playwright MCP still unavailable — no 'chrome' channel). Desktop 1440x900 dfp1, pointer parked and focus blurred; all images forced eager and every section visited before measuring. Mobile 375x667. DOM geometry cross-checked against PIL pixel scans of design/award-system.png.",
+  "task4_desktopGeometryUnchanged": {
+    "verdict": "PASS — nothing moved",
+    "nav": { "left": 144, "right": 322 },
+    "cardColumn": { "left": 443, "right": 1296 },
+    "badge": { "left": 443, "right": 779 },
+    "descriptionTextLeft": { "actual": 819, "design": 819 },
+    "kudos": { "domLeft": 144, "domRight": 1296, "pixelScan": "144-1295", "design": "144-1295" },
+    "badges": "all six 336x336",
+    "cardIcons": "rgb(255,255,255) x4",
+    "menu": "active gold rgb(255,234,158) label+icon; five inactive white rgb(255,255,255)",
+    "documentHeight": { "delivery": 6342, "design": 6410 }
+  },
+  "task4_S5_heroCap": {
+    "verdict": "PASS — desktop-neutral, confirmed at three widths",
+    "1440": { "heroBlock": "144-1296 (1152)", "cardRight": 1296 },
+    "1728": { "heroBlock": "288-1440 (1152)", "cardRight": 1440 },
+    "1920": { "heroBlock": "384-1536 (1152)", "cardRight": 1536 },
+    "note": "hero rule stays flush with the card column's right edge at every width; the 144px-a-side overhang above ~1728 is gone and 1440 is byte-for-byte the geometry previously pinned"
+  },
+  "task4_W1_desktopPin": {
+    "verdict": "PASS",
+    "htmlVarAt1440": "117px (measured header 77 + 40 breathing room)",
+    "effectiveInSubtree": "112px",
+    "note": "the wrapper's lg:[--award-header-offset:112px] shadows the measured value, so desktop geometry cannot be moved by runtime measurement — as designed"
+  },
+  "task5_W1_mobile": {
+    "verdict": "PASS",
+    "measuredHeaderHeightAt375": 245,
+    "reviewerArithmeticEstimate": 235,
+    "offsetTracking": [
+      { "viewport": 1440, "headerHeight": 77, "htmlVar": "117px", "effective": "112px (cascade pin)" },
+      { "viewport": 900, "headerHeight": 77, "effective": "117px" },
+      { "viewport": 600, "headerHeight": 125, "effective": "165px" },
+      { "viewport": 375, "headerHeight": 245, "effective": "285px" },
+      { "viewport": 320, "headerHeight": 301, "effective": "341px" },
+      { "viewport": 1440, "headerHeight": 77, "effective": "112px (restored)" }
+    ],
+    "deepLinkMvpAt375": { "titleTop": 652, "headerBottom": 245, "clears": true, "scrollMarginTop": "285px" },
+    "tapBestManagerAt375": { "titleTop": 652, "headerBottom": 245, "clears": true },
+    "tapTopProjectLeaderAt375": { "titleTop": 652, "headerBottom": 245, "clears": true },
+    "note": "the mechanism is live and tracks real header changes in both directions; it is not a one-shot measurement"
+  },
+  "task6_W2": {
+    "verdict": "PASS on every release path",
+    "playwrightInputAudit": { "eventsFiredByClickAndHover": ["scroll"], "lockReleasersFired": [], "meaning": "the E2E suite genuinely never exercises wheel/touchstart/keydown — confirmed empirically, not assumed" },
+    "statedCriterion_keyboardInterrupt": { "msFromClickToStop": 73, "restingInBand": ["top-talent"], "active": "top-talent", "activeCount": 1, "result": "ends on Top Talent, not MVP" },
+    "wheelReleasesLockEarly": { "sampledAt": "250ms after click, inside the 700ms settle window", "inBand": ["top-project-leader"], "active": "top-project-leader", "result": "geometry reclaimed immediately" },
+    "control_noInterrupt": { "at250ms": "mvp (lock held)", "at1150ms": "top-project-leader (lock expired, geometry took over)", "meaning": "proves the interrupt result is real and that the old stuck-forever bug is gone" },
+    "touchstartReleases": { "inBand": ["top-project"], "active": "top-project" },
+    "restingAccuracy": "nav matched the in-band card at all 8 sampled scroll positions; exactly-one-active held",
+    "fastFlick": { "wheelSteps": 26, "distinctActiveCounts": [1], "trail": "walked all six in order", "end": "mvp" },
+    "harnessLimitation": "synthetic CDP wheel does NOT abort Chrome's programmatic smooth scroll, so a wheel-only interrupt cannot be staged from Playwright; trusted keyboard input was used instead, plus event-level probes for the wheel and touch paths"
+  },
+  "task7_W3_accessibility": {
+    "verdict": "PASS",
+    "h1Count": 1,
+    "headingOrder": ["h1 Hệ thống giải thưởng SAA 2025", "h2 Top Talent", "h2 Top Project", "h2 Top Project Leader", "h2 Best Manager", "h2 Signature 2025 - Creator", "h2 MVP (Most Valuable Person)", "h2 Sun* Kudos"],
+    "sectionNames": "all six <section> elements carry aria-labelledby pointing at their own h2 id; every reference resolves",
+    "categoryNav": { "tag": "NAV", "ariaLabel": "Danh mục giải thưởng" },
+    "note": "three <nav> landmarks on the page; only the category menu is labelled. The header and footer navs are unlabelled shared chrome, pre-existing and out of scope."
+  },
+  "findings": [
+    {
+      "id": "OBS-1",
+      "severity": "minor, not blocking",
+      "title": "At the hero (above the first card) the menu retains an arbitrary previous item instead of Top Talent",
+      "measured": "scrolled from Signature to scrollY 0 -> active 'top-project' on one run, 'signature-2025-creator' on another; the frame shows Top Talent lit at that position",
+      "cause": "resolveActive() keeps the current item when no section intersects the band — a deliberate, commented choice that stops exactly-one-active dropping to zero",
+      "boundedFix": "when nothing is in the band, fall back to the first slug if scrollY is above the first section's top, else keep current. One condition; preserves the exactly-one-active invariant my ID-9/11 asserts."
+    },
+    {
+      "id": "OBS-2",
+      "severity": "pre-existing, out of this screen's ownership",
+      "title": "Sticky header is 80% opaque with no backdrop blur, so bright content scrolls visibly through it",
+      "measured": "header background rgba(16,20,23,0.8), backdrop-filter none — IDENTICAL on / and /awards-information at both 375 and 1440. Header-band non-background pixel share at 375: homepage 22%, award screen 10%.",
+      "cause": "home-header.tsx, shared chrome, ORCH-03 read-only",
+      "note": "not introduced by this screen and worse on the homepage; this screen makes it noticeable because large gold prize text scrolls under a 245px wrapped header at 375. Follow-up ticket against the shared header, not a blocker here."
+    }
+  ]
+}

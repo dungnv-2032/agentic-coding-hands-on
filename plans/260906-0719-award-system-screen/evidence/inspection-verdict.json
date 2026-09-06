@@ -1,0 +1,89 @@
+{
+  "score": 9.6,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "Screen renders at /awards-information with the six awards in design order — ID-3 asserts strict document order banner→h1→award-nav→6 sections→Kudos→contentinfo; ID-5 asserts exactly 6 menu items in design order.",
+    "Clicking a category scrolls to its section and exactly one menu item is active — ID-9/11 clicks all six, asserting toBeInViewport plus an active count of exactly 1; a bidirectional 0→6300px sweep measured counts [1] throughout, never NONE.",
+    "Deep link to /awards-information#<slug> lands on the target section — dedicated deep-link test green; a ~290ms post-hydration transient is recorded and accepted as ORCH-04.",
+    "All visible copy comes from the vi/en dictionary, verbatim from the design — 8/8 description chunks machine-diffed against clarifications.md; grep for design strings in components hits comments only.",
+    "Award badges render undistorted at 336x336 — ID-7 now asserts exact 336x336 per award; against the pre-fix tree it would have failed all six, Signature by 630px.",
+    "The existing homepage suite stays green — 22 passed, 0 failed; homepage Kudos geometry also measured directly and is unchanged (max-w-[1224px], card 252→1188 w936).",
+    "typecheck, lint and build exit 0 — all three re-run on the shipped tree."
+  ],
+  "regressionChecked": [
+    "e2e/homepage.spec.ts 22/22 — the six anon tests that navigate to /awards-information while unauthenticated still hold; the route stays public by decision.",
+    "Full anon project 54/54 after the testMatch widening.",
+    "app/_components/kudos-promo.tsx — the new maxWidthClass prop defaults to max-w-[1224px]; homepage class string proven identical from rendered HTML and by pixel measurement.",
+    "Desktop geometry re-measured after every fix round: nav 144→322, cards 443→1296, text column 821, Kudos 144→1295 vs design 144→1295.",
+    "Mobile path exercised at 375px (header measured 245px, offset tracks 112/117/165/285/341 across widths) — the path the Desktop-Chrome-only suite cannot reach.",
+    "W-2 interrupted-scroll probe with a no-interrupt control, proving both the fix and the absence of the stuck-forever state."
+  ],
+  "contractStatus": "HONORED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "warning",
+      "category": "correctness",
+      "location": "app/awards-information/_components/use-award-scroll-spy.ts:81-105",
+      "summary": "W-2 (FR-402): the observer callback was discarded while clickLock was held and the lock released on a bare timer, so an interrupted programmatic scroll left the wrong menu item lit permanently. Now resolves from live geometry over all six sections, with the lock released on wheel/touchstart/keydown. Verified with an interrupt probe plus a no-interrupt control.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "warning",
+      "category": "correctness",
+      "location": "app/awards-information/page.tsx:32",
+      "summary": "W-1: HEADER_OFFSET=112 was documented against the header's 72px desktop height, but the header wraps below lg (measured 245px at 375px wide), parking deep-linked card titles behind it. Replaced by a ResizeObserver-published --award-header-offset with the lg value pinned in the cascade; measured 112/117/165/285/341 across widths.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "warning",
+      "category": "accessibility",
+      "location": "app/awards-information/_components/award-detail-card.tsx:103",
+      "summary": "W-3: the six award sections had no heading and no accessible name on a 6410px page. Card titles are now <h2 id> with aria-labelledby on each section; locked by a spec assertion so it cannot regress silently.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "suggestion",
+      "category": "correctness",
+      "location": "app/awards-information/_components/use-award-scroll-spy.ts:95-104",
+      "summary": "OBS-1: returning to the hero retained an arbitrary previously-active item where the frame lights the first. Fallback is now asymmetric — first slug above the first section, keep-current below the last — so the exactly-one-active invariant never drops to zero at either end.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "suggestion",
+      "category": "accessibility",
+      "location": "lib/i18n/messages/dictionary.ts:121",
+      "summary": "S-7: the category nav borrowed hero.title for its accessible name, naming the landmark after the page rather than the menu. Added a dedicated awardSystem.navAriaLabel key in both locales.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "warning",
+      "category": "accessibility",
+      "location": "app/_components/home-header.tsx:47",
+      "summary": "FUP-01: the shared sticky header is rgba(16,20,23,0.8) with no backdrop blur, so page content bleeds through it at 375px. Pre-existing and measurably worse on the already-shipped homepage (22% vs 10% non-background pixels); home-header.tsx is read-only under ORCH-03. Deferred to a ticket against the shared header where it can be judged against / first.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "suggestion",
+      "category": "i18n",
+      "location": "app/awards-information/_components/award-detail-card.tsx:136",
+      "summary": "FUP-02: the quantity-unit column is fixed at w-[60px], which suits the VI copy and cramps the EN. The proposed max-w-[88px] would let 'Ca nhan' collapse onto one line, moving the VI layout the frame specifies and the tester pinned by measurement. Deferred until EN gets its own visual pass.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "suggestion",
+      "category": "scope",
+      "location": "plans/260906-0719-award-system-screen/clarifications.md:1",
+      "summary": "MoMorph test case ID-1 (anonymous visitor redirected to login) is deliberately unimplemented: it contradicts the public-route behaviour six already-green homepage tests assert, and its only entry points are the public homepage's award cards, hero CTA and nav. Recorded as open decision D001 in the promoted spec rather than silently dropped.",
+      "disposition": "Reject"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": false,
+    "signoffRequired": false,
+    "humanSignedOff": true
+  }
+}

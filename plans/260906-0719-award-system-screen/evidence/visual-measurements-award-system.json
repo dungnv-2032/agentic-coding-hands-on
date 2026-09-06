@@ -1,0 +1,38 @@
+{
+  "method": "Playwright (project chromium, 1440x900 viewport, deviceScaleFactor 1, pointer parked at 1430,5 and focus blurred before every capture) + PIL pixel measurement of design/award-system.png (1440x6410). Playwright MCP was unavailable (channel 'chrome' not installed; installing is out of scope), so capture ran through the project's own Playwright build.",
+  "comparisonMetric": "No deterministic pixel-diff metric exists: the reference is a Figma frame export, not a rendered baseline. Geometry and colour findings below are measured numbers; everything else is a qualitative judgment.",
+  "documentHeight": { "design": 6410, "actual": 6270 },
+  "contentColumn": { "design": { "left": 144, "right": 1295, "width": 1152 }, "actual": { "left": 144, "right": 1296, "width": 1152 }, "verdict": "match" },
+  "categoryMenu": {
+    "actual": { "left": 144, "width": 178 },
+    "activeItem": { "design": { "icon": "#FFEA9E", "label": "#FFEA9E" }, "actual": { "icon": "rgb(255,234,158)", "label": "rgb(255,234,158)", "borderBottom": "1px solid rgb(255,234,158)" } },
+    "inactiveItem": { "design": { "icon": "#FFFFFF", "label": "#FFFFFF" }, "actual": { "icon": "rgb(255,255,255)", "label": "rgb(255,255,255)" } },
+    "verdict": "match"
+  },
+  "awardBadgeImages": {
+    "naturalSize": "336x336",
+    "designRendered": "336x336 (square, spec D.1.1)",
+    "actualRendered": { "top-talent": "336x550", "top-project": "336x598", "top-project-leader": "336x574", "best-manager": "336x562", "signature-2025-creator": "336x966", "mvp": "336x658" },
+    "objectFit": "fill",
+    "verdict": "MISMATCH — material. Square source stretched to the height of the text column; signature-2025-creator is 2.88x vertical distortion."
+  },
+  "cardIcons": {
+    "design": { "target": "#FFFFFF", "diamond": "#FFFFFF", "license": "#FFFFFF", "sampledAt": ["821,709-829,728", "821,4190-839,4209", "823,4311-838,4331"] },
+    "actual": { "target": "rgb(255,234,158)", "diamond": "rgb(255,234,158)", "license": "rgb(255,234,158)" },
+    "shape": "filled path, no stroke, 24x24 viewBox — matches the frame's filled diamond",
+    "verdict": "MISMATCH — colour only. Shape/weight correct; fill should be white, matching the frame and the inactive menu icons."
+  },
+  "kudosBlock": {
+    "design": { "left": 144, "right": 1295, "width": 1152 },
+    "actual": { "left": 252, "right": 1188, "width": 936, "innerLogo": { "left": 760, "right": 1124 } },
+    "delta": { "leftEdge": "+108px", "width": "-216px (-18.75%)" },
+    "verdict": "MISMATCH — material. Not just an inset: the narrower text column pushes the body copy under the KUDOS logo, which the frame keeps clear."
+  },
+  "cardContentLeftEdge": { "design": { "image": 439, "text": 819 }, "actual": { "image": 397, "text": 778 }, "delta": "-42px / -41px, right edges flush", "verdict": "minor" },
+  "hoacSeparator": {
+    "actual": { "color": "rgb(46,57,64)", "effectiveBackground": "rgb(0,16,26)", "fontSize": "14px", "contrastRatio": 1.64 },
+    "designFrame": "confirmed — the frame renders the separator in the same near-invisible slate tone next to a hairline rule",
+    "verdict": "holds up against the frame; flagged as an accessibility observation, not a design deviation"
+  },
+  "deepLinkTransient": { "trace": [[0, "award-nav-top-talent"], [290, "award-nav-mvp"]], "verdict": "end state correct; ~290ms flash of the wrong active item" }
+}

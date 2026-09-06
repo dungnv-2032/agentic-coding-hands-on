@@ -1,0 +1,52 @@
+
+Running 14 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788663577109-2285105-tx88wb@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.4s)
+  ✓   2 [anon] › e2e/award-system.spec.ts:138:7 › Award System screen — /awards-information (anon) › ID-0/2 — route loads without redirect and the header nav item reaches it and is aria-current=page (1.4s)
+  ✓   3 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (611ms)
+  ✘   4 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (5.6s)
+  ✓   5 [anon] › e2e/award-system.spec.ts:238:7 › Award System screen — /awards-information (anon) › ID-4 — hero title block shows the eyebrow and the exact page heading (636ms)
+  ✓   6 [anon] › e2e/award-system.spec.ts:251:7 › Award System screen — /awards-information (anon) › ID-5 — left category menu lists exactly 6 items in design order (540ms)
+  ✓   7 [anon] › e2e/award-system.spec.ts:269:7 › Award System screen — /awards-information (anon) › ID-6 — all six awards render title, quantity, unit, prize amounts and notes (659ms)
+  ✓   8 [anon] › e2e/award-system.spec.ts:317:7 › Award System screen — /awards-information (anon) › ID-7 — every award card renders its image with the award title as alt text, undistorted at 336x336 (586ms)
+  ✓   9 [anon] › e2e/award-system.spec.ts:342:7 › Award System screen — /awards-information (anon) › ID-8 — Sun* Kudos block renders eyebrow, title, subtitle and the Chi tiết control (562ms)
+  ✓  10 [anon] › e2e/award-system.spec.ts:357:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (2.2s)
+  ✓  11 [anon] › e2e/award-system.spec.ts:391:7 › Award System screen — /awards-information (anon) › ID-10 — menu items are interactive links that respond to hover (994ms)
+  ✓  12 [anon] › e2e/award-system.spec.ts:408:7 › Award System screen — /awards-information (anon) › ID-12 — Kudos Chi tiết control navigates to /kudos (1.0s)
+  ✓  13 [anon] › e2e/award-system.spec.ts:420:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (710ms)
+  ✓  14 [anon] › e2e/award-system.spec.ts:454:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (640ms)
+
+
+  1) [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Danh mục giải thưởng', exact: true }).getByTestId('award-nav')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('navigation', { name: 'Danh mục giải thưởng', exact: true }).getByTestId('award-nav')
+
+
+      232 |     const categoryNav = page.getByRole("navigation", { name: CATEGORY_NAV_LABEL, exact: true });
+      233 |     await expect(categoryNav).toBeVisible();
+    > 234 |     await expect(categoryNav.getByTestId("award-nav")).toBeVisible();
+          |                                                        ^
+      235 |   });
+      236 |
+      237 |   // ID-4 — hero title block: eyebrow, then the gold page heading.
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/award-system.spec.ts:234:56
+
+    Error Context: test-results/award-system-Award-System--b4450-named-category-nav-labelled-anon/error-context.md
+
+  1 failed
+    [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled 
+  13 passed (1.2m)

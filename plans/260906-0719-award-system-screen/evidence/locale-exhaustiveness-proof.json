@@ -1,0 +1,22 @@
+{
+  "claim": "Dictionary['awardSystem'] makes a key present in one locale but missing/mistyped in the other a COMPILE error, not a runtime blank (phase-01 acceptance, FR-002).",
+  "why_this_file_exists": "delivery-tracker correctly refused to tick this box: `npm run typecheck` exiting 0 does not by itself demonstrate exhaustiveness. This is the falsification run that does.",
+  "method": "Mutate lib/i18n/messages/en-award-system.ts with a syntactically valid rename, run `npx tsc --noEmit`, restore from backup, verify byte-identity and a clean baseline.",
+  "note_on_a_contaminated_first_attempt": "An earlier attempt reported TS1005/TS1128 for every case including the restored baseline. Those came from .next/dev/types/{routes.d.ts,validator.ts}, corrupted by dev servers running concurrently during verification — not from the mutations. `rm -rf .next/dev && npm run build` regenerated them; only then did the test measure what it claims to measure.",
+  "baseline": { "command": "npx tsc --noEmit", "exitCode": 0 },
+  "mutations": [
+    {
+      "case": "A — top-level key renamed: prizeOr -> prizeOrTYPO",
+      "exitCode": 1,
+      "error": "lib/i18n/messages/en-award-system.ts(23,3): error TS2353: Object literal may only specify known properties, and 'prizeOrTYPO' does not exist in type '{ hero: {...}; navAriaLabel: string; quantityLabel: string; prizeLabel: string; prizeOr: string; units: Record<AwardUnitKey, string>; cards: Record<...>; }'."
+    },
+    {
+      "case": "B — award card key renamed: cards.mvp -> cards.mvpTYPO",
+      "exitCode": 1,
+      "error": "lib/i18n/messages/en-award-system.ts(80,5): error TS2353: Object literal may only specify known properties, and 'mvpTYPO' does not exist in type 'Record<AwardKey, { title: string; navLabel: string; paragraphs: string[]; quantity: string; prizes: {...}[]; }>'."
+    }
+  ],
+  "restore": { "byteIdenticalToBackup": true, "command": "npx tsc --noEmit", "exitCode": 0 },
+  "verdict": "PROVEN. Both mutations fail the build at the exact source line. The tree is restored and the baseline is clean.",
+  "ts": "2026-09-06T11:35:00+07:00"
+}

@@ -1,0 +1,52 @@
+{
+  "method": "Project Chromium at 1440x900, deviceScaleFactor 1, pointer parked at (1430,5) and focus blurred before every capture; all images forced eager and every section scrolled through so nothing was measured undecoded. DOM geometry cross-checked against PIL pixel scans of design/award-system.png. Playwright MCP still unavailable (channel 'chrome' absent).",
+  "comparisonMetric": "No deterministic pixel-diff: reference is a Figma export, not a rendered baseline. Geometry/colour below are measured numbers; layout fidelity beyond them is qualitative.",
+  "fix1_badgeGeometry": {
+    "verdict": "PASS",
+    "all": { "natural": "336x336", "rendered": "336x336", "alignSelf": "flex-start", "aspectRatio": "1 / 1" },
+    "perAward": { "top-talent": "336x336", "top-project": "336x336", "top-project-leader": "336x336", "best-manager": "336x336", "signature-2025-creator": "336x336", "mvp": "336x336" },
+    "before": { "top-talent": "336x550", "top-project": "336x598", "top-project-leader": "336x574", "best-manager": "336x562", "signature-2025-creator": "336x966", "mvp": "336x658" },
+    "pixelCrossCheck": { "designImageBlock": "439-782", "actualImageBlock": "438-783", "delta": "1px (border antialiasing)" },
+    "lockedBy": "e2e/award-system.spec.ts ID-7 — exact 336x336 assertion at a 1440 viewport"
+  },
+  "fix2_kudosWidth": {
+    "verdict": "PASS",
+    "awardScreen": { "card": { "left": 144, "right": 1296, "width": 1152 }, "pixelScan": "144-1295 across the whole band", "design": "144-1295", "logo": { "left": 868, "right": 1232 }, "bodyCopy": { "left": 208, "right": 665 }, "textUnderLogo": false },
+    "homepageUnchanged": { "sectionClass": "mx-auto w-full max-w-[1224px] px-6 py-8 sm:px-12 lg:px-36", "section": { "left": 108, "width": 1224 }, "card": { "left": 252, "right": 1188, "width": 936 }, "note": "identical to the pre-change measurement recorded in visual-measurements-award-system.json; the default prop is a true no-op for /" }
+  },
+  "fix3_iconColour": {
+    "verdict": "PASS",
+    "cardIcons": "rgb(255,255,255) on all four signature-section icons; design frame samples #FFFFFF",
+    "menuUnregressed": { "active": { "label": "rgb(255,234,158)", "icon": "rgb(255,234,158)", "underline": "rgb(255,234,158)" }, "inactive": { "label": "rgb(255,255,255)", "icon": "rgb(255,255,255)" }, "design": "active gold #FFEA9E / inactive white #FFFFFF — match" }
+  },
+  "fix4_leftEdge": {
+    "verdict": "PASS",
+    "nav": { "left": 144, "right": 322 },
+    "cardColumn": { "left": 443, "right": 1296 },
+    "badge": { "imageLeft": 443, "imageRight": 779 },
+    "textColumn": { "actualPixelScan": 821, "design": 819, "delta": "2px" }
+  },
+  "fix6_justification": {
+    "verdict": "coordinator correct, my earlier finding retracted",
+    "independentMeasurement": "design D.2 description block holds left=443-445 and a flush right edge across 10 consecutive lines, ragged only on the final line (878). That is justified text. text-justify stays."
+  },
+  "scrollSpy": {
+    "freshLoadAtTop": "top-talent",
+    "stepwiseUpward": { "4500": "mvp", "3200": "best-manager", "2000": "top-project-leader", "1000": "top-talent", "400": "top-talent", "0": "top-talent" },
+    "note": "The MVP-active nav visible at the top of final-full-1440.png is an artifact of Playwright fullPage stitching scrolling the page during capture, not product behaviour. Verified separately."
+  },
+  "acceptedKnownTransient": {
+    "item": "deep-link active-item seed",
+    "measured": "[[0,'award-nav-top-talent'],[290,'award-nav-mvp']]",
+    "cause": "hydration latency — a URL fragment is never sent to the server, so SSR HTML necessarily ships items[0] active and the correction lands at hydration. 290ms is this route's time-to-interactive.",
+    "correctionToMyEarlierReport": "I attributed this to smooth-scroll duration. That was wrong: the deep-link path was already behavior:'auto' and no scroll-smooth exists in app/ or lib/.",
+    "status": "ACCEPTED by the coordinator, no code change, do not chase"
+  },
+  "remainingDifferences": [
+    { "item": "Hoac separator contrast 1.64:1", "status": "faithful to the frame; accessibility observation for the designer, not a dev fix" },
+    { "item": "Kudos CTA glyph — frame draws an arrow, actual a rotated chevron", "status": "pre-existing in the shared KudosPromo, already shipped on the homepage, out of this screen's scope" },
+    { "item": "menu label wrap: design breaks 'Signature 2025 / Creator', actual breaks 'Signature / 2025 Creator'", "status": "cosmetic, inside the 178px menu column" },
+    { "item": "document height 6342 vs design 6410 (1.1%)", "status": "cumulative line-height rounding, no single visible offset" },
+    { "item": "homepage Kudos body copy overlaps its logo by ~13px", "status": "pre-existing shipped homepage behaviour, unchanged by fix 2, out of scope" }
+  ]
+}

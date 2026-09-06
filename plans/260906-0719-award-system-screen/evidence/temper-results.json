@@ -1,0 +1,60 @@
+{
+  "commands": [
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "tsc --noEmit clean on the shipped tree (after the OBS-1 hero-fallback fix).",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors. 3 warnings remain, all pre-existing unused imports in e2e/homepage*.spec.ts.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Production build succeeds; /awards-information present in the route table.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Typecheck clean with the W-3 structure assertions live in the spec.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "14 passed, 0 failed — 13 screen tests in e2e/award-system.spec.ts plus 1 from the dependency `setup` project (auth state), confirmed via `--list`. Same command that produced the strict RED (exit 1, 11 failed); no assertion weakened, skipped or edited. Includes the ID-7 336x336 geometry lock and the W-3 heading/landmark lock.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npx playwright test --project=anon",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Full anon project: 54 passed, 0 failed.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npx playwright test e2e/homepage.spec.ts --project=anon",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Homepage regression: 22 passed, 0 failed, after kudos-promo.tsx gained maxWidthClass and Dictionary gained awardSystem.navAriaLabel.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    },
+    {
+      "command": "npx playwright test e2e/award-system.spec.ts --project=anon -g \"W-3|ID-9/11|ID-3 |Deep link\" --repeat-each=6",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Flake check: 25 passed, 0 failed in 50.4s. Round 1's single failure was a 30.1s cold next-dev compile on page.goto, not a screen assertion; kept in evidence as seal-flake-check-round1.log.",
+      "ts": "2026-09-06T10:11:00+07:00"
+    }
+  ]
+}

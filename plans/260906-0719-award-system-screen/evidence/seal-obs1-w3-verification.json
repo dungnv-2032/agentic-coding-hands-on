@@ -1,0 +1,47 @@
+{
+  "obs1_heroFallback": {
+    "verdict": "PASS — deterministic, was arbitrary before",
+    "wheelPath": [
+      { "returnedFrom": "top-project", "atScrollY": 0, "inBand": [], "active": "top-talent", "count": 1 },
+      { "returnedFrom": "top-project-leader", "atScrollY": 0, "inBand": [], "active": "top-talent", "count": 1 },
+      { "returnedFrom": "best-manager", "atScrollY": 0, "inBand": [], "active": "top-talent", "count": 1 },
+      { "returnedFrom": "signature-2025-creator", "atScrollY": 0, "inBand": [], "active": "top-talent", "count": 1 },
+      { "returnedFrom": "mvp", "atScrollY": 0, "inBand": [], "active": "top-talent", "count": 1 }
+    ],
+    "programmaticPath": [
+      { "returnedFrom": "signature-2025-creator", "active": "top-talent", "count": 1 },
+      { "returnedFrom": "mvp", "active": "top-talent", "count": 1 }
+    ],
+    "before": "arbitrary — observed 'top-project' on one run and 'signature-2025-creator' on another"
+  },
+  "obs1_footerKeepsCurrent": {
+    "verdict": "PASS — the asymmetry is real",
+    "samples": [
+      { "scrollY": 5000, "inBand": ["mvp"], "active": "mvp", "count": 1 },
+      { "scrollY": 5442, "inBand": [], "active": "mvp", "count": 1, "note": "page bottom (max scroll); keeps current, does not clear and does not reset to top-talent" }
+    ]
+  },
+  "obs1_invariant": {
+    "verdict": "PASS — holds end to end",
+    "boundarySweep": "scrollY 0..1400 in 100px steps: distinct active counts [1]; transition top-talent -> top-project at y=1000, no flicker",
+    "fullSweep": "scrollY 0..6300 and back in 300px steps: distinct active counts [1], never NONE, ends on top-talent",
+    "clickThrough": "all six menu items click to their own section, active count 1 each — ID-9/11 behaviour unaffected by the fix"
+  },
+  "w3_specLock": {
+    "test": "W-3 — one h1, h1 -> six h2 -> Kudos h2, each award section accessibly named, category nav labelled",
+    "covers": [
+      "exactly one <h1>, text = Hệ thống giải thưởng SAA 2025",
+      "full heading list compared as an ordered array: h1 + six h2 in design order + Kudos h2",
+      "each section aria-labelledby = {slug}-title, that heading holds the award title, and the section resolves as role=region with that accessible name",
+      "category menu resolves as role=navigation named 'Danh mục giải thưởng', is the award-nav element itself, and holds six links"
+    ],
+    "firstRunFailed": "yes — my assertion, not the code; see raw-temper-runs-award-system-seal.json entry 2"
+  },
+  "environmentFlake": {
+    "signature": "page.goto timeout at 30.1s on the FIRST test of a -g-filtered repeat batch",
+    "cause": "cold `next dev` route compile of /awards-information on WSL2; subsequent repeats of the same test ran in ~5.1s, and an identical rerun passed 25/25",
+    "gateAudit": "zero 'Test timeout of' occurrences across all 14 unfiltered gate runs in this task",
+    "whyGatesAreImmune": "the gate command runs ID-0/2 first, which navigates the route in ~1.3-1.4s and warms it; -g filtering excludes ID-0/2 and leaves the cold compile to whichever test runs first",
+    "recommendationNotApplied": "raise `timeout` in playwright.config.ts if CI headroom is wanted. Not applied: it is a robustness change at the seal, and no unfiltered gate run has ever hit it. A timeout is not an assertion, so raising it would not weaken anything."
+  }
+}

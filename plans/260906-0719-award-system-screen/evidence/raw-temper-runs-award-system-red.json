@@ -1,0 +1,12 @@
+[
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "Typecheck clean with the new e2e/award-system.spec.ts in the project."
+  },
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+    "exitCode": 1,
+    "summary": "Valid strict RED for the Award System screen: 11 failed, 2 passed. Every failure is a screen assertion against /awards-information (missing h1 'Hệ thống giải thưởng SAA 2025', missing data-testid='award-nav', missing award-detail-* sections, missing Kudos block on this route). Setup project and dev server started cleanly; no config/browser/webServer error."
+  }
+]

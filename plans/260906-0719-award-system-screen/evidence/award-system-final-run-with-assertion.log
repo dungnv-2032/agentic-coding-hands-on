@@ -1,0 +1,23 @@
+
+Running 13 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788660057734-2185036-zez47w@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.3s)
+  ✓   2 [anon] › e2e/award-system.spec.ts:136:7 › Award System screen — /awards-information (anon) › ID-0/2 — route loads without redirect and the header nav item reaches it and is aria-current=page (1.4s)
+  ✓   3 [anon] › e2e/award-system.spec.ts:161:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (612ms)
+  ✓   4 [anon] › e2e/award-system.spec.ts:191:7 › Award System screen — /awards-information (anon) › ID-4 — hero title block shows the eyebrow and the exact page heading (499ms)
+  ✓   5 [anon] › e2e/award-system.spec.ts:204:7 › Award System screen — /awards-information (anon) › ID-5 — left category menu lists exactly 6 items in design order (515ms)
+  ✓   6 [anon] › e2e/award-system.spec.ts:222:7 › Award System screen — /awards-information (anon) › ID-6 — all six awards render title, quantity, unit, prize amounts and notes (733ms)
+  ✓   7 [anon] › e2e/award-system.spec.ts:270:7 › Award System screen — /awards-information (anon) › ID-7 — every award card renders its image with the award title as alt text, undistorted at 336x336 (645ms)
+  ✓   8 [anon] › e2e/award-system.spec.ts:295:7 › Award System screen — /awards-information (anon) › ID-8 — Sun* Kudos block renders eyebrow, title, subtitle and the Chi tiết control (524ms)
+  ✓   9 [anon] › e2e/award-system.spec.ts:310:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (2.2s)
+  ✓  10 [anon] › e2e/award-system.spec.ts:344:7 › Award System screen — /awards-information (anon) › ID-10 — menu items are interactive links that respond to hover (839ms)
+  ✓  11 [anon] › e2e/award-system.spec.ts:361:7 › Award System screen — /awards-information (anon) › ID-12 — Kudos Chi tiết control navigates to /kudos (883ms)
+  ✓  12 [anon] › e2e/award-system.spec.ts:373:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (762ms)
+  ✓  13 [anon] › e2e/award-system.spec.ts:407:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (639ms)
+
+  13 passed (1.1m)

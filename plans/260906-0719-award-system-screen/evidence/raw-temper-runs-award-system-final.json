@@ -1,0 +1,22 @@
+[
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Post-fix gate, spec still unmodified: 13 passed, 0 failed."
+  },
+  {
+    "command": "npx playwright test e2e/homepage.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Gate on the kudos-promo.tsx maxWidthClass change: 22 passed, 0 failed. Homepage Kudos geometry also measured directly and is unchanged (section max-w-[1224px], card 252-1188, width 936)."
+  },
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Rerun after strengthening ID-7 with an exact 336x336 badge-geometry assertion at a 1440 viewport: 13 passed, 0 failed. The new assertion passes on real geometry, not by relaxation."
+  },
+  {
+    "command": "npx playwright test --project=anon",
+    "exitCode": 0,
+    "summary": "Full anon project (smoke, login-screen, route-guard, callback-security, homepage, award-system) — the blast radius of the playwright.config.ts testMatch edit: 53 passed, 0 failed."
+  }
+]

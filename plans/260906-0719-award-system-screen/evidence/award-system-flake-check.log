@@ -1,0 +1,41 @@
+
+Running 31 tests using 6 workers
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788658084493-2126917-sract7@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.6s)
+  ✓   2 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (11.2s)
+  ✓   5 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (11.1s)
+  ✓   6 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (10.8s)
+  ✓   4 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (11.2s)
+  ✓   7 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (10.4s)
+  ✓   3 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (11.3s)
+  ✓   9 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (3.8s)
+  ✓  10 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (3.8s)
+  ✓  11 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (3.8s)
+  ✓   8 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (3.9s)
+  ✓  13 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (3.9s)
+  ✓  12 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (4.0s)
+  ✓  15 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.6s)
+  ✓  14 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.7s)
+  ✓  16 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.7s)
+  ✓  18 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.6s)
+  ✓  17 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.7s)
+  ✓  19 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.6s)
+  ✓  21 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (3.6s)
+  ✓  20 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (3.7s)
+  ✓  22 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (3.6s)
+  ✓  23 [anon] › e2e/award-system.spec.ts:293:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (3.5s)
+  ✓  26 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (1.8s)
+  ✓  27 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (1.8s)
+  ✓  24 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (1.9s)
+  ✓  25 [anon] › e2e/award-system.spec.ts:356:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (2.0s)
+  ✓  28 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.6s)
+  ✓  29 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.6s)
+  ✓  30 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.6s)
+  ✓  31 [anon] › e2e/award-system.spec.ts:390:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.5s)
+
+  31 passed (1.1m)

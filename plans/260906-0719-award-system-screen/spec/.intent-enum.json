@@ -1,0 +1,7 @@
+{
+  "mode": "single",
+  "intents": [
+    "(khách truy cập, đọc chi tiết hệ thống giải thưởng SAA 2025, hiểu đủ 6 hạng mục — số lượng, giá trị, tiêu chí — và điều hướng tiếp sang Sun* Kudos)"
+  ],
+  "justification": "Một màn hình, một outcome người dùng. Menu danh mục bên trái là affordance điều hướng nội bộ trang (scroll-spy) của chính outcome đó, không phải screen-group riêng; sáu thẻ chi tiết giải thưởng là các SECTION của cùng một trang đọc. Header/footer/khối Sun* Kudos tái dùng nguyên trạng từ F002_HomepageSaa, không re-specify. Không có API, data model hay persistence (clarifications.md — assumption A2), nên không có ranh giới API thứ hai. Tiêu đề tác vụ 'Hệ thống giải' không chứa liên từ — cả hai danh sách smell-flag đều không kích hoạt."
+}

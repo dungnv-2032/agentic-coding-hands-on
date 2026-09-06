@@ -1,0 +1,32 @@
+
+Running 22 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788663941797-2297395-khv5qj@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.7s)
+  ✓   2 [anon] › e2e/homepage.spec.ts:5:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-0 [FR-100] — homepage loads publicly without authentication (541ms)
+  ✓   3 [anon] › e2e/homepage.spec.ts:16:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-7 [FR-101] — page structure includes header, hero, countdown, awards grid, Kudos section, and footer (495ms)
+  ✓   4 [anon] › e2e/homepage.spec.ts:50:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-9 [FR-102] — About SAA 2025 nav item is marked as selected on homepage (537ms)
+  ✓   5 [anon] › e2e/homepage.spec.ts:70:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-12 [FR-103] — countdown displays three 2-digit units labeled DAYS, HOURS, MINUTES (512ms)
+  ✓   6 [anon] › e2e/homepage.spec.ts:97:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-13 [FR-104] — Coming soon label visible when event is in the future (474ms)
+  ✓   7 [anon] › e2e/homepage.spec.ts:109:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-14 [FR-105] — event information block displays correct date, venue, and livestream note (491ms)
+  ✓   8 [anon] › e2e/homepage.spec.ts:128:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-15 [FR-106] — awards grid displays all 6 award category cards (497ms)
+  ✓   9 [anon] › e2e/homepage.spec.ts:144:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-16 [FR-107] — awards grid is responsive: 3 columns at desktop, 2 columns at tablet/mobile (1.7s)
+  ✓  10 [anon] › e2e/homepage.spec.ts:193:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-17 [FR-108] — footer displays logo, navigation links, and copyright text (474ms)
+  ✓  11 [anon] › e2e/homepage.spec.ts:221:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-18 [FR-108b] — header logo navigates to home from non-home route (949ms)
+  ✓  12 [anon] › e2e/homepage.spec.ts:246:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-19 [FR-108c] — footer logo navigates to home from non-home route (803ms)
+  ✓  13 [anon] › e2e/homepage.spec.ts:269:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-39 [FR-109] — countdown decreases in real time without a page reload (3.0s)
+  ✓  14 [anon] › e2e/homepage.spec.ts:297:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-2/3/4/20 [FR-117] — nav items navigate to home from non-home route; clicking selected nav item scrolls to top instead of navigating (1.3s)
+  ✓  15 [anon] › e2e/homepage.spec.ts:332:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-20 [FR-118] — footer logo scrolls to top when clicked on homepage (1.3s)
+  ✓  16 [anon] › e2e/homepage.spec.ts:360:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-41/42/43 [FR-110] — when event time passes, Coming soon hides and countdown holds at 00 (1.2s)
+  ✓  17 [anon] › e2e/homepage.spec.ts:406:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-24/30-35 [FR-111] — language menu: click opens/closes, outside click closes, Enter/Space open, Esc closes (749ms)
+  ✓  18 [anon] › e2e/homepage.spec.ts:448:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-25/26 [FR-112] — selecting EN in language menu switches UI to English, selecting VN reverts to Vietnamese (1.1s)
+  ✓  19 [anon] › e2e/homepage.spec.ts:494:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-44/45 [FR-113] — CTA buttons navigate to Awards Information and Kudos routes (1.5s)
+  ✓  20 [anon] › e2e/homepage.spec.ts:520:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-47/48/49/50/52 [FR-114] — award card (image, title, Chi tiết) navigates to /awards-information#<slug> (3.7s)
+  ✓  21 [anon] › e2e/homepage.spec.ts:551:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-53 [FR-115] — Kudos section Chi tiết button navigates to /kudos (773ms)
+  ✓  22 [anon] › e2e/homepage.spec.ts:573:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-55/59 [FR-116] — all footer links resolve without 404 errors (3.2s)
+
+  22 passed (1.1m)

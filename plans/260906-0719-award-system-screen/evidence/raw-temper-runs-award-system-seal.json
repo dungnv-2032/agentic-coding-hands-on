@@ -1,0 +1,37 @@
+[
+  {
+    "command": "npx tsc --noEmit",
+    "exitCode": 0,
+    "summary": "Typecheck clean with the new W-3 assertions in the spec."
+  },
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+    "exitCode": 1,
+    "summary": "First run of the new W-3 test FAILED: my own assertion was wrong, not the code. I asserted the award-nav testid as a descendant of the labelled <nav>; the label and the testid sit on the same element (award-category-nav.tsx:59-62). Corrected to assert identity, which is the stronger claim. Recorded rather than quietly amended."
+  },
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Rerun after correcting the assertion: 14 passed, 0 failed (13 prior tests plus the new W-3 structure lock)."
+  },
+  {
+    "command": "npx playwright test --project=anon",
+    "exitCode": 0,
+    "summary": "Full anon project: 54 passed, 0 failed."
+  },
+  {
+    "command": "npx playwright test e2e/homepage.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Homepage regression: 22 passed, 0 failed."
+  },
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon -g \"W-3|ID-9/11|ID-3 |Deep link\" --repeat-each=6",
+    "exitCode": 1,
+    "summary": "Flake check round 1: 24 passed, 1 failed. The failure is NOT a screen assertion — page.goto timed out at 30.1s on the batch's FIRST test, a cold `next dev` route compile on WSL2. Every later repeat of the same test ran in ~5.1s. Reported honestly rather than discarded."
+  },
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon -g \"W-3|ID-9/11|ID-3 |Deep link\" --repeat-each=6",
+    "exitCode": 0,
+    "summary": "Flake check round 2, identical command: 25 passed, 0 failed in 50.4s. Confirms the round-1 failure was a one-off cold-compile stall, not a product flake."
+  }
+]

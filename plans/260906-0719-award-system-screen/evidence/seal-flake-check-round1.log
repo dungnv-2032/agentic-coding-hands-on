@@ -1,0 +1,58 @@
+
+Running 25 tests using 6 workers
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788664015720-2299884-ja0m8l@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.6s)
+  ✓   3 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (5.1s)
+  ✓   5 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (5.1s)
+  ✓   4 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (5.3s)
+  ✓   6 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (5.2s)
+  ✓   7 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (5.0s)
+  ✓   8 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (4.5s)
+  ✓  11 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (4.5s)
+  ✓   9 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (4.6s)
+  ✓  10 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (4.6s)
+  ✓  12 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (4.6s)
+  ✓  14 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (5.0s)
+  ✓  17 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (5.4s)
+  ✓  15 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (5.5s)
+  ✓  13 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (5.7s)
+  ✓  16 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (5.5s)
+  ✓  18 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.8s)
+  ✓  20 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.9s)
+  ✓  19 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.1s)
+  ✓  21 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.0s)
+  ✓  22 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.0s)
+  ✘   2 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (30.1s)
+  ✓  23 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (860ms)
+  ✓  24 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (2.2s)
+  ✓  25 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (583ms)
+
+
+  1) [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:3000/awards-information", waiting until "load"
+
+
+      164 |     page,
+      165 |   }) => {
+    > 166 |     await page.goto(ROUTE);
+          |                ^
+      167 |
+      168 |     const banner = page.getByRole("banner");
+      169 |     const heading = page.getByRole("heading", { level: 1, name: PAGE_TITLE });
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/award-system.spec.ts:166:16
+
+    Error Context: test-results/award-system-Award-System--9ed79-nd-footer-in-document-order-anon-repeat2/error-context.md
+
+  1 failed
+    [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order 
+  24 passed (1.2m)

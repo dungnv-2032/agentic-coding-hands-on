@@ -1,0 +1,42 @@
+{
+  "task": "Implement the MoMorph 'He thong giai' (Award System) screen at /awards-information for SAA 2025 — screenId zFYDgyj_pD, fileKey 9ypp4enmFmdK3YAFJLIu6C — replacing the ComingSoon placeholder.",
+  "mode": "takumi --auto, MoMorph e2e-red-first",
+  "acceptanceCriteria": [
+    "Screen renders at /awards-information with the six awards in design order",
+    "Clicking a category scrolls to its section and exactly one menu item is active",
+    "Deep link to /awards-information#<slug> lands on the target section",
+    "All visible copy comes from the vi/en dictionary, verbatim from the design",
+    "Award badges render undistorted at 336x336",
+    "The existing homepage suite stays green",
+    "typecheck, lint and build exit 0"
+  ],
+  "touchpoints": [
+    "app/awards-information/page.tsx",
+    "app/awards-information/_components/award-system-hero.tsx",
+    "app/awards-information/_components/award-category-nav.tsx",
+    "app/awards-information/_components/use-award-scroll-spy.ts",
+    "app/awards-information/_components/award-detail-card.tsx",
+    "app/awards-information/_components/award-prize-list.tsx",
+    "app/awards-information/_components/award-system-icons.tsx",
+    "app/_components/kudos-promo.tsx",
+    "lib/award-system.ts",
+    "lib/i18n/messages/vi-award-system.ts",
+    "lib/i18n/messages/en-award-system.ts",
+    "lib/i18n/messages/dictionary.ts",
+    "lib/i18n/messages/vi.ts",
+    "lib/i18n/messages/en.ts",
+    "e2e/award-system.spec.ts",
+    "playwright.config.ts"
+  ],
+  "blastRadius": [
+    "/ (homepage) — composes the shared KudosPromo, which gained an optional maxWidthClass prop; homepage must render byte-identically",
+    "/kudos, /standards, /profile, /admin — still render app/_components/coming-soon.tsx, which this task leaves in place",
+    "Dictionary interface — a new awardSystem namespace is consumed by every locale file",
+    "e2e anon project — testMatch widened to include award-system.spec.ts"
+  ],
+  "contracts": [
+    "Frozen test hooks: section id/data-testid per slug, nav data-testid=award-nav, aria-current=true on exactly one item, img alt === card title, single h1",
+    "Dictionary['awardSystem'] shape frozen in plan.md before either track started",
+    "Award slugs reused from lib/awards.ts — the homepage deep-links to them"
+  ]
+}

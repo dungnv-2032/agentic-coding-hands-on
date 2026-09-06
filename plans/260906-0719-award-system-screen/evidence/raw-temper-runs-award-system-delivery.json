@@ -1,0 +1,17 @@
+[
+  {
+    "command": "npx playwright test e2e/award-system.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Delivery gate with the strengthened ID-7 336x336 assertion live: 13 passed, 0 failed."
+  },
+  {
+    "command": "npx playwright test e2e/homepage.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "Homepage regression after the shared Dictionary gained awardSystem.navAriaLabel and kudos-promo.tsx gained maxWidthClass: 22 passed, 0 failed."
+  },
+  {
+    "command": "npx playwright test --project=anon",
+    "exitCode": 0,
+    "summary": "Full anon project: 53 passed, 0 failed."
+  }
+]
