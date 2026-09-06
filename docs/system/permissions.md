@@ -41,8 +41,9 @@ draft đã ghi đúng rằng `/admin` "chưa tồn tại trong phạm vi" tại 
 
 ## Curated View
 
-- **Khách vãng lai** xem được toàn bộ trang chủ (`/`) và mọi route placeholder
-  (`/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin`); đăng nhập được qua
+- **Khách vãng lai** xem được toàn bộ trang chủ (`/`), màn hình hệ thống giải
+  (`/awards-information` — F003, công khai có chủ đích, không có guard nào được thêm) và mọi
+  route placeholder còn lại (`/kudos`, `/standards`, `/profile`, `/admin`); đăng nhập được qua
   `/login`; **không** xem được `/todo` — bị điều hướng về `/login`.
 - **Người dùng đã đăng nhập** xem được mọi thứ khách vãng lai xem được, cộng `/todo`; nếu vào
   lại `/login` sẽ bị điều hướng ngay về `/todo`. Trên trang chủ, người dùng này còn thấy thêm

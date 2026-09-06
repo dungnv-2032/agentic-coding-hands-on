@@ -13,7 +13,7 @@ lang: vi
 **Problem:** Khách truy cập SAA 2025 (Sun* Annual Awards 2025) cần một trang chủ công khai để hiểu chủ đề "Root Further" của mùa giải, biết hệ thống giải thưởng gồm những hạng mục nào, và tìm đường vào Sun* Kudos — trước khi có tài khoản hay đăng nhập.
 **Solution:** Trang chủ công khai tại `/` — thay thế trang boilerplate `create-next-app` hiện tại — trình bày header điều hướng, hero với bộ đếm ngược sự kiện, khối nội dung chủ đề "Root Further", lưới 6 thẻ giải thưởng, khối quảng bá Sun* Kudos, nút widget nổi và footer. Người dùng đã đăng nhập thấy thêm chuông thông báo và menu tài khoản trên header.
 **Scope:** Hiển thị đầy đủ nội dung trang chủ theo thiết kế; điều hướng ra các trang đích (kể cả 5 route placeholder tối thiểu để không có liên kết gãy); chuông thông báo + menu tài khoản cho người dùng đã đăng nhập (role admin thấy thêm mục Admin Dashboard); bộ đếm ngược tự tính từ biến cấu hình.
-**Non-Scope:** Không bao gồm nội dung thật của Award Information / Sun* Kudos / Tiêu chuẩn chung / Profile — các route đó chỉ có shell `ComingSoon` dùng chung, không phải trang đích thật. Không có huy hiệu thông báo chưa đọc (chưa có backend thông báo — xem § 11 RISK-01). Không re-specify cơ chế cookie ngôn ngữ / Google OAuth — đã có ở F001_Login.
+**Non-Scope:** Không bao gồm nội dung thật của Sun* Kudos / Tiêu chuẩn chung / Profile — các route đó chỉ có shell `ComingSoon` dùng chung, không phải trang đích thật. *(Award Information cũng nằm trong nhóm này khi F002 ship; từ 2026-09-06 `/awards-information` là màn hình thật của F003_AwardSystem.)* Không có huy hiệu thông báo chưa đọc (chưa có backend thông báo — xem § 11 RISK-01). Không re-specify cơ chế cookie ngôn ngữ / Google OAuth — đã có ở F001_Login.
 
 **Actors**
 
@@ -43,7 +43,7 @@ None — no unresolved domain confirmations. (`/tkm:takumi --auto` đã giải q
 ### Foundation (0xx)
 
 - **FR-001** Trang chủ (`/`) phải công khai, không yêu cầu đăng nhập; `proxy.ts` hiện có (route guard của F001_Login) tiếp tục cho qua nguyên trạng, tính năng này không thêm guard mới. *(clarifications.md — "proxy.ts already lets `/` through untouched", test ID-0)*
-- **FR-002** Năm route placeholder — `/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin` — phải tồn tại, dùng chung một component `ComingSoon` có header/footer thật, để mọi liên kết trên trang chủ (kể cả mục "Admin Dashboard" role-gated trong menu tài khoản) đều có đích hợp lệ. *(clarifications.md ORCH-11, test ID-59; xác nhận code: `app/admin/page.tsx`, `app/_components/use-scroll-to-top-if-current.ts` — comment "the five ComingSoon placeholders")*
+- **FR-002** Mọi route đích của trang chủ phải tồn tại để không có liên kết gãy (kể cả mục "Admin Dashboard" role-gated trong menu tài khoản). Khi F002 ship, cả năm — `/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin` — dùng chung một component `ComingSoon` có header/footer thật. Từ 2026-09-06, `/awards-information` render màn hình thật của F003_AwardSystem và **bốn** route còn lại vẫn dùng `ComingSoon`. *(clarifications.md ORCH-11, test ID-59; xác nhận code: `app/admin/page.tsx`, `app/awards-information/page.tsx:55`. Comment "the five ComingSoon placeholders" ở `app/_components/use-scroll-to-top-if-current.ts:14` nay đếm thừa một — comment thôi, hành vi không phụ thuộc vào route nào.)*
 
 ### Navigation (1xx)
 

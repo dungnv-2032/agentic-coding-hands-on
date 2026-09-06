@@ -8,8 +8,8 @@ tách backend riêng — xem [architecture.md](architecture.md).
 Đây là website công khai cho Sun* Annual Awards 2025 (SAA 2025) — một sự kiện thường niên nội
 bộ của Sun*, dùng để truyền thông chủ đề mùa giải "Root Further", giới thiệu 6 hạng mục giải
 thưởng, quảng bá Sun* Kudos, và cho phép Sunner đăng nhập bằng tài khoản Google để vào khu vực
-đã xác thực. Repo hiện có **61 file TS/TSX, ~4.347 dòng** (`scout-report.md`), và ship đúng
-**hai** tính năng end-to-end:
+đã xác thực. Repo ship **ba** tính năng end-to-end (số liệu file/dòng bên dưới là ảnh chụp của Core pass
+2026-09-05: 61 file TS/TSX, ~4.347 dòng — chưa tính màn hình F003 thêm vào ngày 2026-09-06):
 
 - **F001_Login** — đăng nhập Google qua Supabase Auth (GoTrue), gác cổng `/todo`/`/login`,
   chọn ngôn ngữ VN/EN, đăng xuất. Xem `docs/features/F001_Login/functional-spec.md`.
@@ -17,11 +17,16 @@ thưởng, quảng bá Sun* Kudos, và cho phép Sunner đăng nhập bằng tà
   "Root Further", lưới 6 thẻ giải thưởng, quảng bá Sun* Kudos, widget nổi, footer; cộng chuông
   thông báo (rỗng) + menu tài khoản khi đã đăng nhập. Xem
   `docs/features/F002_HomepageSaa/functional-spec.md`.
+- **F003_AwardSystem** — màn hình công khai "Hệ thống giải" tại `/awards-information`: hero tiêu
+  đề mùa giải, menu danh mục sáu mục dính bên trái có scroll-spy, sáu thẻ chi tiết giải thưởng,
+  khối Sun* Kudos và footer dùng lại của trang chủ. Không có API, không có bảng dữ liệu. Xem
+  `docs/features/F003_AwardSystem/functional-spec.md`.
 
-Năm route còn lại (`/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin`) là
-**placeholder công khai** — mỗi route chỉ render `<ComingSoon />` (header/footer thật + thông
-báo "sắp ra mắt"), chưa có nội dung nghiệp vụ thật (`scout-report.md § 2`). Chúng tồn tại để
-mọi liên kết trên trang chủ có đích hợp lệ, không phải vì đã có tính năng đứng sau.
+Bốn route còn lại (`/kudos`, `/standards`, `/profile`, `/admin`) là **placeholder công khai** —
+mỗi route chỉ render `<ComingSoon />` (header/footer thật + thông báo "sắp ra mắt"), chưa có nội
+dung nghiệp vụ thật. Chúng tồn tại để mọi liên kết trên trang chủ có đích hợp lệ, không phải vì
+đã có tính năng đứng sau. `/awards-information` từng nằm trong nhóm này và đã rời khỏi nó ngày
+2026-09-06 khi F003 ship.
 
 For architecture diagrams and tech stack details, see [architecture.md](architecture.md).
 

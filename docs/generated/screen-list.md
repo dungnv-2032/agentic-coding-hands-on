@@ -13,3 +13,10 @@
 **Route:** /
 **Description:** Trang chủ công khai SAA 2025 — keyvisual ROOT FURTHER, đếm ngược sự kiện, hệ thống giải thưởng, khối Sun* Kudos.
 **States:** anonymous, authenticated, admin, countdown-live, countdown-expired
+
+## SCR003_AwardSystem
+
+**Feature:** F003 — Award System
+**Route:** /awards-information
+**Description:** Màn hình công khai hệ thống giải thưởng SAA 2025 — hero tiêu đề mùa giải, menu danh mục sáu mục dính bên trái, sáu thẻ chi tiết giải thưởng, khối Sun* Kudos.
+**States:** default, hash-seeded, hash-unmatched, reduced-motion, pre-hydration

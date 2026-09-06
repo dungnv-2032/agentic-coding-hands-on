@@ -9,7 +9,8 @@ lang: vi
 
 Trang chủ (`/`) là điểm vào công khai duy nhất không cần đăng nhập. Luồng này gồm: render tĩnh
 theo trạng thái phiên, bộ đếm ngược tick client-side với hai nhánh (còn/hết hạn), và các đường
-điều hướng ra 5 route placeholder dùng chung `ComingSoon` (`/awards-information`, `/kudos`,
+điều hướng ra các route đích: `/awards-information` (từ 2026-09-06 là màn hình Hệ thống giải
+thật — F003, không còn placeholder) cùng 4 route placeholder dùng chung `ComingSoon` (`/kudos`,
 `/standards`, `/profile`, `/admin`) — thẻ giải thưởng thêm một anchor (`#<slug>`) vào route
 `/awards-information` có sẵn, không phải một route thứ 6.
 
@@ -40,7 +41,7 @@ sequenceDiagram
     end
     U->>B: Bam nav, CTA, the giai thuong, widget hoac footer
     B->>Dest: dieu huong client-side qua next/link
-    Dest-->>U: render dich - ComingSoon hoac slug tren awards-information
+    Dest-->>U: render dich - man hinh that (/ , /awards-information) hoac ComingSoon
 ```
 
 ### Numbered Steps
@@ -52,10 +53,10 @@ sequenceDiagram
 5. Sau mount, `useEffect` chạy `tick()` ngay rồi lặp mỗi 1000ms qua `setInterval`; mỗi tick tính lại toàn bộ hiệu số từ `Date.now()` (không cộng dồn từ tick trước) — tự sửa lỗi lệch giờ khi tab bị throttle/treo. `app/_components/countdown-timer.tsx:77-95`, `computeCountdown` tại `:49-63`.
 6. Nhánh còn thời gian (`diffMs > 0`): pad `days`/`hours`/`minutes` về 2 chữ số, hiện nhãn "Coming soon". `app/_components/countdown-timer.tsx:54-62`.
 7. Nhánh đã qua thời điểm sự kiện (`diffMs <= 0`): giữ `00/00/00` ở cả 3 ô, ẩn "Coming soon", không có cờ lỗi nào khác. `app/_components/countdown-timer.tsx:51-53`.
-8. Bấm một thẻ giải thưởng (ảnh, tên, hoặc "Chi tiết" đều nằm trong cùng một `<Link>`) điều hướng `/awards-information#<slug>` theo đúng 1-1 mapping tĩnh từ `lib/awards.ts`. `app/_components/award-card.tsx:32-59`, `lib/awards.ts:27-42`.
+8. Bấm một thẻ giải thưởng (ảnh, tên, hoặc "Chi tiết" đều nằm trong cùng một `<Link>`) điều hướng `/awards-information#<slug>` theo đúng 1-1 mapping tĩnh từ `lib/awards.ts`. Đích là màn hình Hệ thống giải thật (F003): trang dừng ở đúng thẻ hạng mục đó và mục menu tương ứng sáng lên sau khi hydrate. `app/_components/award-card.tsx:32-59`, `lib/awards.ts:27-42`, `app/awards-information/_components/use-award-scroll-spy.ts:143-147`. `F003` `US008`
 9. Bấm mục nav đang chọn ("About SAA 2025" khi đang ở `/`) chặn điều hướng lại, cuộn mượt lên đầu trang thay vì reload; mục khác điều hướng route tương ứng bình thường. `app/_components/home-nav.tsx:58-71`, `app/_components/use-scroll-to-top-if-current.ts:18-21`.
 10. Nút widget nổi và khối quảng bá Kudos điều hướng tĩnh tới `/kudos`/`/standards` — hai liên kết cố định, không có decision logic. `app/_components/floating-widget.tsx:20,28`, `app/_components/kudos-promo.tsx:46-48`.
-11. Cả 5 route đích (`/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin` — mục "Admin Dashboard" role-gated trong menu tài khoản trỏ tới đây) render chung shell `ComingSoon` — có header/footer thật, không phải trang tĩnh cô lập — nên điều hướng ra khỏi trang chủ không bao giờ gãy liên kết. `app/_components/coming-soon.tsx:17-38`, `app/_components/account-menu.tsx:99-107`.
+11. `/awards-information` render màn hình thật của F003; 4 route đích còn lại (`/kudos`, `/standards`, `/profile`, `/admin` — mục "Admin Dashboard" role-gated trong menu tài khoản trỏ tới đây) render chung shell `ComingSoon` — có header/footer thật, không phải trang tĩnh cô lập. Cả hai nhóm đều tồn tại, nên điều hướng ra khỏi trang chủ không bao giờ gãy liên kết. `app/awards-information/page.tsx:55`, `app/_components/coming-soon.tsx:17-38`, `app/_components/account-menu.tsx:99-107`.
 
 ### Edge Cases
 

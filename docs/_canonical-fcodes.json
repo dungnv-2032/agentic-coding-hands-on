@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-05T05:30:05Z",
-  "plan": "260905-1153-homepage-saa",
+  "generated_at": "2026-09-06T03:30:23Z",
+  "plan": "260906-0719-award-system-screen",
   "features": [
     {
       "fcode": "F001",
@@ -46,10 +46,31 @@
         ],
         "routes": [
           "/",
-          "/awards-information",
           "/kudos",
           "/standards",
           "/profile"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    },
+    {
+      "fcode": "F003",
+      "name": "Award System",
+      "slug": "F003_AwardSystem",
+      "priority": "P1",
+      "type": "ui",
+      "related": {
+        "screens": [
+          "SCR003_AwardSystem"
+        ],
+        "user_stories": [
+          "US007",
+          "US008"
+        ],
+        "routes": [
+          "/awards-information"
         ],
         "models": [],
         "bl": [],

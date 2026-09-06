@@ -35,11 +35,19 @@ Feature behavior is specified in `docs/features/F001_Login/`; non-obvious implem
 
 `/` is the public SAA 2025 homepage — header, hero with an event countdown, awards grid, Sun\* Kudos
 promo, and (when signed in) a notification bell and account menu. It shares its header/language
-selector and sign-out action with `/login` (`app/_components/`, `app/_actions/`). Five placeholder
-routes (`/awards-information`, `/kudos`, `/standards`, `/profile`, `/admin`) exist only so every link
-resolves — none has real destination content yet. Feature behavior is specified in
-`docs/features/F002_HomepageSaa/`; the countdown reads `NEXT_PUBLIC_EVENT_START_AT` (see
-`docs/setup/local-development.md` § 2).
+selector and sign-out action with `/login` (`app/_components/`, `app/_actions/`). Four placeholder
+routes (`/kudos`, `/standards`, `/profile`, `/admin`) exist only so every link resolves — none has
+real destination content yet. Feature behavior is specified in `docs/features/F002_HomepageSaa/`;
+the countdown reads `NEXT_PUBLIC_EVENT_START_AT` (see `docs/setup/local-development.md` § 2).
+
+## Award System (`/awards-information`)
+
+`/awards-information` is the public "Hệ thống giải" screen — hero, a sticky six-item category menu
+with scroll-spy, six award detail cards (description, quantity, prize value), the shared Sun\* Kudos
+promo and footer. It is a public route with no auth guard, and it replaced the `ComingSoon`
+placeholder that used to sit there. The six homepage award cards deep-link into it as
+`/awards-information#<slug>`. Feature behavior is specified in `docs/features/F003_AwardSystem/`;
+screen detail in `docs/screens/SCR003_AwardSystem/spec.md`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

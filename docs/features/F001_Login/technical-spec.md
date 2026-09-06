@@ -280,6 +280,6 @@ N/A — A1/A5 chỉ render, A2/A3 điều hướng ra ngoài/callback (không gh
 | Artifact | File | Codes Used | Reviewed |
 |----------|------|------------|----------|
 | Feature List | [feature-list.md](../../generated/feature-list.md) | F001 | [x] |
-| Architecture | [architecture.md](../system/architecture.md) | — (narrative, no per-code cite) | [x] |
-| Permissions | [permissions.md](../system/permissions.md) | — (narrative, no per-code cite) | [x] |
+| Architecture | [architecture.md](../../system/architecture.md) | — (narrative, no per-code cite) | [x] |
+| Permissions | [permissions.md](../../system/permissions.md) | — (narrative, no per-code cite) | [x] |
 | Screens | [functional-spec.md § 6](./functional-spec.md#6-screens) | SCR001_Login | [x] |

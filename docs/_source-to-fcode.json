@@ -1,4 +1,52 @@
 {
-  "generated_at": "2026-09-04T14:38:00Z",
-  "index": {}
+  "generated_at": "2026-09-06T03:30:23Z",
+  "index": {
+    "app/_actions/auth.ts": [
+      "F001"
+    ],
+    "app/_actions/locale.ts": [
+      "F001"
+    ],
+    "app/_components/coming-soon.tsx": [
+      "F002"
+    ],
+    "app/_components/countdown-timer.tsx:43-63,77-95": [
+      "F002"
+    ],
+    "app/_components/notification-bell.tsx": [
+      "F002"
+    ],
+    "app/auth/callback/route.ts": [
+      "F001"
+    ],
+    "app/awards-information/_components/award-category-nav.tsx": [
+      "F003"
+    ],
+    "app/awards-information/_components/use-award-scroll-spy.ts": [
+      "F003"
+    ],
+    "app/awards-information/page.tsx": [
+      "F003"
+    ],
+    "app/login/_components/google-sign-in-button.tsx": [
+      "F001"
+    ],
+    "app/login/actions.ts": [
+      "F001"
+    ],
+    "app/login/page.tsx": [
+      "F001"
+    ],
+    "app/page.tsx": [
+      "F002"
+    ],
+    "app/todo/page.tsx": [
+      "F001"
+    ],
+    "proxy.ts": [
+      "F001",
+      "F002",
+      "F003"
+    ]
+  }
 }

@@ -6,7 +6,7 @@ authored_by: rebuild-spec (Core pass, generated layer)
 
 **Project**: my-app (SAA 2025)
 **Generated**: 2026-09-05
-**Analysis Scope**: `docs/features/F001_Login/functional-spec.md`, `docs/features/F002_HomepageSaa/functional-spec.md`
+**Analysis Scope**: `docs/features/F001_Login/functional-spec.md`, `docs/features/F002_HomepageSaa/functional-spec.md`, `docs/features/F003_AwardSystem/functional-spec.md`
 
 > **Renumbering note**: the two feature specs above (SDD forward-drafts) numbered their user
 > stories per-feature-locally (`F001` → US001–US004, `F002` → US001–US002 — the same codes
@@ -25,6 +25,8 @@ authored_by: rebuild-spec (Core pass, generated layer)
 | US004 | US004_SignOut | Đăng xuất | ui | P0 | F001 | SCR001_Login (bounce target) |
 | US005 | US001_BrowseHomepage | Duyệt trang chủ SAA 2025 | ui | P0 | F002 | SCR002_Homepage |
 | US006 | US002_AccountNotificationMenu | Xem thông báo và quản lý tài khoản | ui | P0 | F002 | SCR002_Homepage |
+| US007 | US007_BrowseAwardSystem | Đọc hệ thống giải thưởng SAA 2025 | ui | P1 | F003 | SCR003_AwardSystem |
+| US008 | US008_JumpToAwardCategory | Nhảy tới một hạng mục qua menu danh mục | ui | P1 | F003 | SCR003_AwardSystem |
 
 ---
 
@@ -279,17 +281,100 @@ As a người dùng đã đăng nhập, I want to kiểm tra thông báo và m�
 
 ---
 
+## US007: Đọc hệ thống giải thưởng SAA 2025
+
+**Type**: ui
+**Interaction**: navigation
+**Priority**: P1
+**Owner F###**: F003
+
+### User Story
+
+As a khách truy cập, I want to đọc chi tiết sáu hạng mục giải SAA 2025 so that biết mỗi hạng mục vinh danh ai, có bao nhiêu giải và giá trị bao nhiêu — thay vì chỉ thấy một dòng mô tả cắt ngắn trên trang chủ.
+
+### Acceptance Criteria
+
+- [x] Trang hiển thị đủ năm khối theo đúng thứ tự thiết kế: header, hero, phần hệ thống giải, khối Sun* Kudos, footer.
+- [x] Sáu thẻ giải thưởng hiện đúng thứ tự thiết kế, mỗi thẻ đủ ảnh 336×336, tiêu đề, mô tả, số lượng và giá trị giải.
+- [x] Thẻ Signature hiện hai mức giải nối bằng `Hoặc`; Best Manager và MVP không có dòng ghi chú dưới số tiền.
+- [ ] Đổi sang EN thì toàn bộ nội dung màn hình đổi theo (đã code, chưa có test tự động — F003 § 11 RISK-05).
+
+### Technical Notes
+
+- **Endpoint**: N/A — Server Component render, no fetch
+- **Data Required**: `AWARDS` (`lib/awards.ts`), `AWARD_UNITS` (`lib/award-system.ts`), `dictionary.awardSystem`
+- **Dependencies**: F002 (`HomeHeader`, `SiteFooter`, `KudosPromo`, sáu ảnh `award-*.png`); F001 (bộ chọn ngôn ngữ dùng chung)
+
+### Screens
+
+- SCR003_AwardSystem: Hệ thống giải
+
+### Background Logic
+
+- BL001_LocaleResolutionFallback, BL002_DictionarySelection (dùng chung với F001/F002)
+
+### Test Scenarios
+
+| Scenario | Given | When | Then |
+|----------|-------|------|------|
+| Happy Path | Khách chưa đăng nhập mở `/awards-information` | Trang tải xong | Đủ năm khối đúng thứ tự, sáu thẻ đủ nội dung, không bị đẩy về `/login` |
+| Error Case | Khách hoàn toàn chưa có phiên đăng nhập | Mở `/awards-information` | Trang hiện bình thường, không redirect, không thông báo lỗi (cố ý — F003 § 3 D001) |
+
+---
+
+## US008: Nhảy tới một hạng mục qua menu danh mục
+
+**Type**: ui
+**Interaction**: secondary-action
+**Priority**: P1
+**Owner F###**: F003
+
+### User Story
+
+As a khách truy cập, I want to bấm một mục trong menu danh mục để đi thẳng tới hạng mục mình quan tâm so that không phải cuộn hết một trang dài sáu khối, và luôn biết mình đang đọc hạng mục nào.
+
+### Acceptance Criteria
+
+- [x] Bấm một mục menu cuộn tới đúng thẻ tương ứng và đổi địa chỉ trang thành `#<slug>` mà không thêm bước lùi lịch sử.
+- [x] Trong lúc cuộn tay, mục menu sáng luôn khớp hạng mục đang trong dải đo, và chỉ có đúng một mục sáng.
+- [x] Vào thẳng `/awards-information#mvp` thì trang dừng ở thẻ MVP và mục MVP sáng sau khi hydrate (~290ms — F003 § 11 RISK-04).
+- [ ] Bật chế độ giảm chuyển động thì cú nhảy là tức thì (đã code, chưa có test tự động — F003 § 11 RISK-05).
+
+### Technical Notes
+
+- **Endpoint**: N/A — client state only, không phát sinh HTTP request
+- **Data Required**: `AWARDS` slug list; `--award-header-offset` (CSS custom property)
+- **Dependencies**: bộ slug do F002 cố định (`lib/awards.ts`) — deep link từ trang chủ trỏ vào đúng bộ này
+
+### Screens
+
+- SCR003_AwardSystem: Hệ thống giải
+
+### Background Logic
+
+- Award category scroll-spy + click lock (client-side, xem `behavior-logic.md` § Client-Side Logic — không có mã BL###, không khớp canonical type nào)
+
+### Test Scenarios
+
+| Scenario | Given | When | Then |
+|----------|-------|------|------|
+| Happy Path | Khách đang ở đầu trang | Bấm mục menu "MVP" | Cuộn tới thẻ MVP, địa chỉ đổi thành `#mvp`, đúng một mục sáng |
+| Error Case | Khách mở `/awards-information#khong-ton-tai` | Trang tải xong | Không cuộn, mục đầu tiên sáng, không có lỗi console |
+
+---
+
 ## Screen → US Map
 
 | Screen | US Codes |
 |--------|----------|
 | SCR001_Login | US001, US002, US003, US004 |
 | SCR002_Homepage | US005, US006 |
+| SCR003_AwardSystem | US007, US008 |
 
 ## Cross-Reference Validation
 
-- [x] All US### codes are unique and globally contiguous (US001–US006)
+- [x] All US### codes are unique and globally contiguous (US001–US008)
 - [x] All acceptance criteria are testable (each ties to an existing FR/AC in the source feature specs — none invented)
-- [x] All US### codes are referenced in `docs/generated/feature-list.md` (F001, F002)
-- [x] All `ui` US### mapped to SCR001_Login or SCR002_Homepage (both exist in `docs/generated/screen-list.md`)
-- [x] No `system`-typed US### in this project (no bg-job/hook stories — all six are user-facing)
+- [x] All US### codes are referenced in `docs/generated/feature-list.md` (F001, F002, F003)
+- [x] All `ui` US### mapped to SCR001_Login, SCR002_Homepage hoặc SCR003_AwardSystem (cả ba đều có trong `docs/generated/screen-list.md`)
+- [x] No `system`-typed US### in this project (no bg-job/hook stories — all eight are user-facing)

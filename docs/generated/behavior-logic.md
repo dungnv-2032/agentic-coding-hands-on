@@ -232,7 +232,7 @@ Three distinct decisions, all at `app/auth/callback/route.ts:31-107`:
 
 ## Client-Side Logic
 
-Four genuine decision-logic items exist that have no clean home in the canonical-10 BL taxonomy
+Five genuine decision-logic items exist that have no clean home in the canonical-10 BL taxonomy
 (they are not background jobs, not middleware chains, not third-party integrations) and do not
 match the template's five named client patterns (debounce, optimistic-UI, polling, upload
 progress, realtime) either. Documented here in full rather than mistyped or dropped.
@@ -278,7 +278,10 @@ the entire point — attach it only when the link already points at the current 
 Two consumers use the hook (`home-header.tsx:39`, `site-footer.tsx:25`); `HomeNav` composes the
 bare handler with its own `selected` check instead, since calling a hook inside `.map()` would be
 a hook-in-a-loop violation (`:27-30`). Fixes a regression: applying it unconditionally turned
-"back to home" into a dead end on all five placeholder routes.
+"back to home" into a dead end on every route that reuses the header and footer — the four
+remaining `ComingSoon` placeholders plus `/awards-information`. (The source comment at
+`use-scroll-to-top-if-current.ts:14` still says "the five ComingSoon placeholders"; that count
+predates F003 and is now four. Comment only — the behavior is route-agnostic and unaffected.)
 
 ### Outside/Escape dismissal contract
 
@@ -290,6 +293,44 @@ Outside `pointerdown` closes **without** moving focus (`:24` — the user aimed 
 and account menu. `language-selector.tsx:53-75` holds a byte-equivalent inline copy deliberately
 **not** retrofitted onto this shared hook (`use-dismiss-on-outside.ts:8-10`) — documented,
 intentional duplication, not accidental drift.
+
+### Award category scroll-spy + click lock (F003)
+
+**Source**: `app/awards-information/_components/use-award-scroll-spy.ts:81-105` (resolve),
+`:149-165` (observer), `:114-136` (lock release), `:176-193` (click)
+**Trigger**: `IntersectionObserver` fires on any of the six award sections crossing the measurement
+band; user click on a category menu item; `wheel`/`touchstart`/`keydown` during a click's settle
+window
+
+The observer is only a *trigger*, never the data source — its callback sees only the entries that
+changed in that batch, which under a fast flick can rank a section that has already left the band.
+Every fire re-measures all six sections live (`:85-90`) and picks the one whose top edge is closest
+to the band top. Band runs from `--award-header-offset` down to 45% of viewport height, mirroring
+the `rootMargin: -${offset}px 0px -55% 0px`.
+
+| Branch | Condition | Output |
+|--------|-----------|--------|
+| Click lock held | `clickLock.current` true (`:158`) | Return without touching state — stops the menu flickering along a smooth scroll |
+| A section in band | any rect straddles `[bandTop, bandBottom)` | `activeSlug` = nearest-to-band-top section (`:88-92`) |
+| Above the first section | no section in band AND first section's top `>= bandBottom` (`:103-104`) | Falls back to the first slug — the frame lights Top Talent at the hero |
+| Below the last section | no section in band, first section above the band | Keeps the current slug — never drops to zero active |
+
+`activeSlug` is a single value, not a set, so "exactly one active" is an invariant of the state
+shape rather than a cleanup step. A click sets the slug, locks, scrolls
+(`behavior: "smooth"`, or `"auto"` under `prefers-reduced-motion`, `:180-184`), and
+`history.replaceState`s the fragment — replace, never push, so Back leaves the page rather than
+walking back through categories (`:186`). The lock expires after 700ms
+(`SCROLL_SETTLE_MS`, `:25`) **or immediately** on a real user scroll input, and releasing always
+re-runs the measurement (`:121`) — because `IntersectionObserver` only fires on *change*, a scroll
+that ended inside the window would otherwise leave the menu stuck on the clicked item forever.
+
+Hydration constraint: the first client render must byte-match the server's, and the suite asserts
+zero console errors. A URL fragment never reaches the server, so the initial active item is always
+`items[0]` (`:31`) and `location.hash`/`matchMedia`/`history` are touched only inside effects. The
+deep-link effect (`:143-147`) therefore controls *position* only — it validates the fragment against
+the frozen slug list before `getElementById`, then `scrollIntoView({ behavior: "auto" })`. The active
+item catches up when the observer first delivers, a measured ~290ms after load. Accepted
+deliberately — see `docs/features/F003_AwardSystem/functional-spec.md` § 11 RISK-04.
 
 ### Debounce / Throttle, Optimistic UI, Polling, Upload Progress, Realtime
 

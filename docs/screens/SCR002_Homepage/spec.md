@@ -148,7 +148,7 @@ N/A — no validation rules or submit-side error feedback detected. *(Không có
 | From | Trigger there | Condition | Source |
 |------|----------------|-----------|--------|
 | external \| direct URL | truy cập `/` trực tiếp hoặc bookmark | — | `TBD (draft)` |
-| SCR *(Award Information placeholder)* | bấm logo hoặc mục nav "About SAA 2025" | — | `TBD (draft)` |
+| SCR003_AwardSystem | bấm logo hoặc mục nav "About SAA 2025" | — | `app/_components/home-nav.tsx:59-66` |
 | SCR *(Sun* Kudos placeholder)* | bấm logo hoặc mục nav "About SAA 2025" | — | `TBD (draft)` |
 | SCR *(Tiêu chuẩn chung placeholder)* | bấm logo hoặc mục nav "About SAA 2025" | — | `TBD (draft)` |
 
@@ -156,10 +156,10 @@ N/A — no validation rules or submit-side error feedback detected. *(Không có
 
 | Action | Element | Condition | Destination | Result | Source |
 |--------|---------|-----------|-------------|--------|--------|
-| Xem Award Information | E03, E18 | — | *(Award Information placeholder)* | redirect | `TBD (draft)` |
+| Xem Award Information | E03, E18 | — | SCR003_AwardSystem (`/awards-information`) | redirect | `app/_components/home-nav.tsx`, `app/_components/home-hero.tsx` |
 | Xem Sun* Kudos | E04, E19, E23, E24 (icon viết kudos) | — | *(Sun* Kudos placeholder)* | redirect | `TBD (draft)` |
 | Xem Tiêu chuẩn chung | E24 (icon thể lệ SAA), footer link | — | *(Tiêu chuẩn chung placeholder)* | redirect | `TBD (draft)` |
-| Xem chi tiết một hạng mục giải thưởng | E22 | — | *(Award Information placeholder)*`#<slug>` | redirect | `TBD (draft)` |
+| Xem chi tiết một hạng mục giải thưởng | E22 | — | SCR003_AwardSystem `#<slug>` | redirect | `app/_components/award-card.tsx:32-59` |
 | Xem Profile | E08 | — | *(Profile placeholder — `/profile`)* | redirect | `TBD (draft)` |
 | Xem Admin Dashboard | E10 | chỉ khi role admin | *(Admin Dashboard placeholder — `/admin`, route riêng biệt với Profile)* | redirect | `TBD (draft)` |
 | Đăng xuất | E09 | đã đăng nhập | `/login` | redirect *(tái dùng F001_Login sign-out)* | `TBD (draft)` |

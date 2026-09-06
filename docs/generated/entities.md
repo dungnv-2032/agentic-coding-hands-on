@@ -85,11 +85,13 @@ static objects satisfying this interface — not rows, not a translations table.
 | `footer.*` | `string` fields | Footer copy incl. `standards` (4th link) |
 | `header.*` (implied by usage) | `string` fields | `header.accountLabel`, `header.profile`, `header.adminDashboard`, `header.signOut` (read in `account-menu.tsx:75,89,97,105,110`) |
 | `home.awards.cards` | `Record<AwardKey, {...}>` | Keyed by the 6-member `AwardKey` union — a missing card is a compile error, not a silent grid gap. |
+| `awardSystem.*` | nested object (`dictionary.ts:112-146`) | Award System screen copy (F003): `hero`, `navAriaLabel`, `quantityLabel`, `prizeLabel`, `prizeOr`, `units: Record<AwardUnitKey, string>`, and `cards: Record<AwardKey, {title, navLabel, paragraphs[], quantity, prizes[]}>`. `prizes[].note` is **optional** — "Best Manager carries no note line" is a type-level fact, not an empty string. |
 | `home.eventTimeValue` | `string` | Hardcoded copy `"26/12/2025"` (`vi-home.ts`) — independent of `NEXT_PUBLIC_EVENT_START_AT`; the two can drift (scout §7). |
 
-**Relationships**: `home.awards.cards` is keyed by `AwardKey`, the same union `Award.key`
-(MODEL003) uses — the only cross-structure link in the app, and it is a shared string-literal
-type, not a foreign key.
+**Relationships**: `home.awards.cards` and `awardSystem.cards` are both keyed by `AwardKey`, the
+same union `Award.key` (MODEL003) uses; `awardSystem.units` is keyed by `AwardUnitKey`, which
+`AWARD_UNITS` (MODEL003) maps into. These are the app's only cross-structure links, and all of them
+are shared string-literal types, not foreign keys.
 
 **Discriminator Fields**: None — `Dictionary` fields are plain `string`, not an enum
 (`dictionary.ts:2-4`, deliberate: lets `en.ts` hold different copy under the same type).
@@ -99,13 +101,19 @@ type, not a foreign key.
 ### MODEL003_Award — client-side type contract, not a database table
 
 **Description**: `AWARDS` (`lib/awards.ts:27-42`) — 6 hardcoded records, frozen in design order.
-Award *identity* lives here; award *copy* (title, description) lives in `Dictionary.home.awards.cards`,
-zipped together by `award-card.tsx`.
+Award *identity* lives here; award *copy* lives in the dictionary and is zipped in at render time —
+`Dictionary.home.awards.cards` by `award-card.tsx` on the homepage, `Dictionary.awardSystem.cards`
+by `app/awards-information/page.tsx:99-109` on the Award System screen. A third, non-locale facet —
+*which unit* each award is counted in — lives in `AWARD_UNITS: Record<AwardKey, AwardUnitKey>`
+(`lib/award-system.ts:25-32`), exhaustive so a seventh award cannot compile until its unit is
+declared. `lib/award-system.ts` deliberately does **not** redefine `AwardSlug`/`AwardKey`/`AWARDS`
+(`:7-12`): a second slug list would silently strand every `/awards-information#<slug>` deep link the
+moment the two drifted.
 
 | Attribute | Type | Constraints | Description |
 |-----------|------|-------------|--------------|
 | `slug` | `AwardSlug` (6-member string-literal union) | Fixed set, no runtime validation needed (compile-time exhaustive) | URL fragment target: `/awards-information#<slug>` (FR-405). |
-| `key` | `AwardKey` (6-member string-literal union) | Must exist in `Dictionary.home.awards.cards` | Dictionary key for this award's copy. |
+| `key` | `AwardKey` (6-member string-literal union) | Must exist in `Dictionary.home.awards.cards`, `Dictionary.awardSystem.cards` and `AWARD_UNITS` | Dictionary key for this award's copy, and lookup key for its counting unit. |
 | `image` | `string` | Static path under `/images/home/` | Composed thumbnail path. |
 
 **Relationships**: `key` maps 1:1 into `Dictionary.home.awards.cards` (MODEL002). No relationship
@@ -115,7 +123,7 @@ to `AUTH_USERS`.
 
 | Field | DISC-### | Values | Description |
 |-------|----------|--------|--------------|
-| `slug` | DISC-002 | `top-talent`, `top-project`, `top-project-leader`, `best-manager`, `signature-2025-creator`, `mvp` | Each value routes to a different `#<slug>` fragment on `/awards-information`; no other behavioral branch reads this field. |
+| `slug` | DISC-002 | `top-talent`, `top-project`, `top-project-leader`, `best-manager`, `signature-2025-creator`, `mvp` | Each value is the `id` of one award `<section>` on `/awards-information` and the `#<slug>` deep-link fragment the homepage cards point at; it is also the category-menu scroll-spy's key (F003 ALG-001). No other behavioral branch reads this field. |
 
 ---
 
@@ -155,5 +163,5 @@ rule, not a field constraint.
 
 ## Summary
 
-- **Total Entities**: 4 (1 externally-managed, 3 client-side type contracts — 0 application-owned database tables)
-- **Total Relationships**: 1 (`Award.key` ↔ `Dictionary.home.awards.cards`, both static in-memory structures)
+- **Total Entities**: 4 (1 externally-managed, 3 client-side type contracts — 0 application-owned database tables). `AWARD_UNITS` / `AwardUnitKey` (`lib/award-system.ts`) is folded into MODEL003 rather than given its own code: it is a lookup facet of `Award`, not a separate entity.
+- **Total Relationships**: 3, all static in-memory structures — `Award.key` ↔ `Dictionary.home.awards.cards`; `Award.key` ↔ `Dictionary.awardSystem.cards`; `AWARD_UNITS[Award.key]` ↔ `Dictionary.awardSystem.units`

@@ -44,7 +44,7 @@ sequenceDiagram
 5. `setLocale` resolve giá trị qua `resolveLocale` **trước khi ghi cookie** — giá trị lạ/không hợp lệ không bao giờ vào được `NEXT_LOCALE` từ chính app này. `app/_actions/locale.ts:13-14`, `lib/i18n/locales.ts:22-24`. `BL001`
 6. Ghi cookie `NEXT_LOCALE` với `path: "/"`, `maxAge` 1 năm, `sameSite: "lax"`. `app/_actions/locale.ts:16-20`.
 7. Gọi `revalidatePath("/", "layout")` — bao trùm toàn bộ layout subtree, không chỉ `/login`, vì Server Action này giờ dùng chung cho cả `/` (F002) lẫn `/login` (F001); thiếu bước này thì trang chủ tiếp tục phục vụ nội dung ngôn ngữ cũ sau khi đổi. `app/_actions/locale.ts:21-26`.
-8. Lần render kế tiếp của bất kỳ Server Component nào đọc `NEXT_LOCALE` — `app/_page-context.ts:33` (dùng bởi `/`, và 5 route placeholder qua `ComingSoon`), `app/login/page.tsx:37`, `app/todo/page.tsx:24` — đều lấy locale mới qua `resolveLocale` + `getDictionary`. `BL001` `BL002`
+8. Lần render kế tiếp của bất kỳ Server Component nào đọc `NEXT_LOCALE` — `app/_page-context.ts:33` (dùng bởi `/`, `/awards-information`, và 4 route placeholder qua `ComingSoon`), `app/login/page.tsx:37`, `app/todo/page.tsx:24` — đều lấy locale mới qua `resolveLocale` + `getDictionary`. `BL001` `BL002`
 
 ### Edge Cases
 

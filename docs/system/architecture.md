@@ -16,7 +16,7 @@ graph TB
     subgraph "Next.js App Router (my-app)"
         PX["proxy.ts — session refresh + route guard (Next 16 rename của middleware)"]
         PC["app/_page-context.ts — điểm đọc duy nhất: locale + dictionary + isAuthenticated + isAdmin"]
-        SC["Server Components — app/page.tsx, app/login/page.tsx, app/todo/page.tsx, 5 placeholder pages"]
+        SC["Server Components — app/page.tsx, app/awards-information/page.tsx, app/login/page.tsx, app/todo/page.tsx, 4 placeholder pages"]
         SA["Server Actions — signOut(), setLocale(), signInWithGoogle()"]
         CB["app/auth/callback/route.ts — Route Handler GET (OAuth callback, route duy nhất của app)"]
         CC["Client Components — home-header, language-selector, account-menu, notification-bell, countdown-timer..."]
