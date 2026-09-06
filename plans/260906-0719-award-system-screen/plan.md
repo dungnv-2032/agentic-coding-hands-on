@@ -4,7 +4,7 @@ description: "Phased blueprint for the SAA 2025 award system screen: awardSystem
 status: in-progress
 priority: P1
 effort: 6h
-branch: feat/language-dropdown-open-state
+branch: feat/award-system-screen
 tags: [award-system, saa2025, nextjs16, i18n, scroll-spy, e2e, momorph]
 created: 2026-09-06
 work_type: feature
