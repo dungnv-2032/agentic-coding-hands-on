@@ -35,9 +35,9 @@ Feature behavior is specified in `docs/features/F001_Login/`; non-obvious implem
 
 `/` is the public SAA 2025 homepage — header, hero with an event countdown, awards grid, Sun\* Kudos
 promo, and (when signed in) a notification bell and account menu. It shares its header/language
-selector and sign-out action with `/login` (`app/_components/`, `app/_actions/`). Four placeholder
-routes (`/kudos`, `/standards`, `/profile`, `/admin`) exist only so every link resolves — none has
-real destination content yet. Feature behavior is specified in `docs/features/F002_HomepageSaa/`;
+selector and sign-out action with `/login` (`app/_components/`, `app/_actions/`). Three placeholder
+routes (`/standards`, `/profile`, `/admin`) exist only so every link resolves — none has real
+destination content yet. Feature behavior is specified in `docs/features/F002_HomepageSaa/`;
 the countdown reads `NEXT_PUBLIC_EVENT_START_AT` (see `docs/setup/local-development.md` § 2).
 
 ## Award System (`/awards-information`)
@@ -48,6 +48,22 @@ promo and footer. It is a public route with no auth guard, and it replaced the `
 placeholder that used to sit there. The six homepage award cards deep-link into it as
 `/awards-information#<slug>`. Feature behavior is specified in `docs/features/F003_AwardSystem/`;
 screen detail in `docs/screens/SCR003_AwardSystem/spec.md`.
+
+## Kudos Live Board (`/kudos`)
+
+`/kudos` is the public "Sun\* Kudos - Live board" screen — a highlight carousel (top 5 by heart
+count), a Hashtag/Phòng ban filter that filters both the carousel and the full feed at once, a
+Spotlight word-cloud with a live-looking ticker, an infinite-scroll ALL KUDOS feed, and a personal
+sidebar with received/sent/heart counts and a gift leaderboard. It is a public route with no auth
+guard, and it replaced the `ComingSoon` placeholder that used to sit there. It is also the first
+screen in this repo backed by a real Postgres schema — a migration, RLS policies, and a seed all
+live under `supabase/`; run `npx supabase db reset` after pulling this feature so your local
+database has the `kudos`/`sunners`/`kudos_likes`/... tables before you load the page (see
+`docs/setup/local-development.md` § 1.1). Anyone can read the whole screen; only a signed-in
+Sunner can toggle the heart on a kudos, and never on one they sent themselves. Four CTAs on this
+screen (compose bar, "Mở Secret Box", "Xem chi tiết", Sunner search) resolve to real routes that
+still render `ComingSoon` — their surfaces are separate commissions. Feature behavior is specified
+in `docs/features/F004_KudosLiveBoard/`; screen detail in `docs/screens/SCR004_KudosLiveBoard/spec.md`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

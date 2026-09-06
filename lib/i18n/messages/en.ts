@@ -1,6 +1,7 @@
 import type { Dictionary } from "./dictionary";
 import { enAwardSystem } from "./en-award-system";
 import { enHome } from "./en-home";
+import { enKudos } from "./en-kudos";
 
 /**
  * English copy, typed against the shared `Dictionary` shape so a missing or
@@ -49,4 +50,5 @@ export const en: Dictionary = {
     title: "Coming soon",
     body: "This content is being updated. Please check back soon.",
   },
+  kudos: enKudos,
 };

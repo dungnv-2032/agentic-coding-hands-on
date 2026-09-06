@@ -149,4 +149,42 @@ export interface Dictionary {
     title: string;
     body: string;
   };
+  /**
+   * Sun* Kudos - Live board copy (F004, screen `MaZUn5xHXZ`). Badge tier
+   * names/tooltips are NOT here — they flow via the frozen
+   * `lib/kudos/view-model.ts` + `derive.ts`. Spotlight `388 KUDOS` is a
+   * seeded DB value, not copy (test-contract.md ratification 2026-09-06c).
+   */
+  kudos: {
+    /** `hero.title` is the page's only `<h1>`. */
+    hero: { title: string; composePlaceholder: string; searchPlaceholder: string };
+    /** Shared eyebrow above all three section headings. */
+    eyebrow: string;
+    sections: { highlight: string; spotlight: string; allKudos: string };
+    filters: { hashtag: string; department: string };
+    /** `viewDetail` is highlight-carousel-only (test-contract § Kudos card). */
+    card: { copyLink: string; viewDetail: string; empty: string };
+    spotlightBoard: {
+      searchPlaceholder: string;
+      /** Accessible label and `title` tooltip. */
+      panZoom: string;
+      /** Appended after "{timeLabel} {name}" to form one ticker sentence. */
+      tickerSuffix: string;
+      empty: string;
+    };
+    sidebar: {
+      /** Five rows, in the test contract's exact order. */
+      stats: {
+        kudosReceived: string;
+        kudosSent: string;
+        heartsReceived: string;
+        secretBoxOpened: string;
+        secretBoxUnopened: string;
+      };
+      secretBoxButton: string;
+      giftHeading: string;
+      giftEmpty: string;
+    };
+    toast: { copySuccess: string; copyFailure: string };
+  };
 }
