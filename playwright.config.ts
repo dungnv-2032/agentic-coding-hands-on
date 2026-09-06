@@ -57,10 +57,11 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
     // Unauthenticated tests (login screen, error paths, open-redirect, callback security, homepage)
+    // NOTE: kudos-live-board.spec.ts only (not -authed variant)
     {
       name: "anon",
       testMatch:
-        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system)\.spec\.ts/,
+        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|kudos-live-board(?!-authed))\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },
@@ -70,6 +71,17 @@ export default defineConfig({
     {
       name: "authed",
       testMatch: /authenticated\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/user.json",
+      },
+      dependencies: ["setup"],
+    },
+    // Kudos authenticated tests (heart toggle, persistence) — loads storageState from setup
+    // NOTE: kudos-live-board-authed.spec.ts only
+    {
+      name: "kudos-authed",
+      testMatch: /kudos-live-board-authed\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "e2e/.auth/user.json",
