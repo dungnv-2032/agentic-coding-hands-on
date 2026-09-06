@@ -59,7 +59,8 @@ export default defineConfig({
     // Unauthenticated tests (login screen, error paths, open-redirect, callback security, homepage)
     {
       name: "anon",
-      testMatch: /(?:smoke|login-screen|route-guard|callback-security|homepage)\.spec\.ts/,
+      testMatch:
+        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },
