@@ -10,13 +10,32 @@ import { IconChevronDown } from "./icons";
  * own `<section>` (never the awards section) so ID-53's
  * `section:has-text(/kudos/i)` scope resolves to exactly this block, and
  * the awards section's negative "no Kudos text" scope stays honest.
+ *
+ * Shared with the Award System screen (F003), which draws the same block from
+ * a different artboard: the homepage frame is 1512 wide (1512 − 288 gutters =
+ * 1224 of content), `/awards-information` is 1440 (→ 1152). Hence
+ * `maxWidthClass` rather than a hardcoded cap or a forked copy — the homepage
+ * passes nothing and renders byte-identically, and the narrower screen no
+ * longer squeezes the body copy underneath the KUDOS logo.
  */
-export function KudosPromo({ home }: { home: Dictionary["home"] }) {
+interface KudosPromoProps {
+  home: Dictionary["home"];
+  /**
+   * Container cap for the calling screen's artboard. A union, not `string`:
+   * an interpolated class (`max-w-[${n}px]`) would compile, never be emitted
+   * by Tailwind's scanner, and silently drop the cap. Adding a value here
+   * forces you to spell the literal out, which is exactly what the scanner
+   * needs to see.
+   */
+  maxWidthClass?: "max-w-[1224px]" | "max-w-[1440px]";
+}
+
+export function KudosPromo({ home, maxWidthClass = "max-w-[1224px]" }: KudosPromoProps) {
   const { kudos } = home;
 
   return (
     // mm:3390:10349
-    <section className="mx-auto w-full max-w-[1224px] px-6 py-8 sm:px-12 lg:px-36">
+    <section className={`mx-auto w-full ${maxWidthClass} px-6 py-8 sm:px-12 lg:px-36`}>
       <div className="relative isolate flex w-full flex-col items-start justify-center overflow-hidden rounded-2xl bg-[#0F0F0F] p-10 sm:p-16">
         {/* mm:I3390:10349;313:8416 (MM_MEDIA_Kudos Background) */}
         <Image

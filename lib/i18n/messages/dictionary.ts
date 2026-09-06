@@ -8,6 +8,8 @@
  * fails `npm run typecheck` rather than falling back to a runtime blank.
  */
 
+import type { AwardUnitKey } from "../../award-system";
+
 /**
  * The six award categories, in the design's fixed order. A string-literal
  * union (not a plain `string`) so a card missing from `home.awards.cards`
@@ -96,6 +98,51 @@ export interface Dictionary {
       writeKudos: string;
       standards: string;
     };
+  };
+  /**
+   * Award System screen copy (F003). Keyed by the same `AwardKey` as
+   * `home.awards.cards` so the two screens can never disagree about which six
+   * awards exist — `lib/awards.ts` stays the single source of slug/image
+   * identity and iteration order.
+   *
+   * `units` is keyed by `AwardUnitKey` (`lib/award-system.ts`) rather than
+   * repeating "Cá nhân" on four cards: which unit an award has is structural,
+   * how that unit reads is copy that must translate (FR-002).
+   */
+  awardSystem: {
+    hero: { eyebrow: string; title: string; wordmarkAlt: string };
+    /**
+     * Accessible name for the category `<nav>` landmark. Its own key rather
+     * than a reuse of `hero.title`: the page carries three `<nav>` landmarks
+     * (header, this one, footer), so each needs a name that says what it
+     * navigates. Borrowing the `<h1>` text named the landmark after the page
+     * instead of after the menu.
+     */
+    navAriaLabel: string;
+    quantityLabel: string;
+    prizeLabel: string;
+    /** Separator between Signature's two prize rows ("Hoặc"). */
+    prizeOr: string;
+    units: Record<AwardUnitKey, string>;
+    cards: Record<
+      AwardKey,
+      {
+        /** Card heading — also the award image's alt text (test contract). */
+        title: string;
+        /** Left-menu label. Differs from `title` for signature2025Creator + mvp. */
+        navLabel: string;
+        /** One or two paragraphs, rendered in order. */
+        paragraphs: string[];
+        /** String, not number: the design renders the leading zero ("02"). */
+        quantity: string;
+        /**
+         * BR-004 — one row for four awards, two for Signature. `note` is
+         * optional so "Best Manager carries no note line" is a type-level
+         * fact; `note: ""` would still render an empty note element.
+         */
+        prizes: Array<{ amount: string; note?: string }>;
+      }
+    >;
   };
   /** Copy for the shared `ComingSoon` placeholder route shell (phase 07). */
   comingSoon: {

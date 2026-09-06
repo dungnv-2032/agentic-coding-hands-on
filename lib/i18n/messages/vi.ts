@@ -1,4 +1,5 @@
 import type { Dictionary } from "./dictionary";
+import { viAwardSystem } from "./vi-award-system";
 import { viHome } from "./vi-home";
 
 export type { Dictionary };
@@ -41,6 +42,7 @@ export const vi: Dictionary = {
     adminDashboard: "Trang quản trị",
   },
   home: viHome,
+  awardSystem: viAwardSystem,
   comingSoon: {
     title: "Coming soon",
     body: "Nội dung đang được cập nhật. Vui lòng quay lại sau.",

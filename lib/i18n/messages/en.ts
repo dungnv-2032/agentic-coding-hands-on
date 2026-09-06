@@ -1,4 +1,5 @@
 import type { Dictionary } from "./dictionary";
+import { enAwardSystem } from "./en-award-system";
 import { enHome } from "./en-home";
 
 /**
@@ -43,6 +44,7 @@ export const en: Dictionary = {
     adminDashboard: "Admin Dashboard",
   },
   home: enHome,
+  awardSystem: enAwardSystem,
   comingSoon: {
     title: "Coming soon",
     body: "This content is being updated. Please check back soon.",
