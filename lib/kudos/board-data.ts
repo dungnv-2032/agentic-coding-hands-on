@@ -36,6 +36,13 @@ import { resolveSidebarSunnerId, resolveViewer } from "./viewer";
 /** Asia/Ho_Chi_Minh fixed offset, mirroring derive.ts's (frozen, unexported) constant. */
 const TICKER_OFFSET_MINUTES = 7 * 60;
 
+/** Neutral fallback for a missing anonymous display name — data, not copy (clarifications § Unresolved question 4). */
+const ANONYMOUS_FALLBACK_LABEL = "Ẩn danh";
+/** Redacted `SunnerView` stand-in for an anonymous kudos: no real name, department, avatar or badge tooltip crosses the mapping boundary. */
+function toAnonymousSenderView(label: string): SunnerView {
+  return { id: 0, fullName: label, department: "", avatarUrl: "/images/kudos/sample-avatar.png", badge: "New Hero", badgeTooltip: null };
+}
+
 function formatTickerTime(iso: string): string {
   const shifted = new Date(new Date(iso).getTime() + TICKER_OFFSET_MINUTES * 60_000);
   const hours24 = shifted.getUTCHours();
@@ -84,25 +91,38 @@ export async function getKudosBoard(): Promise<KudosBoardViewModel> {
     );
   }
 
-  const kudos: KudosCardView[] = rows.map((row) => ({
-    id: row.id,
-    sender: toSunnerView(row.sender, receivedCountBySunnerId.get(row.sender.id) ?? 0),
-    receiver: toSunnerView(row.receiver, receivedCountBySunnerId.get(row.receiver.id) ?? 0),
-    campaign: row.campaign,
-    message: row.message,
-    sentAtLabel: formatSentAt(row.sent_at),
-    hashtags: [...row.hashtags]
-      .sort((a, b) => a.position - b.position)
-      .map((h) => h.hashtag?.name)
-      .filter((name): name is string => Boolean(name)),
-    attachments: [...row.attachments]
-      .sort((a, b) => a.position - b.position)
-      .map((a) => ({ id: a.id, imageUrl: a.image_url })),
-    hearts: heartsOf(row),
-    likedByViewer: viewerLikes.has(row.id),
-    canLike: viewer.isAuthenticated && viewer.sunnerId !== row.sender.id,
-    isOwnedByViewer: viewer.sunnerId !== null && viewer.sunnerId === row.sender.id,
-  }));
+  const kudos: KudosCardView[] = rows.map((row) => {
+    // Non-null only for anonymous rows; a blank/whitespace-only stored name falls back to the neutral label.
+    const anonymousSenderLabel = row.is_anonymous
+      ? row.anonymous_name?.trim() || ANONYMOUS_FALLBACK_LABEL
+      : null;
+    return {
+      id: row.id,
+      sender:
+        anonymousSenderLabel === null
+          ? toSunnerView(row.sender, receivedCountBySunnerId.get(row.sender.id) ?? 0)
+          : toAnonymousSenderView(anonymousSenderLabel),
+      receiver: toSunnerView(row.receiver, receivedCountBySunnerId.get(row.receiver.id) ?? 0),
+      campaign: row.campaign,
+      message: row.message,
+      sentAtLabel: formatSentAt(row.sent_at),
+      hashtags: [...row.hashtags]
+        .sort((a, b) => a.position - b.position)
+        .map((h) => h.hashtag?.name)
+        .filter((name): name is string => Boolean(name)),
+      attachments: [...row.attachments]
+        .sort((a, b) => a.position - b.position)
+        .map((a) => ({ id: a.id, imageUrl: a.image_url })),
+      hearts: heartsOf(row),
+      likedByViewer: viewerLikes.has(row.id),
+      // Real sender id, never the redacted stub's `id: 0` — the author still cannot like their own anonymous kudos.
+      canLike: viewer.isAuthenticated && viewer.sunnerId !== row.sender.id,
+      isOwnedByViewer: viewer.sunnerId !== null && viewer.sunnerId === row.sender.id,
+      // Narrowed by comparison, never cast — an unexpected value degrades to "plain", rendered as raw text.
+      messageFormat: row.message_format === "doc" ? "doc" : "plain",
+      anonymousSenderLabel,
+    };
+  });
 
   const hashtagOptions: FilterOptionView[] = filterOptions.hashtags.map((h) => ({
     id: h.id,

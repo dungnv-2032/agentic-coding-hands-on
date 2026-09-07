@@ -91,28 +91,37 @@ export type Database = {
       }
       kudos: {
         Row: {
+          anonymous_name: string | null
           campaign: string | null
           heart_baseline: number
           id: number
+          is_anonymous: boolean
           message: string
+          message_format: string
           receiver_id: number
           sender_id: number
           sent_at: string
         }
         Insert: {
+          anonymous_name?: string | null
           campaign?: string | null
           heart_baseline?: number
           id?: never
+          is_anonymous?: boolean
           message: string
+          message_format?: string
           receiver_id: number
           sender_id: number
           sent_at: string
         }
         Update: {
+          anonymous_name?: string | null
           campaign?: string | null
           heart_baseline?: number
           id?: never
+          is_anonymous?: boolean
           message?: string
+          message_format?: string
           receiver_id?: number
           sender_id?: number
           sent_at?: string
@@ -307,7 +316,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_kudos: {
+        Args: {
+          p_anonymous_name: string
+          p_campaign: string
+          p_hashtag_ids: number[]
+          p_image_urls: string[]
+          p_is_anonymous: boolean
+          p_message: string
+          p_message_format: string
+          p_receiver_id: number
+        }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

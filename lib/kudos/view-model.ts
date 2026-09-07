@@ -7,10 +7,20 @@
  * `app/kudos/page.tsx`. Neither track imports the other — this file is the
  * only thing both sides depend on.
  *
+ * `MessageFormat` is imported as a type only from the frozen
+ * `compose-contract.ts` (phase 01) — no runtime dependency crosses in.
+ *
  * A missing field here is escalated to the orchestrator, which amends this
  * phase's contract once and notifies both tracks — never patched
  * unilaterally inside a track (plan.md § Risk Assessment).
+ *
+ * Phase 04 (Viết Kudo) adds `messageFormat` and `anonymousSenderLabel` to
+ * `KudosCardView`, additively — every existing field keeps its meaning, so
+ * F004's shipped card and its e2e suite are unaffected until phase 05 reads
+ * the new fields.
  */
+
+import type { MessageFormat } from "@/lib/kudos/compose-contract";
 
 export type BadgeTier = "New Hero" | "Rising Hero" | "Super Hero" | "Legend Hero";
 
@@ -43,6 +53,10 @@ export interface KudosCardView {
   likedByViewer: boolean;
   canLike: boolean;
   isOwnedByViewer: boolean;
+  /** `'doc'` selects the rich-text renderer (phase 05); `'plain'` keeps F004's raw-text rendering. */
+  messageFormat: MessageFormat;
+  /** Non-null ⇒ the card renders the anonymous chip with this label instead of `sender`. */
+  anonymousSenderLabel: string | null;
 }
 
 export interface FilterOptionView {

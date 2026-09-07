@@ -37,6 +37,9 @@ export interface KudosFeedRow {
   message: string;
   sent_at: string;
   heart_baseline: number;
+  message_format: string;
+  is_anonymous: boolean;
+  anonymous_name: string | null;
   sender: SunnerEmbed;
   receiver: SunnerEmbed;
   hashtags: { position: number; hashtag: { name: string } | null }[];
@@ -49,7 +52,7 @@ export async function fetchKudos(supabase: SupabaseClient<Database>): Promise<Ku
   const { data, error } = await supabase
     .from("kudos")
     .select(
-      `id, campaign, message, sent_at, heart_baseline,
+      `id, campaign, message, sent_at, heart_baseline, message_format, is_anonymous, anonymous_name,
        sender:sunners!kudos_sender_id_fkey(id, full_name, avatar_url, kudos_received_baseline, department:departments(name)),
        receiver:sunners!kudos_receiver_id_fkey(id, full_name, avatar_url, kudos_received_baseline, department:departments(name)),
        hashtags:kudos_hashtags(position, hashtag:hashtags(name)),
