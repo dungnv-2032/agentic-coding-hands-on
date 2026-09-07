@@ -58,3 +58,12 @@ next-env.d.ts
 .claude/hooks/.logs/
 **/__pycache__/
 *.pyc
+
+# Takumi kit: the kit itself is committed so the team shares the same agents,
+# skills and rules. These three are per-machine state, not project content:
+#   *.bak          — local backups the installer leaves when it rewrites settings
+#   agent-memory/  — notes individual agents save for themselves across sessions
+#   session-state/ — transient per-session scratch state
+.claude/settings.json.*.bak
+.claude/agent-memory/
+.claude/session-state/
