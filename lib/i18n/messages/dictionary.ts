@@ -9,6 +9,7 @@
  */
 
 import type { AwardUnitKey } from "../../award-system";
+import type { ComposeFieldErrorCode } from "../../kudos/compose-contract";
 
 /**
  * The six award categories, in the design's fixed order. A string-literal
@@ -186,5 +187,79 @@ export interface Dictionary {
       giftEmpty: string;
     };
     toast: { copySuccess: string; copyFailure: string };
+  };
+  /**
+   * Viết Kudo compose screen copy (F005, screen `ihQ26W78P2`, `/kudos/new`).
+   * Hashtag names, recipient names and any other DB-sourced values are data
+   * (from the `hashtags`/`sunners` tables), never copy — this namespace
+   * holds only static UI text.
+   *
+   * `errors` is keyed by `ComposeFieldErrorCode`
+   * (`lib/kudos/compose-contract.ts`, frozen) rather than by field, so
+   * `Không được để trống` is written once and reused by all four required
+   * fields (recipient/title/body/hashtag) instead of four separate copies
+   * of the same literal.
+   */
+  kudosCompose: {
+    /** The page's only `<h1>`. */
+    title: string;
+    /** The four fields the frame gives their own label + `*`. */
+    labels: {
+      recipient: string;
+      title: string;
+      body: string;
+      hashtag: string;
+      image: string;
+    };
+    placeholders: {
+      recipient: string;
+      title: string;
+      body: string;
+      /** Unauthored — the reveal-on-check name field has no design source. */
+      anonymousName: string;
+    };
+    hints: {
+      titleLine1: string;
+      titleLine2: string;
+      body: string;
+    };
+    buttons: {
+      addHashtag: string;
+      addImage: string;
+      max: string;
+      /** Also reused by `linkDialog`'s cancel action — same word, one key. */
+      cancel: string;
+      submit: string;
+    };
+    /** Rich-text toolbar button accessible names. */
+    toolbar: {
+      bold: string;
+      italic: string;
+      strike: string;
+      orderedList: string;
+      link: string;
+      quote: string;
+    };
+    /** Unauthored — no design source names this dialog's contents. */
+    linkDialog: {
+      heading: string;
+      urlLabel: string;
+      confirm: string;
+    };
+    errors: Record<ComposeFieldErrorCode, string>;
+    /** The `recipient-empty` text. */
+    recipientEmpty: string;
+    /** Unauthored (test-contract.md ratification item 6) — ships anyway. */
+    communityStandards: string;
+    anonymousCheckboxLabel: string;
+    /** Unauthored — the reveal-on-check name field's own label. */
+    anonymousNameLabel: string;
+    /** The loading/pending state shown after pressing Gửi. */
+    submitPending: string;
+    /**
+     * Live Board card fallback for an anonymous sender whose display name
+     * was left blank (phase 04 consumes this).
+     */
+    anonymousFallbackName: string;
   };
 }

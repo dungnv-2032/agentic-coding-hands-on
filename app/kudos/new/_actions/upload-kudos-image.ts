@@ -18,7 +18,11 @@
  */
 
 import type { ComposeFieldErrorCode, UploadResult } from "@/lib/kudos/compose-contract";
-import { isAcceptedImageType } from "@/lib/kudos/validate-compose";
+import {
+  IMAGE_SIGNATURE_SNIFF_LENGTH,
+  isAcceptedImageType,
+  matchesImageSignature,
+} from "@/lib/kudos/validate-compose";
 import { createClient } from "@/lib/supabase/server";
 
 const BUCKET = "kudos-attachments";
@@ -31,7 +35,13 @@ const EXTENSION_BY_MIME: Record<string, string> = {
   "image/webp": "webp",
 };
 
-export class UploadKudosImageError extends Error {
+// Not exported: a "use server" file may only export async functions
+// (Next.js 16 Server Function convention); nothing outside this file
+// imports this class (`grep -rn "UploadKudosImageError"` confirms), so
+// dropping the export is a build-error repair, not a contract change —
+// `uploadKudosImage`'s signature and throw-to-signal-failure behavior
+// (Wave-2 ruling #3, test-contract.md) are unchanged.
+class UploadKudosImageError extends Error {
   constructor(public readonly code: ComposeFieldErrorCode) {
     super(`uploadKudosImage failed: ${code}`);
     this.name = "UploadKudosImageError";
@@ -53,6 +63,15 @@ export async function uploadKudosImage(file: File): Promise<UploadResult> {
   // where the client cannot skip it, regardless of what the picker already
   // filtered.
   if (!(file instanceof File) || !isAcceptedImageType(file.type)) {
+    throw new UploadKudosImageError("invalidType");
+  }
+
+  // The declared-type check above is a cheap first gate only — `file.type`
+  // is caller-declared and an attacker can label arbitrary bytes
+  // `image/jpeg`. Sniff the actual leading bytes before anything is written
+  // to the public `kudos-attachments` bucket.
+  const header = new Uint8Array(await file.slice(0, IMAGE_SIGNATURE_SNIFF_LENGTH).arrayBuffer());
+  if (!matchesImageSignature(file.type, header)) {
     throw new UploadKudosImageError("invalidType");
   }
 

@@ -2,6 +2,7 @@ import type { Dictionary } from "./dictionary";
 import { viAwardSystem } from "./vi-award-system";
 import { viHome } from "./vi-home";
 import { viKudos } from "./vi-kudos";
+import { viKudosCompose } from "./vi-kudos-compose";
 
 export type { Dictionary };
 
@@ -49,4 +50,5 @@ export const vi: Dictionary = {
     body: "Nội dung đang được cập nhật. Vui lòng quay lại sau.",
   },
   kudos: viKudos,
+  kudosCompose: viKudosCompose,
 };

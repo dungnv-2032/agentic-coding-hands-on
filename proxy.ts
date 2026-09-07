@@ -5,12 +5,18 @@ import { updateSession } from "@/lib/supabase/update-session";
  * Next.js 16 renamed the `middleware` convention to `proxy`.
  * See node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/proxy.md
  *
- * Refreshes the Supabase session on every request, then guards two explicit
+ * Refreshes the Supabase session on every request, then guards explicit
  * route prefixes (FR-101/FR-602, FR-102): unauthenticated visitors are bounced
  * off `/todo` to `/login`, and authenticated sessions are bounced off `/login`
  * to `/todo`. Everything else — `/`, `/auth/callback` in particular — falls
  * through untouched: guarding the OAuth callback would make the round-trip
  * structurally impossible (clarifications.md, plan risk R2).
+ *
+ * `/kudos/new` (Viết Kudo, ID-1) is guarded the same way — writing a Kudos
+ * needs an identity — but the match is exact-path-or-subpath, never a bare
+ * `startsWith("/kudos")`: the rest of the Kudos surface (`/kudos`,
+ * `/kudos/[id]`, `/kudos/secret-box`) is a ratified F004 public read path and
+ * must stay reachable without a session (test-contract.md § Route and access).
  */
 export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
@@ -38,7 +44,9 @@ export async function proxy(request: NextRequest) {
     return redirectResponse;
   };
 
-  if (!user && pathname.startsWith("/todo")) {
+  const isGuarded =
+    pathname.startsWith("/todo") || pathname === "/kudos/new" || pathname.startsWith("/kudos/new/");
+  if (!user && isGuarded) {
     return redirectWithSessionCookies("/login");
   }
   if (user && pathname.startsWith("/login")) {
