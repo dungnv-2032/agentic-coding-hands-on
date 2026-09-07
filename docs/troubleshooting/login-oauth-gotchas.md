@@ -84,3 +84,55 @@ có phiên nào test round-trip với Google thật** để xác nhận — bộ
 Supabase local, không đăng nhập Google thật (xem Assumption A1,
 `docs/features/F001_Login/technical-spec.md` § 5.2). Nếu sau này có phiên test với tài khoản Google
 thật mà đăng nhập không qua được ở bước exchange code, đây là chỗ đầu tiên nên nhìn lại.
+
+## 5. "Access blocked: Authorization Error" ở màn Google — credential còn là placeholder
+
+**Triệu chứng:** bấm "LOGIN With Google", trình duyệt nhảy sang Google rồi dựng màn
+`Access blocked: Authorization Error`. Không có lỗi nào trong log Next.js, không có request nào quay
+lại `/auth/callback`.
+
+**Nguyên nhân:** `.env` ở repo root đang giữ credential placeholder:
+
+```
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=local-placeholder.apps.googleusercontent.com
+SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=local-placeholder
+```
+
+Supabase CLI thay `env(...)` trong `supabase/config.toml` bằng đúng chuỗi này lúc `supabase start`, nên
+GoTrue đẩy người dùng sang Google với một `client_id` không tồn tại. Google không nói rõ lý do — nó chỉ
+chặn. Đây **không phải lỗi code**: `app/login/actions.ts`, `app/auth/callback/route.ts` và
+`site_url`/`additional_redirect_urls` đều đúng.
+
+**Chẩn đoán trong 5 giây** — không cần mở trình duyệt, hỏi thẳng GoTrue nó đang gửi `client_id` nào:
+
+```bash
+curl -s -i "http://127.0.0.1:54321/auth/v1/authorize?provider=google&redirect_to=http://127.0.0.1:3000/auth/callback" \
+  | grep -i '^location' | grep -oE 'client_id=[^&]*'
+```
+
+Ra `client_id=local-placeholder.apps.googleusercontent.com` là dính đúng lỗi này. Ra một client id thật
+(`<số>-<chuỗi>.apps.googleusercontent.com`) thì nguyên nhân nằm chỗ khác — đọc tiếp mục 1–4.
+
+**Cách sửa:**
+
+1. Google Cloud Console → APIs & Services → Credentials → Create credentials → OAuth client ID →
+   Application type **Web application**.
+2. Trong **Authorized redirect URIs**, thêm đúng URI của **Supabase**, không phải của Next.js:
+
+   ```
+   http://127.0.0.1:54321/auth/v1/callback
+   ```
+
+   Đây là chỗ hay sai nhất. Google gọi về GoTrue (cổng 54321), rồi GoTrue mới chuyển tiếp về
+   `http://127.0.0.1:3000/auth/callback` của app — cái sau khai trong `additional_redirect_urls` của
+   `supabase/config.toml`, **không** khai với Google. Khai nhầm cái sau sẽ ra `redirect_uri_mismatch`,
+   một lỗi khác hẳn lỗi ở trang này.
+3. Dán client id + secret thật vào `.env` ở repo root (file này gitignored — không phải `.env.local`,
+   vì `.env.local` chỉ Next.js đọc, còn `.env` mới là file Supabase CLI đọc).
+4. **Khởi động lại Supabase**: `npx supabase stop && npx supabase start`. Chỉ sửa `.env` là chưa đủ —
+   `env(...)` chỉ được thay lúc container khởi động, nên stack đang chạy vẫn giữ giá trị placeholder cũ.
+5. Chạy lại lệnh `curl` ở trên để xác nhận `client_id` đã đổi trước khi thử lại trên trình duyệt.
+
+**Vì sao repo để placeholder:** cố ý. Không có Google Cloud project nào gắn với repo này (Assumption A3,
+`plans/260904-1714-login-page-supabase-google-oauth/clarifications.md`), và bộ E2E seed session thẳng vào
+Supabase local nên không cần credential thật để chạy xanh — xem thêm mục 4 ở trên.
