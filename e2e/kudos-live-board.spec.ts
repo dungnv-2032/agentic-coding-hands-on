@@ -570,26 +570,20 @@ test.describe("Kudos Live Board screen — /kudos (anon)", () => {
     await expect(leaderboard.getByText(GIFT_LEADERBOARD_HEADING)).toBeVisible();
   });
 
-  // K-21 — placeholder routes resolve with ComingSoon, not 404.
-  test("K-21 — placeholder routes /kudos/new, /kudos/secret-box, /kudos/[id] render ComingSoon", async ({
+  // K-21 — placeholder routes /kudos/secret-box and /kudos/[id] render ComingSoon
+  // Note: /kudos/new is guarded as of phase-02 (requires authentication). Guard coverage moved to ID-1 (anon) and ID-0 (authed).
+  test("K-21 — placeholder routes /kudos/secret-box and /kudos/[id] render ComingSoon", async ({
     page,
   }) => {
-    // Test /kudos/new
-    let response = await page.goto("/kudos/new");
+    // Test /kudos/secret-box (public placeholder)
+    let response = await page.goto("/kudos/secret-box");
     expect(response?.status()).toBe(200);
-    expect(page.url()).toContain("/kudos/new");
+    expect(page.url()).toContain("/kudos/secret-box");
     // Assert ComingSoon is rendered (main with flex children)
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("main h1")).toBeVisible();
 
-    // Test /kudos/secret-box
-    response = await page.goto("/kudos/secret-box");
-    expect(response?.status()).toBe(200);
-    expect(page.url()).toContain("/kudos/secret-box");
-    await expect(page.locator("main")).toBeVisible();
-    await expect(page.locator("main h1")).toBeVisible();
-
-    // Test /kudos/[id] (e.g., /kudos/123)
+    // Test /kudos/[id] (e.g., /kudos/123 — public placeholder)
     response = await page.goto("/kudos/123");
     expect(response?.status()).toBe(200);
     expect(page.url()).toContain("/kudos/123");

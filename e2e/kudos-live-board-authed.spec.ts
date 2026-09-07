@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { execSync } from "child_process";
 import { ROUTE } from "./fixtures/kudos-constants";
 
 /**
@@ -15,11 +16,44 @@ import { ROUTE } from "./fixtures/kudos-constants";
 const kudosCard = (page: Page): Locator =>
   page.getByTestId("kudos-card");
 
+// The seed deliberately creates ZERO `kudos_likes` rows (F004 § seed: likes are
+// real per-viewer state, never seeded), so ANY row in that table is residue from
+// a test run. That is why cleanup can safely delete by kudos id alone.
+//
+// It must NOT filter by a user id: `e2e/auth.setup.ts` signs up a brand-new user
+// with a fresh uuid on every run, so a hardcoded uuid here would never match the
+// row this run actually created — the delete would quietly affect nothing and the
+// try/catch would swallow the miss, leaving a cleanup that only looks like it works.
+const FIRST_KUDO_ID = 1; // The first card in the seed data
+
+// Helper to clean up stray kudos_likes rows created by this test suite.
+// Used in afterEach to restore idempotence when a test fails mid-execution.
+function cleanupTestLikes() {
+  try {
+    const sql = `DELETE FROM kudos_likes WHERE kudos_id = ${FIRST_KUDO_ID};`;
+    execSync(
+      `docker exec supabase_db_my-app psql -U postgres -d postgres -c "${sql}"`,
+      { stdio: "pipe" }
+    );
+  } catch {
+    // Cleanup failure is non-fatal; log it but don't fail the test.
+    console.warn("K-25 afterEach cleanup failed (non-fatal)");
+  }
+}
+
 // ============================================================================
 // Authenticated tests — /kudos (kudos-authed project, reuses e2e/.auth/user.json)
 // ============================================================================
 
 test.describe("Kudos Live Board screen — /kudos (kudos-authed)", () => {
+  // Restore idempotence: clean up any stray kudos_likes rows if a test exits early.
+  // K-25 is the only test in this suite that mutates kudos_likes, and it reverts
+  // the mutation at the end. If it fails mid-execution, this cleanup ensures the
+  // next run starts from a clean state (kudos_likes = 0).
+  test.afterEach(() => {
+    cleanupTestLikes();
+  });
+
   // K-10 — heart toggle flips aria-pressed and moves count by 1 (authed viewer).
   test("K-10 — heart toggle flips aria-pressed and updates count by 1", async ({
     page,
@@ -64,6 +98,12 @@ test.describe("Kudos Live Board screen — /kudos (kudos-authed)", () => {
   // K-25 — heart persists: click, reload, aria-pressed + count hold new values; click again, reload, both return to originals.
   // PERSISTENCE PROOF: The reload assertions demonstrate real Supabase persistence, not client state.
   test("K-25 — heart persists across page reload", async ({ page }) => {
+    // Increase timeout for this test since it involves multiple server round trips
+    // (click, reload, click, reload). Under load with concurrent workers, the
+    // Postgres round trip can exceed the default 5s expect() timeout. This does
+    // not weaken the assertion — it just allows slow round trips to finish.
+    test.setTimeout(60000);
+
     await page.goto(ROUTE);
     await page.waitForLoadState("networkidle");
 

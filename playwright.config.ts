@@ -47,13 +47,23 @@ export default defineConfig({
     // Setup project — runs auth.setup.ts once before tests
     {
       name: "setup",
-      testMatch: /^((?!homepage).)*auth\.setup\.ts$/,
+      // Excludes the per-suite setups (homepage-auth.setup.ts, kudos-auth.setup.ts)
+      // so each runs only in its OWN setup project, not twice.
+      testMatch: /^((?!homepage)(?!kudos).)*auth\.setup\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
     // Homepage auth setup — creates independent session for homepage-authed tests
     {
       name: "homepage-auth-setup",
       testMatch: /homepage-auth\.setup\.ts$/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    // Kudos auth setup — independent session for the kudos-authed project, for the
+    // same reason homepage has one: authenticated.spec.ts's C9 signs out globally
+    // and revokes any session it shares.
+    {
+      name: "kudos-auth-setup",
+      testMatch: /kudos-auth\.setup\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
     // Unauthenticated tests (login screen, error paths, open-redirect, callback security, homepage)
@@ -77,16 +87,24 @@ export default defineConfig({
       },
       dependencies: ["setup"],
     },
-    // Kudos authenticated tests (heart toggle, persistence) — loads storageState from setup
-    // NOTE: kudos-live-board-authed.spec.ts only
+    // Kudos authenticated tests (heart toggle, persistence, compose screen) — loads storageState from setup
+    // NOTE: kudos-live-board-authed.spec.ts and viet-kudo.spec.ts
     {
       name: "kudos-authed",
-      testMatch: /kudos-live-board-authed\.spec\.ts/,
+      testMatch: /(kudos-live-board-authed|viet-kudo)\.spec\.ts/,
+      // 15s instead of the 5s default, scoped to THIS project only. These are
+      // the only tests that wait on a server-authoritative Postgres round trip
+      // (the heart toggle is deliberately not optimistic — see
+      // `kudos-card-actions.tsx`), and under multi-file contention that round
+      // trip can exceed 5s. Raising it globally would triple how long every
+      // failing assertion takes to fail everywhere else, which matters: a full
+      // RED run of the compose suite already takes ~25 minutes.
+      expect: { timeout: 15_000 },
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "e2e/.auth/user.json",
+        storageState: "e2e/.auth/kudos-user.json",
       },
-      dependencies: ["setup"],
+      dependencies: ["kudos-auth-setup"],
     },
     // Homepage authenticated tests — independent session, isolated from C9 sign-out
     {
