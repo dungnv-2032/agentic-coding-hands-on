@@ -1,10 +1,12 @@
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { KudosCardView, ToggleKudosLike } from "@/lib/kudos/view-model";
 
+import { AnonymousSenderChip } from "./anonymous-sender-chip";
 import { KudosAttachments } from "./kudos-attachments";
 import { KudosCardActions } from "./kudos-card-actions";
 import { KudosHashtagRow } from "./kudos-hashtag-row";
 import { IconPen, IconSend } from "./kudos-icons";
+import { KudosMessageBody } from "./kudos-message-body";
 import { SunnerChip } from "./sunner-chip";
 
 export type KudosCardVariant = "highlight" | "feed";
@@ -72,6 +74,10 @@ const BODY_CLAMP: Record<KudosCardVariant, string> = {
  * frame defines no layout there, so this is a documented conservative
  * trade-off, not a defect.
  *
+ * Phase 05 (F005): the sender slot is now conditional — an anonymous kudos
+ * (`card.anonymousSenderLabel !== null`) renders `AnonymousSenderChip`
+ * instead of `SunnerChip`, because A3 hides the giver, never the receiver.
+ *
  * Defect 2 (message justification) was investigated and NOT changed: the
  * frame's own message-body node (`I3127:21871;256:5156`, verified via
  * `get_node`/`query_component`, both highlight and feed instances) carries
@@ -116,7 +122,11 @@ export function KudosCard({
           `sunner-chip.tsx`) so the narrower highlight card fits without
           clipping the receiver. */}
       <div className="flex w-full min-w-0 flex-col items-center gap-6 min-[1360px]:flex-row min-[1360px]:items-start min-[1360px]:justify-between">
-        <SunnerChip sunner={card.sender} role="sender" />
+        {card.anonymousSenderLabel !== null ? (
+          <AnonymousSenderChip label={card.anonymousSenderLabel} />
+        ) : (
+          <SunnerChip sunner={card.sender} role="sender" />
+        )}
         {/* mm:256:5161 (C.3.2_Icon sent) */}
         <div className="flex shrink-0 items-center justify-center py-2 min-[1360px]:py-[46px]">
           {/* mm:256:5147 (MM_MEDIA_Send) */}
@@ -154,13 +164,11 @@ export function KudosCard({
         {/* mm:662:11382 (Frame 425 — message box); flattened
             rgba(255,234,158,0.4) over #FFF8E1 = #FFF2C6 (clarifications). */}
         <div className="w-full rounded-xl border border-[#FFEA9E] bg-[#FFF2C6] px-6 py-4">
-          {/* mm:256:5156 */}
-          <p
-            data-testid="kudos-body"
-            className={`text-justify text-xl leading-8 font-bold text-[#00101A] ${BODY_CLAMP[variant]}`}
-          >
-            {card.message}
-          </p>
+          <KudosMessageBody
+            message={card.message}
+            format={card.messageFormat}
+            clamp={BODY_CLAMP[variant]}
+          />
         </div>
 
         {variant === "feed" && <KudosAttachments attachments={card.attachments} />}

@@ -10,26 +10,14 @@
 
 import { badgeTierFor, badgeTooltipFor, formatSentAt } from "@/lib/kudos/derive";
 import type {
-  FilterOptionView,
-  GiftRowView,
-  KudosBoardViewModel,
-  KudosCardView,
-  SidebarCountsView,
-  SpotlightNodeView,
-  SpotlightTickerRowView,
-  SunnerView,
+  FilterOptionView, GiftRowView, KudosBoardViewModel, KudosCardView,
+  SidebarCountsView, SpotlightNodeView, SpotlightTickerRowView, SunnerView,
 } from "@/lib/kudos/view-model";
 import { createClient } from "@/lib/supabase/server";
 
 import {
-  fetchFilterOptions,
-  fetchGifts,
-  fetchKudos,
-  fetchSidebarBoxCounts,
-  fetchSpotlightEvents,
-  fetchSpotlightTotal,
-  fetchViewerLikes,
-  type KudosFeedRow,
+  fetchFilterOptions, fetchGifts, fetchKudos, fetchSidebarBoxCounts,
+  fetchSpotlightEvents, fetchSpotlightTotal, fetchViewerLikes, type KudosFeedRow,
 } from "./queries";
 import { resolveSidebarSunnerId, resolveViewer } from "./viewer";
 
