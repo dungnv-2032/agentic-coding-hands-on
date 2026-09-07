@@ -54,16 +54,18 @@ next-env.d.ts
 # root (see playwright.config.ts) — never committed, machine-specific binaries
 /.playwright-libs/
 
-# Agent toolkit runtime noise — the kit itself is installed locally, not vendored.
-.claude/hooks/.logs/
+# Python bytecode — the kit ships Python scripts, these are generated artefacts.
 **/__pycache__/
 *.pyc
 
-# Takumi kit: the kit itself is committed so the team shares the same agents,
-# skills and rules. These three are per-machine state, not project content:
-#   *.bak          — local backups the installer leaves when it rewrites settings
+# Takumi kit: the kit IS vendored — committed on purpose so everyone works from
+# the same agents, skills and rules rather than whatever each machine installed.
+# Only runtime noise and per-machine state stay out; none of it is project content:
+#   hooks/.logs/   — hook execution logs
+#   *.bak          — backups the installer leaves when it rewrites settings
 #   agent-memory/  — notes individual agents save for themselves across sessions
 #   session-state/ — transient per-session scratch state
+.claude/hooks/.logs/
 .claude/settings.json.*.bak
 .claude/agent-memory/
 .claude/session-state/
