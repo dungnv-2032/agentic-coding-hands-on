@@ -1,0 +1,1422 @@
+
+Running 62 tests using 2 workers
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788747309147-1068494-ssvud9@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.9s)
+  ✓   2 [anon] › e2e/route-guard.spec.ts:6:7 › Route Guards (anon project) › C6 [FR-101, FR-602, SC-001] — unauthenticated access to /todo redirects to /login (790ms)
+  ✘   4 [anon] › e2e/route-guard.spec.ts:21:7 › Route Guards (anon project) › ID-1 [Viết Kudo] — unauthenticated access to /kudos/new redirects to /login (636ms)
+  ✘   3 [kudos-authed] › e2e/viet-kudo.spec.ts:180:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-0 — authenticated user navigates to /kudos/new and form renders (6.3s)
+  ✘   5 [kudos-authed] › e2e/viet-kudo.spec.ts:191:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid (5.5s)
+  ✘   6 [kudos-authed] › e2e/viet-kudo.spec.ts:199:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-3 — fields render in correct order: recipient → title → body → hashtags → images → anonymous (5.4s)
+  ✘   7 [kudos-authed] › e2e/viet-kudo.spec.ts:234:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-4 — recipient input has placeholder 'Tìm kiếm' (5.5s)
+  ✘   8 [kudos-authed] › e2e/viet-kudo.spec.ts:245:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-5 — body editor has correct placeholder (5.6s)
+  ✘   9 [kudos-authed] › e2e/viet-kudo.spec.ts:254:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default (5.5s)
+  ✘  10 [kudos-authed] › e2e/viet-kudo.spec.ts:260:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-7 — recipient field shows error on empty submit (30.0s)
+  ✘  11 [kudos-authed] › e2e/viet-kudo.spec.ts:282:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-8 — recipient autocomplete filters by query (30.0s)
+  ✘  12 [kudos-authed] › e2e/viet-kudo.spec.ts:296:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-9 — recipient autocomplete shows empty state when no matches (30.0s)
+  ✘  13 [kudos-authed] › e2e/viet-kudo.spec.ts:313:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-10 — recipient autocomplete trims leading/trailing whitespace (30.0s)
+  ✘  14 [kudos-authed] › e2e/viet-kudo.spec.ts:329:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-11 — body field error on empty submit (30.0s)
+  ✘  15 [kudos-authed] › e2e/viet-kudo.spec.ts:353:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-12 — typing @ in body opens mention menu (30.0s)
+  ✘  16 [kudos-authed] › e2e/viet-kudo.spec.ts:367:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-13 — selecting mention inserts colleague name into body (30.0s)
+  ✘  17 [kudos-authed] › e2e/viet-kudo.spec.ts:385:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit (30.0s)
+  ✘  18 [kudos-authed] › e2e/viet-kudo.spec.ts:406:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-15 — add one hashtag successfully (30.0s)
+  ✘  19 [kudos-authed] › e2e/viet-kudo.spec.ts:422:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-16 — add 5 hashtags successfully (30.0s)
+  ✘  20 [kudos-authed] › e2e/viet-kudo.spec.ts:447:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added (30.0s)
+  ✘  21 [kudos-authed] › e2e/viet-kudo.spec.ts:484:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-18 — upload 3 images and button remains visible (30.0s)
+  ✘  22 [kudos-authed] › e2e/viet-kudo.spec.ts:506:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden (30.0s)
+  ✘  23 [kudos-authed] › e2e/viet-kudo.spec.ts:527:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-20 — at 5 images, button is hidden and 6th cannot be added (30.0s)
+  ✘  24 [kudos-authed] › e2e/viet-kudo.spec.ts:548:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-21 — .jpg image uploads successfully and shows thumbnail (30.0s)
+  ✘  25 [kudos-authed] › e2e/viet-kudo.spec.ts:563:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-22 — .png image uploads successfully and shows thumbnail (30.0s)
+  ✘  26 [kudos-authed] › e2e/viet-kudo.spec.ts:578:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-23 — .pdf file is rejected with format error (30.0s)
+  ✘  27 [kudos-authed] › e2e/viet-kudo.spec.ts:596:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-24 — .mp4 file is rejected with format error (30.0s)
+  ✘  28 [kudos-authed] › e2e/viet-kudo.spec.ts:614:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-25 — recipient search filters menu by query (30.0s)
+  ✘  29 [kudos-authed] › e2e/viet-kudo.spec.ts:626:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-26 — selecting recipient fills field and closes menu (30.0s)
+  ✘  30 [kudos-authed] › e2e/viet-kudo.spec.ts:646:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-27 — toolbar bold button has aria-pressed attribute (5.5s)
+  ✘  31 [kudos-authed] › e2e/viet-kudo.spec.ts:655:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-28 — toolbar italic button has aria-pressed attribute (5.4s)
+  ✘  32 [kudos-authed] › e2e/viet-kudo.spec.ts:664:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-29 — toolbar strikethrough button has aria-pressed attribute (5.5s)
+  ✘  33 [kudos-authed] › e2e/viet-kudo.spec.ts:673:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-30 — toolbar ordered list button present (5.5s)
+  ✘  34 [kudos-authed] › e2e/viet-kudo.spec.ts:680:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-31 — toolbar link button opens dialog with URL input (30.0s)
+  ✘  35 [kudos-authed] › e2e/viet-kudo.spec.ts:692:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-32 — toolbar quote button present (5.5s)
+  ✘  36 [kudos-authed] › e2e/viet-kudo.spec.ts:699:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-33 — typing @Nguyen filters mention menu (30.0s)
+  ✘  37 [kudos-authed] › e2e/viet-kudo.spec.ts:712:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-34 — add hashtag displays as removable chip (30.0s)
+  ✘  38 [kudos-authed] › e2e/viet-kudo.spec.ts:731:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips (30.0s)
+  ✘  39 [kudos-authed] › e2e/viet-kudo.spec.ts:750:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-36 — removing one hashtag chip leaves others intact (30.0s)
+  ✘  40 [kudos-authed] › e2e/viet-kudo.spec.ts:776:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-37 — clicking image add opens file picker and shows thumbnail (30.0s)
+  ✘  41 [kudos-authed] › e2e/viet-kudo.spec.ts:791:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-38 — uploading 5 images hides the add button (30.0s)
+  ✘  42 [kudos-authed] › e2e/viet-kudo.spec.ts:808:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact (30.0s)
+  ✘  43 [kudos-authed] › e2e/viet-kudo.spec.ts:832:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-40 — removing one image from 5 shows the add button again (30.0s)
+  ✘  44 [kudos-authed] › e2e/viet-kudo.spec.ts:856:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-41 — anonymous checkbox can be checked (5.5s)
+  ✘  45 [kudos-authed] › e2e/viet-kudo.spec.ts:867:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-42 — anonymous checkbox can be unchecked (30.0s)
+  ✘  46 [kudos-authed] › e2e/viet-kudo.spec.ts:879:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-43 — checking anonymous checkbox reveals name input field (30.0s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘  47 [kudos-authed] › e2e/viet-kudo.spec.ts:895:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-44 — unchecking anonymous checkbox hides name input field (30.0s)
+  ✘  48 [kudos-authed] › e2e/viet-kudo.spec.ts:912:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving (30.0s)
+  ✘  49 [kudos-authed] › e2e/viet-kudo.spec.ts:939:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-46/ID-47 — successful submission creates kudos and navigates to board (30.0s)
+  ✘  50 [kudos-authed] › e2e/viet-kudo.spec.ts:989:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-48 — submit button disabled when required fields empty (5.5s)
+  ✘  51 [kudos-authed] › e2e/viet-kudo.spec.ts:999:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-49 — submit button enabled when required fields filled (30.0s)
+  ✘  52 [kudos-authed] › e2e/viet-kudo.spec.ts:1021:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-50 — recipient field shows error with red border when empty (30.0s)
+  ✘  53 [kudos-authed] › e2e/viet-kudo.spec.ts:1044:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-51 — body field shows error when empty on submit (30.0s)
+  ✘  54 [kudos-authed] › e2e/viet-kudo.spec.ts:1069:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-52 — hashtag field shows error when empty on submit (30.0s)
+  ✘  55 [kudos-authed] › e2e/viet-kudo.spec.ts:1092:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-53 — attempting 6th hashtag shows max error (30.0s)
+  ✘  56 [kudos-authed] › e2e/viet-kudo.spec.ts:1127:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-54 — at 5 images, button hidden, no 6th can be added (30.0s)
+  ✘  57 [kudos-authed] › e2e/viet-kudo.spec.ts:1148:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-55 — .txt file rejected with format error (30.0s)
+  ✘  58 [kudos-authed] › e2e/viet-kudo.spec.ts:1164:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-56 — all required field errors show simultaneously (30.0s)
+  ✘  59 [kudos-authed] › e2e/viet-kudo.spec.ts:1183:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Title field: placeholder and hints present (5.5s)
+  ✘  60 [kudos-authed] › e2e/viet-kudo.spec.ts:1199:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Body field: hint present (5.6s)
+  ✘  61 [kudos-authed] › e2e/viet-kudo.spec.ts:1207:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present (5.4s)
+  ✘  62 [kudos-authed] › e2e/viet-kudo.spec.ts:1217:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Cancel and Submit buttons have correct labels (5.5s)
+
+
+  1) [anon] › e2e/route-guard.spec.ts:21:7 › Route Guards (anon project) › ID-1 [Viết Kudo] — unauthenticated access to /kudos/new redirects to /login 
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "/login"
+    Received string:    "http://127.0.0.1:3000/kudos/new"
+
+      25 |
+      26 |     // Should have been redirected to /login
+    > 27 |     expect(page.url()).toContain("/login");
+         |                        ^
+      28 |
+      29 |     // Login page should be visible
+      30 |     const loginButton = page.getByRole("button", { name: /LOGIN With Google/i });
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/route-guard.spec.ts:27:24
+
+    Error Context: test-results/route-guard-Route-Guards-a-82459-udos-new-redirects-to-login-anon/error-context.md
+
+  2) [kudos-authed] › e2e/viet-kudo.spec.ts:180:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-0 — authenticated user navigates to /kudos/new and form renders 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('heading', { level: 1 })
+    Expected: "Gửi lời cám ơn và ghi nhận đến đồng đội"
+    Received: "Coming soon"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveText" with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        14 × locator resolved to <h1 class="text-2xl font-bold text-white">Coming soon</h1>
+           - unexpected value "Coming soon"
+
+
+      185 |
+      186 |     await expect(h1(page)).toBeVisible();
+    > 187 |     await expect(h1(page)).toHaveText(PAGE_TITLE);
+          |                            ^
+      188 |   });
+      189 |
+      190 |   // ID-2 — page structure: form element with data-testid present
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:187:28
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-89492--kudos-new-and-form-renders-kudos-authed/error-context.md
+
+  3) [kudos-authed] › e2e/viet-kudo.spec.ts:191:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('compose-form')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('compose-form')
+
+
+      193 |   }) => {
+      194 |     await page.goto(ROUTE);
+    > 195 |     await expect(composeForm(page)).toBeVisible();
+          |                                     ^
+      196 |   });
+      197 |
+      198 |   // ID-3 — field order: recipient, title, body, hashtags, images, anonymous checkbox
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:195:37
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-e2a31-rk-present-with-data-testid-kudos-authed/error-context.md
+
+  4) [kudos-authed] › e2e/viet-kudo.spec.ts:199:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-3 — fields render in correct order: recipient → title → body → hashtags → images → anonymous 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('recipient-input')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('recipient-input')
+
+
+      209 |     const anonymous = anonymousCheckbox(page);
+      210 |
+    > 211 |     await expect(recipient).toBeVisible();
+          |                             ^
+      212 |     await expect(title).toBeVisible();
+      213 |     await expect(body).toBeVisible();
+      214 |     await expect(hashtags).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:211:29
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-03484-shtags-→-images-→-anonymous-kudos-authed/error-context.md
+
+  5) [kudos-authed] › e2e/viet-kudo.spec.ts:234:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-4 — recipient input has placeholder 'Tìm kiếm' 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByTestId('recipient-input')
+    Expected: "Tìm kiếm"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for getByTestId('recipient-input')
+
+
+      236 |   }) => {
+      237 |     await page.goto(ROUTE);
+    > 238 |     await expect(recipientInput(page)).toHaveAttribute(
+          |                                        ^
+      239 |       "placeholder",
+      240 |       RECIPIENT_PLACEHOLDER,
+      241 |     );
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:238:40
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-a019d-t-has-placeholder-Tìm-kiếm--kudos-authed/error-context.md
+
+  6) [kudos-authed] › e2e/viet-kudo.spec.ts:245:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-5 — body editor has correct placeholder 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByTestId('body-editor')
+    Expected: "Hãy gửi gắm lời cám ơn và ghi nhận đến đồng đội tại đây nhé!"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for getByTestId('body-editor')
+
+
+      245 |   test("ID-5 — body editor has correct placeholder", async ({ page }) => {
+      246 |     await page.goto(ROUTE);
+    > 247 |     await expect(bodyEditor(page)).toHaveAttribute(
+          |                                    ^
+      248 |       "placeholder",
+      249 |       BODY_PLACEHOLDER,
+      250 |     );
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:247:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-d17a4-tor-has-correct-placeholder-kudos-authed/error-context.md
+
+  7) [kudos-authed] › e2e/viet-kudo.spec.ts:254:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default 
+
+    Error: expect(locator).not.toBeChecked() failed
+
+    Locator: getByTestId('anonymous-checkbox')
+    Expected: not checked
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "not toBeChecked" with timeout 5000ms
+      - waiting for getByTestId('anonymous-checkbox')
+
+
+      254 |   test("ID-6 — anonymous checkbox unchecked by default", async ({ page }) => {
+      255 |     await page.goto(ROUTE);
+    > 256 |     await expect(anonymousCheckbox(page)).not.toBeChecked();
+          |                                               ^
+      257 |   });
+      258 |
+      259 |   // ID-7 — recipient field shows red border and error on empty submit
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:256:47
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-401b0-eckbox-unchecked-by-default-kudos-authed/error-context.md
+
+  8) [kudos-authed] › e2e/viet-kudo.spec.ts:260:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-7 — recipient field shows error on empty submit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('title-input')
+
+
+      264 |
+      265 |     // Fill other required fields
+    > 266 |     await titleInput(page).fill(TEST_TITLE);
+          |                            ^
+      267 |     await bodyEditor(page).fill(TEST_BODY);
+      268 |     await hashtagAddButton(page).click();
+      269 |     const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:266:28
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-0d48a-shows-error-on-empty-submit-kudos-authed/error-context.md
+
+  9) [kudos-authed] › e2e/viet-kudo.spec.ts:282:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-8 — recipient autocomplete filters by query 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      283 |     await page.goto(ROUTE);
+      284 |
+    > 285 |     await recipientInput(page).fill("Nguyễn");
+          |                                ^
+      286 |
+      287 |     // Menu should appear
+      288 |     await expect(recipientMenu(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:285:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-4d2f9-tocomplete-filters-by-query-kudos-authed/error-context.md
+
+  10) [kudos-authed] › e2e/viet-kudo.spec.ts:296:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-9 — recipient autocomplete shows empty state when no matches 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      299 |     await page.goto(ROUTE);
+      300 |
+    > 301 |     await recipientInput(page).fill("@#$%^&");
+          |                                ^
+      302 |
+      303 |     // Menu should appear but be empty (or show empty-state text)
+      304 |     await expect(recipientMenu(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:301:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-bc3f3-empty-state-when-no-matches-kudos-authed/error-context.md
+
+  11) [kudos-authed] › e2e/viet-kudo.spec.ts:313:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-10 — recipient autocomplete trims leading/trailing whitespace 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      316 |     await page.goto(ROUTE);
+      317 |
+    > 318 |     await recipientInput(page).fill("  Nguyễn  ");
+          |                                ^
+      319 |
+      320 |     // Menu should appear and filter correctly (trim happens server-side or client-side)
+      321 |     await expect(recipientMenu(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:318:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-7c4c5-leading-trailing-whitespace-kudos-authed/error-context.md
+
+  12) [kudos-authed] › e2e/viet-kudo.spec.ts:329:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-11 — body field error on empty submit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      331 |
+      332 |     // Fill recipient and title and hashtag
+    > 333 |     await recipientInput(page).fill("Nguyễn");
+          |                                ^
+      334 |     await recipientMenu(page).waitFor({ state: "visible" });
+      335 |     await recipientOption(page).first().click();
+      336 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:333:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-428e6-field-error-on-empty-submit-kudos-authed/error-context.md
+
+  13) [kudos-authed] › e2e/viet-kudo.spec.ts:353:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-12 — typing @ in body opens mention menu 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('body-editor')
+
+
+      355 |
+      356 |     // Focus body and type @
+    > 357 |     await bodyEditor(page).fill("Cảm ơn @");
+          |                            ^
+      358 |
+      359 |     // Menu should appear
+      360 |     await expect(mentionMenu(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:357:28
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-86814--in-body-opens-mention-menu-kudos-authed/error-context.md
+
+  14) [kudos-authed] › e2e/viet-kudo.spec.ts:367:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-13 — selecting mention inserts colleague name into body 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('body-editor')
+
+
+      371 |
+      372 |     // Type @ to open mention menu
+    > 373 |     await bodyEditor(page).fill("Cảm ơn @");
+          |                            ^
+      374 |     await expect(mentionMenu(page)).toBeVisible();
+      375 |
+      376 |     // Click first option
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:373:28
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-b99d0-ts-colleague-name-into-body-kudos-authed/error-context.md
+
+  15) [kudos-authed] › e2e/viet-kudo.spec.ts:385:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      387 |
+      388 |     // Fill recipient, title, body
+    > 389 |     await recipientInput(page).fill("Nguyễn");
+          |                                ^
+      390 |     await recipientMenu(page).waitFor({ state: "visible" });
+      391 |     await recipientOption(page).first().click();
+      392 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:389:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-83e11--error-when-empty-on-submit-kudos-authed/error-context.md
+
+  16) [kudos-authed] › e2e/viet-kudo.spec.ts:406:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-15 — add one hashtag successfully 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      408 |
+      409 |     // Add hashtag via menu
+    > 410 |     await hashtagAddButton(page).click();
+          |                                  ^
+      411 |     await expect(hashtagMenu(page)).toBeVisible();
+      412 |
+      413 |     const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:410:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-70b97-dd-one-hashtag-successfully-kudos-authed/error-context.md
+
+  17) [kudos-authed] › e2e/viet-kudo.spec.ts:422:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-16 — add 5 hashtags successfully 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      432 |
+      433 |     for (const tag of tags) {
+    > 434 |       await hashtagAddButton(page).click();
+          |                                    ^
+      435 |       await expect(hashtagMenu(page)).toBeVisible();
+      436 |
+      437 |       const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:434:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-1d993-add-5-hashtags-successfully-kudos-authed/error-context.md
+
+  18) [kudos-authed] › e2e/viet-kudo.spec.ts:447:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      460 |     // Add 5 tags first
+      461 |     for (const tag of tags) {
+    > 462 |       await hashtagAddButton(page).click();
+          |                                    ^
+      463 |       await expect(hashtagMenu(page)).toBeVisible();
+      464 |       const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+      465 |       await hashtagOptions.locator(`text=${tag}`).click();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:462:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-1960f-hows-error-and-is-not-added-kudos-authed/error-context.md
+
+  19) [kudos-authed] › e2e/viet-kudo.spec.ts:484:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-18 — upload 3 images and button remains visible 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add') to be visible
+
+
+      492 |     // Add 3 images
+      493 |     for (let i = 0; i < 3; i++) {
+    > 494 |       await imageAddButton(page).waitFor({ state: "visible" });
+          |                                  ^
+      495 |       await imageInput(page).setInputFiles(imagePath);
+      496 |     }
+      497 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:494:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-69641--and-button-remains-visible-kudos-authed/error-context.md
+
+  20) [kudos-authed] › e2e/viet-kudo.spec.ts:506:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add') to be visible
+
+
+      513 |     // Add 5 images
+      514 |     for (let i = 0; i < 5; i++) {
+    > 515 |       await imageAddButton(page).waitFor({ state: "visible" });
+          |                                  ^
+      516 |       await imageInput(page).setInputFiles(imagePath);
+      517 |     }
+      518 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:515:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-8d314-s-and-button-becomes-hidden-kudos-authed/error-context.md
+
+  21) [kudos-authed] › e2e/viet-kudo.spec.ts:527:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-20 — at 5 images, button is hidden and 6th cannot be added 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add') to be visible
+
+
+      534 |     // Add 5 images
+      535 |     for (let i = 0; i < 5; i++) {
+    > 536 |       await imageAddButton(page).waitFor({ state: "visible" });
+          |                                  ^
+      537 |       await imageInput(page).setInputFiles(imagePath);
+      538 |     }
+      539 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:536:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-a8fc3-den-and-6th-cannot-be-added-kudos-authed/error-context.md
+
+  22) [kudos-authed] › e2e/viet-kudo.spec.ts:548:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-21 — .jpg image uploads successfully and shows thumbnail 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      553 |     const imagePath = "./e2e/fixtures/test-image.jpg";
+      554 |
+    > 555 |     await imageAddButton(page).click();
+          |                                ^
+      556 |     await imageInput(page).setInputFiles(imagePath);
+      557 |
+      558 |     // Thumbnail should appear
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:555:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-de5ce-ssfully-and-shows-thumbnail-kudos-authed/error-context.md
+
+  23) [kudos-authed] › e2e/viet-kudo.spec.ts:563:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-22 — .png image uploads successfully and shows thumbnail 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      568 |     const imagePath = "./e2e/fixtures/test-image.png";
+      569 |
+    > 570 |     await imageAddButton(page).click();
+          |                                ^
+      571 |     await imageInput(page).setInputFiles(imagePath);
+      572 |
+      573 |     // Thumbnail should appear
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:570:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-cb063-ssfully-and-shows-thumbnail-kudos-authed/error-context.md
+
+  24) [kudos-authed] › e2e/viet-kudo.spec.ts:578:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-23 — .pdf file is rejected with format error 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      583 |     const pdfPath = "./e2e/fixtures/test-file.pdf";
+      584 |
+    > 585 |     await imageAddButton(page).click();
+          |                                ^
+      586 |     await imageInput(page).setInputFiles(pdfPath);
+      587 |
+      588 |     // Error should appear
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:585:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-e1a09--rejected-with-format-error-kudos-authed/error-context.md
+
+  25) [kudos-authed] › e2e/viet-kudo.spec.ts:596:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-24 — .mp4 file is rejected with format error 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      601 |     const videoPath = "./e2e/fixtures/test-video.mp4";
+      602 |
+    > 603 |     await imageAddButton(page).click();
+          |                                ^
+      604 |     await imageInput(page).setInputFiles(videoPath);
+      605 |
+      606 |     // Error should appear
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:603:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-aa4a1--rejected-with-format-error-kudos-authed/error-context.md
+
+  26) [kudos-authed] › e2e/viet-kudo.spec.ts:614:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-25 — recipient search filters menu by query 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      615 |     await page.goto(ROUTE);
+      616 |
+    > 617 |     await recipientInput(page).fill("An");
+          |                                ^
+      618 |
+      619 |     await expect(recipientMenu(page)).toBeVisible();
+      620 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:617:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-5c7a5-earch-filters-menu-by-query-kudos-authed/error-context.md
+
+  27) [kudos-authed] › e2e/viet-kudo.spec.ts:626:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-26 — selecting recipient fills field and closes menu 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      629 |     await page.goto(ROUTE);
+      630 |
+    > 631 |     await recipientInput(page).fill("Nguyễn");
+          |                                ^
+      632 |     await expect(recipientMenu(page)).toBeVisible();
+      633 |
+      634 |     // Click first option
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:631:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-6b4e8-fills-field-and-closes-menu-kudos-authed/error-context.md
+
+  28) [kudos-authed] › e2e/viet-kudo.spec.ts:646:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-27 — toolbar bold button has aria-pressed attribute 
+
+    Error: expect(locator).toHaveAttribute() failed
+
+    Locator: getByTestId('toolbar-bold')
+    Expected: have attribute
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for getByTestId('toolbar-bold')
+
+
+      649 |     await page.goto(ROUTE);
+      650 |
+    > 651 |     await expect(toolbarBold(page)).toHaveAttribute("aria-pressed");
+          |                                     ^
+      652 |   });
+      653 |
+      654 |   // ID-28 — toolbar italic button carries aria-pressed
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:651:37
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-b1e6f--has-aria-pressed-attribute-kudos-authed/error-context.md
+
+  29) [kudos-authed] › e2e/viet-kudo.spec.ts:655:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-28 — toolbar italic button has aria-pressed attribute 
+
+    Error: expect(locator).toHaveAttribute() failed
+
+    Locator: getByTestId('toolbar-italic')
+    Expected: have attribute
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for getByTestId('toolbar-italic')
+
+
+      658 |     await page.goto(ROUTE);
+      659 |
+    > 660 |     await expect(toolbarItalic(page)).toHaveAttribute("aria-pressed");
+          |                                       ^
+      661 |   });
+      662 |
+      663 |   // ID-29 — toolbar strikethrough button carries aria-pressed
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:660:39
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-5c954--has-aria-pressed-attribute-kudos-authed/error-context.md
+
+  30) [kudos-authed] › e2e/viet-kudo.spec.ts:664:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-29 — toolbar strikethrough button has aria-pressed attribute 
+
+    Error: expect(locator).toHaveAttribute() failed
+
+    Locator: getByTestId('toolbar-strike')
+    Expected: have attribute
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for getByTestId('toolbar-strike')
+
+
+      667 |     await page.goto(ROUTE);
+      668 |
+    > 669 |     await expect(toolbarStrike(page)).toHaveAttribute("aria-pressed");
+          |                                       ^
+      670 |   });
+      671 |
+      672 |   // ID-30 — toolbar ordered list button present
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:669:39
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-ba6cb--has-aria-pressed-attribute-kudos-authed/error-context.md
+
+  31) [kudos-authed] › e2e/viet-kudo.spec.ts:673:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-30 — toolbar ordered list button present 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('toolbar-ordered-list')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('toolbar-ordered-list')
+
+
+      674 |     await page.goto(ROUTE);
+      675 |
+    > 676 |     await expect(toolbarOrderedList(page)).toBeVisible();
+          |                                            ^
+      677 |   });
+      678 |
+      679 |   // ID-31 — toolbar link button opens link-dialog
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:676:44
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-80cbb-ordered-list-button-present-kudos-authed/error-context.md
+
+  32) [kudos-authed] › e2e/viet-kudo.spec.ts:680:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-31 — toolbar link button opens dialog with URL input 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('toolbar-link')
+
+
+      683 |     await page.goto(ROUTE);
+      684 |
+    > 685 |     await toolbarLink(page).click();
+          |                             ^
+      686 |
+      687 |     await expect(linkDialog(page)).toBeVisible();
+      688 |     await expect(linkUrlInput(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:685:29
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-f768d-opens-dialog-with-URL-input-kudos-authed/error-context.md
+
+  33) [kudos-authed] › e2e/viet-kudo.spec.ts:692:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-32 — toolbar quote button present 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('toolbar-quote')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('toolbar-quote')
+
+
+      693 |     await page.goto(ROUTE);
+      694 |
+    > 695 |     await expect(toolbarQuote(page)).toBeVisible();
+          |                                      ^
+      696 |   });
+      697 |
+      698 |   // ID-33 — mentions: typing @Name filters mention menu
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:695:38
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-70ab8-oolbar-quote-button-present-kudos-authed/error-context.md
+
+  34) [kudos-authed] › e2e/viet-kudo.spec.ts:699:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-33 — typing @Nguyen filters mention menu 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('body-editor')
+
+
+      700 |     await page.goto(ROUTE);
+      701 |
+    > 702 |     await bodyEditor(page).fill("Cảm ơn @Nguyen");
+          |                            ^
+      703 |
+      704 |     await expect(mentionMenu(page)).toBeVisible();
+      705 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:702:28
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-3b9a4-Nguyen-filters-mention-menu-kudos-authed/error-context.md
+
+  35) [kudos-authed] › e2e/viet-kudo.spec.ts:712:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-34 — add hashtag displays as removable chip 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      713 |     await page.goto(ROUTE);
+      714 |
+    > 715 |     await hashtagAddButton(page).click();
+          |                                  ^
+      716 |     await expect(hashtagMenu(page)).toBeVisible();
+      717 |
+      718 |     const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:715:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-3a315--displays-as-removable-chip-kudos-authed/error-context.md
+
+  36) [kudos-authed] › e2e/viet-kudo.spec.ts:731:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      737 |
+      738 |     for (const tag of tags) {
+    > 739 |       await hashtagAddButton(page).click();
+          |                                    ^
+      740 |       await expect(hashtagMenu(page)).toBeVisible();
+      741 |       const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+      742 |       await hashtagOptions.locator(`text=${tag}`).click();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:739:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-06c31-display-as-3-separate-chips-kudos-authed/error-context.md
+
+  37) [kudos-authed] › e2e/viet-kudo.spec.ts:750:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-36 — removing one hashtag chip leaves others intact 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      756 |
+      757 |     for (const tag of tags) {
+    > 758 |       await hashtagAddButton(page).click();
+          |                                    ^
+      759 |       await expect(hashtagMenu(page)).toBeVisible();
+      760 |       const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+      761 |       await hashtagOptions.locator(`text=${tag}`).click();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:758:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-62869-g-chip-leaves-others-intact-kudos-authed/error-context.md
+
+  38) [kudos-authed] › e2e/viet-kudo.spec.ts:776:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-37 — clicking image add opens file picker and shows thumbnail 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      781 |     const imagePath = "./e2e/fixtures/test-image.jpg";
+      782 |
+    > 783 |     await imageAddButton(page).click();
+          |                                ^
+      784 |     await imageInput(page).setInputFiles(imagePath);
+      785 |
+      786 |     // Thumbnail should appear
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:783:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-4dd00--picker-and-shows-thumbnail-kudos-authed/error-context.md
+
+  39) [kudos-authed] › e2e/viet-kudo.spec.ts:791:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-38 — uploading 5 images hides the add button 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add') to be visible
+
+
+      797 |
+      798 |     for (let i = 0; i < 5; i++) {
+    > 799 |       await imageAddButton(page).waitFor({ state: "visible" });
+          |                                  ^
+      800 |       await imageInput(page).setInputFiles(imagePath);
+      801 |     }
+      802 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:799:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-20043-images-hides-the-add-button-kudos-authed/error-context.md
+
+  40) [kudos-authed] › e2e/viet-kudo.spec.ts:808:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      815 |     // Add 3 images
+      816 |     for (let i = 0; i < 3; i++) {
+    > 817 |       await imageAddButton(page).click();
+          |                                  ^
+      818 |       await imageInput(page).setInputFiles(imagePath);
+      819 |     }
+      820 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:817:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-79a60--thumb-leaves-others-intact-kudos-authed/error-context.md
+
+  41) [kudos-authed] › e2e/viet-kudo.spec.ts:832:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-40 — removing one image from 5 shows the add button again 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add') to be visible
+
+
+      839 |     // Add 5 images
+      840 |     for (let i = 0; i < 5; i++) {
+    > 841 |       await imageAddButton(page).waitFor({ state: "visible" });
+          |                                  ^
+      842 |       await imageInput(page).setInputFiles(imagePath);
+      843 |     }
+      844 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:841:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-97534--shows-the-add-button-again-kudos-authed/error-context.md
+
+  42) [kudos-authed] › e2e/viet-kudo.spec.ts:856:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-41 — anonymous checkbox can be checked 
+
+    Error: expect(locator).not.toBeChecked() failed
+
+    Locator: getByTestId('anonymous-checkbox')
+    Expected: not checked
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "not toBeChecked" with timeout 5000ms
+      - waiting for getByTestId('anonymous-checkbox')
+
+
+      857 |     await page.goto(ROUTE);
+      858 |
+    > 859 |     await expect(anonymousCheckbox(page)).not.toBeChecked();
+          |                                               ^
+      860 |
+      861 |     await anonymousCheckbox(page).check();
+      862 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:859:47
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-c568d-ous-checkbox-can-be-checked-kudos-authed/error-context.md
+
+  43) [kudos-authed] › e2e/viet-kudo.spec.ts:867:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-42 — anonymous checkbox can be unchecked 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('anonymous-checkbox')
+
+
+      868 |     await page.goto(ROUTE);
+      869 |
+    > 870 |     await anonymousCheckbox(page).check();
+          |                                   ^
+      871 |     await expect(anonymousCheckbox(page)).toBeChecked();
+      872 |
+      873 |     await anonymousCheckbox(page).uncheck();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:870:35
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-06a1d-s-checkbox-can-be-unchecked-kudos-authed/error-context.md
+
+  44) [kudos-authed] › e2e/viet-kudo.spec.ts:879:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-43 — checking anonymous checkbox reveals name input field 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('anonymous-checkbox')
+
+
+      886 |
+      887 |     // Check the checkbox
+    > 888 |     await anonymousCheckbox(page).check();
+          |                                   ^
+      889 |
+      890 |     // Now visible
+      891 |     await expect(anonymousNameInput(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:888:35
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-cc00f-ox-reveals-name-input-field-kudos-authed/error-context.md
+
+  45) [kudos-authed] › e2e/viet-kudo.spec.ts:895:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-44 — unchecking anonymous checkbox hides name input field 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('anonymous-checkbox')
+
+
+      899 |
+      900 |     // Check first
+    > 901 |     await anonymousCheckbox(page).check();
+          |                                   ^
+      902 |     await expect(anonymousNameInput(page)).toBeVisible();
+      903 |
+      904 |     // Uncheck
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:901:35
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-ff8e0-kbox-hides-name-input-field-kudos-authed/error-context.md
+
+  46) [kudos-authed] › e2e/viet-kudo.spec.ts:912:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      916 |
+      917 |     // Fill some data
+    > 918 |     await recipientInput(page).fill("Nguyễn");
+          |                                ^
+      919 |     await recipientMenu(page).waitFor({ state: "visible" });
+      920 |     await recipientOption(page).first().click();
+      921 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:918:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-303b9-tes-to-kudos-without-saving-kudos-authed/error-context.md
+
+  47) [kudos-authed] › e2e/viet-kudo.spec.ts:939:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-46/ID-47 — successful submission creates kudos and navigates to board 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      943 |
+      944 |     // Fill all required fields
+    > 945 |     await recipientInput(page).fill("Nguyễn");
+          |                                ^
+      946 |     await recipientMenu(page).waitFor({ state: "visible" });
+      947 |     await recipientOption(page).first().click();
+      948 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:945:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-0840d-udos-and-navigates-to-board-kudos-authed/error-context.md
+
+  48) [kudos-authed] › e2e/viet-kudo.spec.ts:989:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-48 — submit button disabled when required fields empty 
+
+    Error: expect(locator).toBeDisabled() failed
+
+    Locator: getByTestId('compose-submit')
+    Expected: disabled
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeDisabled" with timeout 5000ms
+      - waiting for getByTestId('compose-submit')
+
+
+      993 |
+      994 |     // No fields filled
+    > 995 |     await expect(composeSubmit(page)).toBeDisabled();
+          |                                       ^
+      996 |   });
+      997 |
+      998 |   // ID-49 — submit button enabled when required fields filled
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:995:39
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-94d8b--when-required-fields-empty-kudos-authed/error-context.md
+
+  49) [kudos-authed] › e2e/viet-kudo.spec.ts:999:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-49 — submit button enabled when required fields filled 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      1003 |
+      1004 |     // Fill required fields
+    > 1005 |     await recipientInput(page).fill("Nguyễn");
+           |                                ^
+      1006 |     await recipientMenu(page).waitFor({ state: "visible" });
+      1007 |     await recipientOption(page).first().click();
+      1008 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1005:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-3f178-when-required-fields-filled-kudos-authed/error-context.md
+
+  50) [kudos-authed] › e2e/viet-kudo.spec.ts:1021:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-50 — recipient field shows error with red border when empty 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('title-input')
+
+
+      1025 |
+      1026 |     // Fill other fields but not recipient
+    > 1027 |     await titleInput(page).fill(TEST_TITLE);
+           |                            ^
+      1028 |     await bodyEditor(page).fill(TEST_BODY);
+      1029 |
+      1030 |     await hashtagAddButton(page).click();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1027:28
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-c366c--with-red-border-when-empty-kudos-authed/error-context.md
+
+  51) [kudos-authed] › e2e/viet-kudo.spec.ts:1044:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-51 — body field shows error when empty on submit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      1048 |
+      1049 |     // Fill recipient, title, hashtag but not body
+    > 1050 |     await recipientInput(page).fill("Nguyễn");
+           |                                ^
+      1051 |     await recipientMenu(page).waitFor({ state: "visible" });
+      1052 |     await recipientOption(page).first().click();
+      1053 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1050:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-08b59--error-when-empty-on-submit-kudos-authed/error-context.md
+
+  52) [kudos-authed] › e2e/viet-kudo.spec.ts:1069:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-52 — hashtag field shows error when empty on submit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.fill: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('recipient-input')
+
+
+      1073 |
+      1074 |     // Fill recipient, title, body but not hashtag
+    > 1075 |     await recipientInput(page).fill("Nguyễn");
+           |                                ^
+      1076 |     await recipientMenu(page).waitFor({ state: "visible" });
+      1077 |     await recipientOption(page).first().click();
+      1078 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1075:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-f1f2b--error-when-empty-on-submit-kudos-authed/error-context.md
+
+  53) [kudos-authed] › e2e/viet-kudo.spec.ts:1092:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-53 — attempting 6th hashtag shows max error 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('hashtag-add')
+
+
+      1103 |     // Add 5 tags
+      1104 |     for (const tag of tags) {
+    > 1105 |       await hashtagAddButton(page).click();
+           |                                    ^
+      1106 |       await expect(hashtagMenu(page)).toBeVisible();
+      1107 |       const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
+      1108 |       await hashtagOptions.locator(`text=${tag}`).click();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1105:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-3e5b9-6th-hashtag-shows-max-error-kudos-authed/error-context.md
+
+  54) [kudos-authed] › e2e/viet-kudo.spec.ts:1127:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-54 — at 5 images, button hidden, no 6th can be added 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add') to be visible
+
+
+      1134 |     // Add 5 images
+      1135 |     for (let i = 0; i < 5; i++) {
+    > 1136 |       await imageAddButton(page).waitFor({ state: "visible" });
+           |                                  ^
+      1137 |       await imageInput(page).setInputFiles(imagePath);
+      1138 |     }
+      1139 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1136:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-6f6a9--hidden-no-6th-can-be-added-kudos-authed/error-context.md
+
+  55) [kudos-authed] › e2e/viet-kudo.spec.ts:1148:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-55 — .txt file rejected with format error 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('image-add')
+
+
+      1151 |     const txtPath = "./e2e/fixtures/test-file.txt";
+      1152 |
+    > 1153 |     await imageAddButton(page).click();
+           |                                ^
+      1154 |     await imageInput(page).setInputFiles(txtPath);
+      1155 |
+      1156 |     // Error should appear
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1153:32
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-effa4--rejected-with-format-error-kudos-authed/error-context.md
+
+  56) [kudos-authed] › e2e/viet-kudo.spec.ts:1164:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-56 — all required field errors show simultaneously 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('compose-submit')
+
+
+      1168 |
+      1169 |     // Leave everything empty and click submit
+    > 1170 |     await composeSubmit(page).click();
+           |                               ^
+      1171 |
+      1172 |     // All 4 error messages should appear
+      1173 |     await expect(fieldErrorRecipient(page)).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1170:31
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-95d81--errors-show-simultaneously-kudos-authed/error-context.md
+
+  57) [kudos-authed] › e2e/viet-kudo.spec.ts:1183:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Title field: placeholder and hints present 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByTestId('title-input')
+    Expected: "Dành tặng một danh hiệu cho đồng đội"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 5000ms
+      - waiting for getByTestId('title-input')
+
+
+      1184 |     await page.goto(ROUTE);
+      1185 |
+    > 1186 |     await expect(titleInput(page)).toHaveAttribute(
+           |                                    ^
+      1187 |       "placeholder",
+      1188 |       TITLE_PLACEHOLDER,
+      1189 |     );
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1186:36
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-9f1d4-aceholder-and-hints-present-kudos-authed/error-context.md
+
+  58) [kudos-authed] › e2e/viet-kudo.spec.ts:1199:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Body field: hint present 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('body-hint')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('body-hint')
+
+
+      1200 |     await page.goto(ROUTE);
+      1201 |
+    > 1202 |     await expect(bodyHint(page)).toBeVisible();
+           |                                  ^
+      1203 |     await expect(bodyHint(page)).toHaveText(BODY_HINT);
+      1204 |   });
+      1205 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1202:34
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-0f479-hed-Body-field-hint-present-kudos-authed/error-context.md
+
+  59) [kudos-authed] › e2e/viet-kudo.spec.ts:1207:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('community-standards-link')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('community-standards-link')
+
+
+      1208 |     await page.goto(ROUTE);
+      1209 |
+    > 1210 |     await expect(communityStandardsLink(page)).toBeVisible();
+           |                                                ^
+      1211 |     await expect(communityStandardsLink(page)).toContainText(
+      1212 |       COMMUNITY_STANDARDS_LABEL,
+      1213 |     );
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1210:48
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-65ec7-nity-Standards-link-present-kudos-authed/error-context.md
+
+  60) [kudos-authed] › e2e/viet-kudo.spec.ts:1217:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Cancel and Submit buttons have correct labels 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('compose-cancel')
+    Expected substring: "Hủy"
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toContainText" with timeout 5000ms
+      - waiting for getByTestId('compose-cancel')
+
+
+      1218 |     await page.goto(ROUTE);
+      1219 |
+    > 1220 |     await expect(composeCancel(page)).toContainText(CANCEL_BUTTON_LABEL);
+           |                                       ^
+      1221 |     await expect(composeSubmit(page)).toContainText(SUBMIT_BUTTON_LABEL);
+      1222 |   });
+      1223 | });
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1220:39
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-f2400-buttons-have-correct-labels-kudos-authed/error-context.md
+
+  60 failed
+    [anon] › e2e/route-guard.spec.ts:21:7 › Route Guards (anon project) › ID-1 [Viết Kudo] — unauthenticated access to /kudos/new redirects to /login 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:180:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-0 — authenticated user navigates to /kudos/new and form renders 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:191:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:199:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-3 — fields render in correct order: recipient → title → body → hashtags → images → anonymous 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:234:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-4 — recipient input has placeholder 'Tìm kiếm' 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:245:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-5 — body editor has correct placeholder 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:254:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:260:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-7 — recipient field shows error on empty submit 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:282:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-8 — recipient autocomplete filters by query 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:296:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-9 — recipient autocomplete shows empty state when no matches 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:313:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-10 — recipient autocomplete trims leading/trailing whitespace 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:329:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-11 — body field error on empty submit 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:353:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-12 — typing @ in body opens mention menu 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:367:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-13 — selecting mention inserts colleague name into body 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:385:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:406:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-15 — add one hashtag successfully 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:422:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-16 — add 5 hashtags successfully 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:447:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:484:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-18 — upload 3 images and button remains visible 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:506:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:527:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-20 — at 5 images, button is hidden and 6th cannot be added 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:548:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-21 — .jpg image uploads successfully and shows thumbnail 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:563:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-22 — .png image uploads successfully and shows thumbnail 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:578:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-23 — .pdf file is rejected with format error 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:596:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-24 — .mp4 file is rejected with format error 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:614:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-25 — recipient search filters menu by query 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:626:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-26 — selecting recipient fills field and closes menu 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:646:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-27 — toolbar bold button has aria-pressed attribute 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:655:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-28 — toolbar italic button has aria-pressed attribute 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:664:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-29 — toolbar strikethrough button has aria-pressed attribute 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:673:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-30 — toolbar ordered list button present 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:680:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-31 — toolbar link button opens dialog with URL input 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:692:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-32 — toolbar quote button present 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:699:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-33 — typing @Nguyen filters mention menu 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:712:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-34 — add hashtag displays as removable chip 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:731:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:750:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-36 — removing one hashtag chip leaves others intact 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:776:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-37 — clicking image add opens file picker and shows thumbnail 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:791:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-38 — uploading 5 images hides the add button 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:808:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:832:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-40 — removing one image from 5 shows the add button again 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:856:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-41 — anonymous checkbox can be checked 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:867:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-42 — anonymous checkbox can be unchecked 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:879:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-43 — checking anonymous checkbox reveals name input field 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:895:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-44 — unchecking anonymous checkbox hides name input field 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:912:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:939:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-46/ID-47 — successful submission creates kudos and navigates to board 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:989:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-48 — submit button disabled when required fields empty 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:999:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-49 — submit button enabled when required fields filled 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1021:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-50 — recipient field shows error with red border when empty 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1044:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-51 — body field shows error when empty on submit 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1069:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-52 — hashtag field shows error when empty on submit 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1092:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-53 — attempting 6th hashtag shows max error 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1127:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-54 — at 5 images, button hidden, no 6th can be added 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1148:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-55 — .txt file rejected with format error 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1164:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-56 — all required field errors show simultaneously 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1183:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Title field: placeholder and hints present 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1199:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Body field: hint present 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1207:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1217:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Cancel and Submit buttons have correct labels 
+  2 passed (24.9m)
+EXIT=1

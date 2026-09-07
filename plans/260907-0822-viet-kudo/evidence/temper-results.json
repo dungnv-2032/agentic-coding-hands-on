@@ -1,0 +1,60 @@
+{
+  "commands": [
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 type errors repo-wide. The e2e author had left 12 errors in the compose spec; phase 02 repaired them to zero and it has stayed clean since.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors; 28 pre-existing unused-locator warnings remain in e2e specs outside this feature.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Production build succeeds; /kudos/new compiles as a dynamic route, correct for a cookie-reading guarded write surface. Note: the first attempt failed on a corrupted .next/dev/types/routes.d.ts — a generated file mangled by dev servers being SIGKILLed to free port 3000, not a source error. Removing .next and rebuilding gave exit 0.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "npx supabase db reset",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Migration plus seed apply cleanly: three new kudos columns, 4 INSERT policies, create_kudos, a Storage bucket, an Unassigned department with filter_position NULL, and all 57 seeded rows plain/non-anonymous.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "npx playwright test e2e/viet-kudo.spec.ts e2e/route-guard.spec.ts --reporter=list",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "63 passed (61 compose + the auth setups + the two route-guard cases) from a valid 60-failed assertion-caused RED; exit 0. Re-confirmed after the hardening pass. The count rose from 62 when a dedicated kudos-auth-setup project was added to isolate the session.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "npx playwright test e2e/viet-kudo.spec.ts e2e/route-guard.spec.ts e2e/kudos-live-board.spec.ts e2e/kudos-live-board-authed.spec.ts e2e/homepage.spec.ts e2e/award-system.spec.ts e2e/login-screen.spec.ts e2e/authenticated.spec.ts e2e/smoke.spec.ts e2e/callback-security.spec.ts --reporter=list",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "144 passed across all 10 spec files and every project, twice consecutively, with kudos_likes back to 0 each time. This is the run that used to fail: K-25 was sharing a session with authenticated.spec.ts's global sign-out, fixed by giving kudos-authed its own setup.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "docker exec supabase_db_my-app psql -U postgres -d postgres -c \"select tablename, policyname, roles, cmd from pg_policies where schemaname='public'\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "RLS proven live rather than read off the migration: anon INSERT into kudos rejected 401, anon RPC create_kudos 403, a forged sender_id from a real session 403 with SQLSTATE 42501, and no UPDATE or DELETE policy exists on kudos by design.",
+      "ts": "2026-09-07T06:05:57Z"
+    },
+    {
+      "command": "node scratchpad/verify-hardening.mjs (magic-byte sniff + image-cap validation)",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Closes the inspection's three findings with real evidence: a PDF's bytes declared as image/jpeg is rejected by the upload action, as are an mp4 and a txt with image MIME types; six image urls now return a field-specific cap error from validateCompose() instead of a generic unknown; compose-form.tsx and board-data.ts are 193 and 188 lines, under the 200-line cap.",
+      "ts": "2026-09-07T06:05:57Z"
+    }
+  ]
+}

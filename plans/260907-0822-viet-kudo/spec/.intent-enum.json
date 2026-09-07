@@ -1,0 +1,12 @@
+{
+  "mode": "single",
+  "intents": [
+    {
+      "actor": "Sunner (signed in)",
+      "action_domain": "compose and send a Kudos to a colleague",
+      "outcome": "the recognition is recorded and appears on the public Sun* Kudos live board, optionally anonymously"
+    }
+  ],
+  "justification": "Check B (conjunction smell): the task text names one artifact, 'màn hình Viết Kudo', with no conjunction and no ALWAYS-fire phrase. Check A (enumeration): the screen's parts — recipient autocomplete, title, rich-text body with mentions, hashtag picker, image attachments, anonymity toggle — are all inputs to ONE user-facing outcome (send a Kudos), not distinct (actor, action-domain, outcome) triples; none is reachable or meaningful on its own, and all of them are discarded together by a single Hủy. Count = 1 confirmed -> SINGLE. This also matches the four shipped precedents in this repo, where one MoMorph screen maps to one feature code (F001 Login, F002 Homepage SAA, F003 Award System, F004 Kudos Live Board).",
+  "resolved_by": "takumi orchestrator (--auto), 2026-09-07"
+}

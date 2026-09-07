@@ -1,0 +1,56 @@
+{
+  "task": "Implement the Viết Kudo compose screen (MoMorph screen ihQ26W78P2, file 9ypp4enmFmdK3YAFJLIu6C) at the auth-guarded route /kudos/new, backed by the Supabase local project as the user directed. Replaces the ComingSoon placeholder. Adds the repo's first user-facing write form: INSERT policies, a transactional create function, sender auto-provisioning, Supabase Storage uploads, and a rich-text document model.",
+  "mode": "takumi --auto (e2e-red-first)",
+  "acceptanceCriteria": [
+    "Route /kudos/new is auth-guarded: an unauthenticated visitor is redirected to /login, while an authenticated one gets the form",
+    "The public Kudos read surface stays public: /kudos, /kudos/[id] and /kudos/secret-box are unaffected by the new guard",
+    "The modal renders the h1 'Gui loi cam on va ghi nhan den dong doi' and the fields in the frame's order: recipient, title, body editor, hashtags, images, anonymous checkbox, footer actions",
+    "Recipient autocomplete filters by query, trims whitespace, shows an empty state, and selecting an option fills the field and closes the menu",
+    "The Danh hieu title field renders its placeholder and both helper lines and is required",
+    "The rich-text toolbar offers bold, italic, strikethrough, ordered list, link and quote, with the link button opening a URL dialog",
+    "Typing @ opens a mention menu that narrows as the name continues and inserts the chosen colleague, matching names without diacritics",
+    "Hashtags are chips: at least 1 required, at most 5, a sixth is refused with 'Toi da 5 hashtag' while the add button stays visible, and removing one chip leaves the others",
+    "Images: a jpg and a png attach and show a thumbnail of that file, a pdf is rejected with a format error, the add button is hidden at 5 and returns after a removal",
+    "The anonymous checkbox is unchecked by default and checking it reveals an anonymous name input that hides again when unchecked",
+    "Submitting an empty form shows all four required-field errors simultaneously with 'Khong duoc de trong' and does not submit",
+    "The submit button is never disabled and instead carries data-submit-ready reflecting whether the required fields are filled",
+    "Cancel navigates to /kudos and saves nothing",
+    "A successful submit lands on /kudos with the new Kudos visible on the board, proving the row reached Postgres",
+    "Every rule is re-validated server-side in the action, so a client that bypasses the UI is still rejected",
+    "RLS makes a forged sender impossible: sender_id must resolve through sunners.auth_user_id to the session, and anon cannot insert at all",
+    "A signed-in user with no sunners row is auto-provisioned exactly once, idempotently under double submit",
+    "The Kudos Live Board renders 'doc' messages as safe React elements and anonymous senders via a dedicated chip, with malformed documents degrading to plain text",
+    "F004 does not regress: all 57 seeded rows stay plain and non-anonymous and the shipped board suite stays green",
+    "Every screen string ships in both vi and en, compile-time enforced by the Dictionary interface",
+    "npm run typecheck, npm run lint and npm run build all exit 0, and every new code file stays under the repo's 200-line cap"
+  ],
+  "touchpoints": [
+    "app/kudos/new/page.tsx (cutover from ComingSoon) and proxy.ts (the first route guard since F001)",
+    "app/kudos/new/_components/ (13 files: compose form, field primitives, body editor, toolbar, mention menu, link dialog, hashtag and image pickers, actions, helpers, controller hook)",
+    "app/kudos/new/_actions/ (create-kudos.ts, upload-kudos-image.ts)",
+    "lib/kudos/ (compose-contract.ts, compose-state.ts, rich-text.ts, validate-compose.ts, compose-options.ts) plus additive edits to view-model.ts, queries.ts, board-data.ts",
+    "app/kudos/_components/ (kudos-message-body.tsx, anonymous-sender-chip.tsx, and an edit to the shipped kudos-card.tsx)",
+    "supabase/migrations/20260907025909_viet_kudo_write_path.sql (columns, INSERT policies, create_kudos, Storage bucket, Unassigned department)",
+    "lib/supabase/database.types.ts (regenerated) and next.config.ts (images.remotePatterns for the Storage host)",
+    "lib/i18n/messages/ (dictionary.ts, vi.ts, en.ts, vi-kudos-compose.ts, en-kudos-compose.ts)",
+    "e2e/viet-kudo.spec.ts, e2e/route-guard.spec.ts, e2e/fixtures/viet-kudo-constants.ts, fixture image and pdf files, playwright.config.ts"
+  ],
+  "blastRadius": [
+    "proxy.ts is the shared route guard: a prefix match on /kudos rather than an exact match on /kudos/new would silently make the whole public Kudos surface members-only and break F004",
+    "kudos-card.tsx is shipped F004 code rendering 57 seeded rows; the message_format and anonymity branches must leave the plain non-anonymous path byte-identical",
+    "lib/i18n/messages/dictionary.ts is shared by every screen, so a malformed namespace breaks typecheck for login, homepage, award-system and the board alike",
+    "lib/kudos/{view-model,queries,board-data}.ts feed the shipped board; the new columns had to be additive",
+    "playwright.config.ts governs the whole suite, and a project regex that matches two files runs tests under the wrong session",
+    "next.config.ts images.remotePatterns: without the Storage host, the first uploaded attachment crashes next/image and takes all of /kudos down",
+    "The new INSERT policies are the first write grants in the repo and set the precedent every later table follows",
+    "supabase/seed.sql and e2e/auth.setup.ts interact: db reset truncates auth.users, so it must never run mid-suite"
+  ],
+  "contracts": [
+    "plans/260907-0822-viet-kudo/test-contract.md — every data-testid, role, aria attribute and copy string, plus four orchestrator rulings: the submit button is never disabled and carries data-submit-ready, copy is presentation typed off the Dictionary rather than part of the frozen data contract, a failed upload rejects with a typed error, and the community-standards link is spec-confirmed",
+    "plans/260907-0822-viet-kudo/clarifications.md — 22 resolved decisions, assumptions A1-A5 and 6 unresolved questions; authoritative and not re-openable",
+    "plans/260907-0822-viet-kudo/design/test-cases.csv — the 57 authored test cases that define the behaviour, including ID-33's diacritic-free query",
+    "MoMorph frame ihQ26W78P2 at revision 2a59143b0305d622e49b962fdf2cb2c7 — the visual source of truth; no visual value may be guessed",
+    "lib/kudos/compose-contract.ts — the frozen Track A/Track B data contract",
+    "F004's shipped contract in plans/260906-1945-kudos-live-board/test-contract.md — the board's hooks must keep behaving exactly as its suite asserts"
+  ]
+}

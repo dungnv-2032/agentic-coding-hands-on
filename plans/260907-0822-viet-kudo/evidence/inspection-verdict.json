@@ -1,0 +1,65 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "Route /kudos/new is auth-guarded: an unauthenticated visitor is redirected to /login, while an authenticated one gets the form -- verified in proxy.ts (isGuarded checks pathname === \"/kudos/new\" || startsWith(\"/kudos/new/\")) and e2e/route-guard.spec.ts ID-1; part of the 62-pass compose gate.",
+    "The public Kudos read surface stays public: /kudos, /kudos/[id] and /kudos/secret-box are unaffected by the new guard -- verified proxy.ts uses exact-path match, never a bare startsWith(\"/kudos\"); K-21/kudos-live-board*.spec.ts remain in the 144-pass full run.",
+    "The modal renders the h1 'Gui loi cam on va ghi nhan den dong doi' and the fields in the frame's order: recipient, title, body editor, hashtags, images, anonymous checkbox, footer actions -- verified compose-form.tsx renders h1 then FieldRow(recipient) -> FieldRow(title) -> body editor -> hashtag FieldRow -> image FieldRow -> AnonymousToggle -> ComposeActions in that literal source order.",
+    "Recipient autocomplete filters by query, trims whitespace, shows an empty state, and selecting an option fills the field and closes the menu -- verified recipient-picker.tsx: trimmedQuery, foldVietnameseText diacritic-insensitive filter, recipient-empty testid, onSelect fills field and clears query state.",
+    "The Danh hieu title field renders its placeholder and both helper lines and is required -- verified title-field.tsx wiring to copy.placeholders.title/hints.titleLine1/titleLine2, and validateCompose() flags title required.",
+    "The rich-text toolbar offers bold, italic, strikethrough, ordered list, link and quote, with the link button opening a URL dialog -- verified rich-text-toolbar.tsx six buttons + link-dialog.tsx URL input/confirm wired to toggleInlineMark/toggleBlockMark in rich-text.ts.",
+    "Typing @ opens a mention menu that narrows as the name continues and inserts the chosen colleague, matching names without diacritics -- verified use-body-editor-controller.ts foldVietnameseText (NFD normalize + explicit d/D fold) reused identically by recipient-picker.tsx and mention-menu.tsx, and insertMention() in rich-text.ts stores the sunnerId run.",
+    "Hashtags are chips: at least 1 required, at most 5, a sixth is refused with 'Toi da 5 hashtag' while the add button stays visible, and removing one chip leaves the others -- verified hashtag-picker.tsx (hashtag-add stays rendered, hashtag-error on tooMany) and validateCompose()/create_kudos SQL both enforcing 1-5.",
+    "Images: a jpg and a png attach and show a thumbnail of that file, a pdf is rejected with a format error, the add button is hidden at 5 and returns after a removal -- verified image-picker.tsx (image-add hidden at MAX_IMAGES, image-error on rejection) and isAcceptedImageType()/upload-kudos-image.ts server-side MIME re-check.",
+    "The anonymous checkbox is unchecked by default and checking it reveals an anonymous name input that hides again when unchecked -- verified anonymous-toggle.tsx checked=false initial state and conditional render of anonymous-name-input.",
+    "Submitting an empty form shows all four required-field errors simultaneously with 'Khong duoc de trong' and does not submit -- verified validateCompose() never early-returns and sets all of recipient/title/body/hashtag at once; compose-form.tsx's handleSubmit dispatches setErrors and returns before calling submit() when any error exists.",
+    "The submit button is never disabled and instead carries data-submit-ready reflecting whether the required fields are filled -- verified compose-actions.tsx never sets disabled/aria-disabled on compose-submit and isSubmitReady()/data-submit-ready reflects state, matching the ratified test-contract.md amendment.",
+    "Cancel navigates to /kudos and saves nothing -- verified compose-actions.tsx compose-cancel links to CANCEL_HREF = \"/kudos\" with no dispatch/submit call.",
+    "A successful submit lands on /kudos with the new Kudos visible on the board, proving the row reached Postgres -- verified create-kudos.ts calls supabase.rpc(\"create_kudos\") then redirect(\"/kudos\") only on success; live psql run of create_kudos produced a real row (id 65-67 in the adversarial session) and the seeded+e2e-created row count is 62 in the live database.",
+    "Every rule is re-validated server-side in the action, so a client that bypasses the UI is still rejected -- verified create-kudos.ts calls validateCompose(payload) independently of the client, and create_kudos SQL re-checks receiver existence, campaign/message non-blank, message_format, and hashtag count 1-5 regardless of caller.",
+    "RLS makes a forged sender impossible: sender_id must resolve through sunners.auth_user_id to the session, and anon cannot insert at all -- verified LIVE by adversarial psql: anon direct INSERT into kudos raised 'new row violates row-level security policy'; an authenticated JWT for an unrelated uid attempting sender_id=1 also raised the same RLS violation; anon calling the create_kudos RPC raised 'create_kudos requires an authenticated session'; live pg_policies confirms kudos_insert_own's with_check joins sunners.auth_user_id = auth.uid() and no UPDATE/DELETE policy exists on kudos, kudos_hashtags, kudos_attachments or sunners.",
+    "A signed-in user with no sunners row is auto-provisioned exactly once, idempotently under double submit -- verified LIVE by inserting a throwaway auth.users row and calling create_kudos twice in the same session: exactly one sunners row was created (on conflict (auth_user_id) do nothing), full_name/avatar_url/department_id resolved to the documented fallbacks (Unassigned department, sample-avatar.png).",
+    "The Kudos Live Board renders 'doc' messages as safe React elements and anonymous senders via a dedicated chip, with malformed documents degrading to plain text -- verified kudos-message-body.tsx never uses dangerouslySetInnerHTML, walks parseKudosDoc's output into <span>/<a>/<strong> elements, degrades to the raw message string when parseKudosDoc returns null, and re-checks the link scheme allow-list at render time independent of the parser; parseKudosDoc in rich-text.ts rejects malformed JSON, unknown block/run types, and non-allow-listed link schemes by returning null.",
+    "F004 does not regress: all 57 seeded rows stay plain and non-anonymous and the shipped board suite stays green -- verified LIVE via psql: all 57 seeded kudos rows have message_format='plain' and is_anonymous=false; kudos-card.tsx's diff is purely additive (conditional AnonymousSenderChip swap-in, KudosMessageBody wraps the identical <p data-testid=\"kudos-body\"> markup); temper-results.json records the 144-pass full run twice consecutively with kudos_likes back to 0.",
+    "Every screen string ships in both vi and en, compile-time enforced by the Dictionary interface -- verified lib/i18n/messages/dictionary.ts declares a required kudosCompose namespace on the Dictionary interface and vi.ts/en.ts both export a matching viKudosCompose/enKudosCompose satisfying it; npx tsc --noEmit exits 0 repo-wide per temper-results.json.",
+    "npm run typecheck, npm run lint and npm run build all exit 0, and every new code file stays under the repo's 200-line cap -- verified temper-results.json records exitCode 0 for tsc, lint and build; wc -l confirms every new/changed file is <=200 lines, with compose-form.tsx and board-data.ts landing exactly at the 200-line boundary (flagged as a Low finding, not a build or lint failure)."
+  ],
+  "regressionChecked": [
+    "proxy.ts exact-vs-prefix match on /kudos/new -- read the guard logic directly: pathname === \"/kudos/new\" || pathname.startsWith(\"/kudos/new/\"), confirmed this cannot match /kudos, /kudos/[id] or /kudos/secret-box.",
+    "kudos-card.tsx byte-identical plain/non-anonymous path -- read the uncommitted working-tree diff; the plain path change is purely additive (conditional chip swap, KudosMessageBody wrapping the same <p data-testid=\"kudos-body\"> with the same className), and live-queried all 57 seeded rows to confirm they remain 'plain'/non-anonymous.",
+    "lib/i18n/messages/dictionary.ts shared namespace -- confirmed kudosCompose is a new top-level key (not a mutation of an existing namespace like kudos), and npx tsc --noEmit exits 0 repo-wide per temper-results.json, so login/homepage/award-system/board typechecking is unaffected.",
+    "lib/kudos/{view-model,queries,board-data}.ts additive columns feeding the shipped board -- read board-data.ts/queries.ts/view-model.ts diffs (60958c2): messageFormat and anonymousSenderLabel are new fields added to KudosCardView, none of the existing fields were removed or retyped.",
+    "playwright.config.ts project regex collisions -- read every testMatch pattern; kudos-authed's (kudos-live-board-authed|viet-kudo)\\.spec\\.ts and anon's kudos-live-board(?!-authed)\\.spec\\.ts are mutually exclusive by the negative lookahead, and no other project pattern overlaps a Viet Kudo file.",
+    "next.config.ts images.remotePatterns for the Storage host -- confirmed the Storage bucket is public-read (storage.buckets public=true) and the app's next/image usage in kudos-message-body/anonymous-sender-chip/image-picker only ever points at that bucket or the committed sample-avatar asset.",
+    "New INSERT policies as the precedent for future write tables -- read the migration and live pg_policies output: all four INSERT policies bridge through sunners.auth_user_id = (select auth.uid()) or auth_user_id = (select auth.uid()) directly, matching the kudos_likes_insert_own idiom already shipped; confirmed no UPDATE/DELETE policy exists on any of the four tables.",
+    "supabase/seed.sql and e2e/auth.setup.ts interaction with db reset -- temper-results.json's db reset run re-applies the seed (57 plain rows) and the full-suite run explicitly checks kudos_likes returns to 0 twice consecutively, consistent with db reset never running mid-suite."
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Low",
+      "category": "Craft",
+      "location": "app/kudos/new/_components/compose-form.tsx:200",
+      "summary": "compose-form.tsx and lib/kudos/board-data.ts land at exactly 200 lines, not strictly under the repo's 200-line file-size guideline (development-rules.md). Not a lint/build failure and not a maintainability problem in practice, but literally at rather than under the stated cap.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "API contracts",
+      "location": "lib/kudos/validate-compose.ts:32",
+      "summary": "validateCompose() checks hashtag count (>MAX_HASHTAGS) but never checks imageUrls.length > MAX_IMAGES; the >5-images rule is enforced only inside the create_kudos SQL function, one layer further out than the hashtag path's two-layer defense. Functionally safe -- a bypass still gets rejected by the database -- but it surfaces as a generic {form:\"unknown\"} error rather than a field-specific one, and is inconsistent with the stated 'every rule is re-checked server-side in the action' framing.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "Security",
+      "location": "app/kudos/new/_actions/upload-kudos-image.ts:61",
+      "summary": "isAcceptedImageType(file.type) trusts the client-declared File.type rather than sniffing file content/magic bytes, so an attacker can label arbitrary bytes as image/jpeg and have them stored and publicly served from the kudos-attachments bucket under that content-type. Low risk here (not renderable as HTML/JS since it's served with an image content-type, and next/image only ever consumes it as an <img> source) but worth hardening if the bucket's threat model grows.",
+      "disposition": "Accept"
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+
+Running 88 tests using 6 workers
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788756906047-1404238-1n11ld@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Homepage session created and saved to e2e/.auth/homepage-user.json
+  Test user email: e2e-1788756906045-1404239-a5img7@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓   2 [homepage-auth-setup] › e2e/homepage-auth.setup.ts:24:6 › homepage: create independent session (343ms)
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (4.8s)
+  ✓   3 [anon] › e2e/callback-security.spec.ts:21:7 › Callback Security (anon project) › Host: evil.com on error branch is rejected (unauthenticated exploit) (1.0s)
+  ✓   9 [anon] › e2e/callback-security.spec.ts:41:7 › Callback Security (anon project) › Host: evil.com with neither code nor error is rejected (1.5s)
+  ✓  10 [anon] › e2e/callback-security.spec.ts:60:7 › Callback Security (anon project) › x-forwarded-host: evil.com is rejected (417ms)
+  ✓  11 [anon] › e2e/callback-security.spec.ts:76:7 › Callback Security (anon project) › next as absolute URL to evil.com is rejected (312ms)
+  ✓  12 [anon] › e2e/callback-security.spec.ts:91:7 › Callback Security (anon project) › next as protocol-relative //evil.com is rejected (322ms)
+  ✓  13 [anon] › e2e/callback-security.spec.ts:108:7 › Callback Security (anon project) › next with backslash variant /\evil.com is rejected (253ms)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  14 [anon] › e2e/callback-security.spec.ts:126:7 › Callback Security (anon project) › next as a valid same-origin path is accepted in redirect (376ms)
+  ✓   4 [anon] › e2e/login-screen.spec.ts:5:7 › Login Screen (anon project) › C1 [FR-201, US003] — renders header, hero, ROOT FURTHER wordmark, tagline, login button, locale selector, and footer (4.3s)
+  ✓   5 [anon] › e2e/homepage.spec.ts:5:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-0 [FR-100] — homepage loads publicly without authentication (4.6s)
+  ✓   8 [anon] › e2e/smoke.spec.ts:7:5 › dev server responds and renders a non-empty page (4.3s)
+  ✓   7 [anon] › e2e/kudos-live-board.spec.ts:181:7 › Kudos Live Board screen — /kudos (anon) › K-0 — route loads publicly without redirect and renders h1 (4.8s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  15 [anon] › e2e/login-screen.spec.ts:41:7 › Login Screen (anon project) › C2 [FR-402, DEC-001] — displays error message when redirected with error=oauth_failed (2.9s)
+  ✓   6 [anon] › e2e/award-system.spec.ts:138:7 › Award System screen — /awards-information (anon) › ID-0/2 — route loads without redirect and the header nav item reaches it and is aria-current=page (7.3s)
+  ✓  17 [anon] › e2e/kudos-live-board.spec.ts:192:7 › Kudos Live Board screen — /kudos (anon) › K-1 — hero renders compose bar and Sunner search with correct placeholders (2.5s)
+  ✓  16 [anon] › e2e/homepage.spec.ts:16:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-7 [FR-101] — page structure includes header, hero, countdown, awards grid, Kudos section, and footer (2.7s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  18 [authed] › e2e/authenticated.spec.ts:6:7 › Authenticated Routes (authed project) › C7 [FR-102, SC-002] — authenticated access to /login redirects to /todo (2.9s)
+  ✓  21 [anon] › e2e/kudos-live-board.spec.ts:209:7 › Kudos Live Board screen — /kudos (anon) › K-2 — HIGHLIGHT KUDOS section renders heading, eyebrow, and filters (3.0s)
+  ✓  22 [anon] › e2e/homepage.spec.ts:50:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-9 [FR-102] — About SAA 2025 nav item is marked as selected on homepage (3.0s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  20 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (3.3s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  19 [anon] › e2e/login-screen.spec.ts:52:7 › Login Screen (anon project) › C3 [FR-203, US003] — switching locale to EN updates page content and sets NEXT_LOCALE cookie (3.9s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  26 [anon] › e2e/homepage.spec.ts:70:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-12 [FR-103] — countdown displays three 2-digit units labeled DAYS, HOURS, MINUTES (3.2s)
+  ✓  28 [anon] › e2e/login-screen.spec.ts:87:7 › Login Screen (anon project) › C3b [FR-203] — open dropdown shows a flag beside every locale option (3.0s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  27 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (3.5s)
+  ✓  23 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:24:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 (6.5s)
+  ✓  25 [anon] › e2e/kudos-live-board.spec.ts:229:7 › Kudos Live Board screen — /kudos (anon) › K-3 — filter menus: hashtag has 13 options, department has 50 (3.9s)
+[WebServer] ⨯ Error: The destination stream closed early.
+[WebServer]     at ignore-listed frames {
+[WebServer]   digest: '941324909'
+[WebServer] }
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  24 [authed] › e2e/authenticated.spec.ts:21:7 › Authenticated Routes (authed project) › C8 [SC-001, proxy-cookie-rotation] — after guarded /login→/todo redirect with token refresh, subsequent requests stay authenticated (7.2s)
+  ✓  29 [anon] › e2e/homepage.spec.ts:97:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-13 [FR-104] — Coming soon label visible when event is in the future (4.2s)
+  ✓  31 [anon] › e2e/award-system.spec.ts:241:7 › Award System screen — /awards-information (anon) › ID-4 — hero title block shows the eyebrow and the exact page heading (3.8s)
+  ✓  33 [anon] › e2e/kudos-live-board.spec.ts:252:7 › Kudos Live Board screen — /kudos (anon) › K-4 — carousel renders at most 5 slides with centre slide aria-current (3.7s)
+  ✓  30 [anon] › e2e/login-screen.spec.ts:116:7 › Login Screen (anon project) › C3c [FR-203] — open panel visual contract (background, border, radius, padding, option size) (4.1s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  35 [anon] › e2e/homepage.spec.ts:109:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-14 [FR-105] — event information block displays correct date, venue, and livestream note (3.6s)
+  ✓  37 [anon] › e2e/kudos-live-board.spec.ts:276:7 › Kudos Live Board screen — /kudos (anon) › K-5 — carousel pagination text matches expected format (3.5s)
+  ✓  38 [anon] › e2e/login-screen.spec.ts:139:7 › Login Screen (anon project) › C3d [FR-203.b] — selected and unselected option backgrounds, hover state (3.7s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  36 [anon] › e2e/award-system.spec.ts:254:7 › Award System screen — /awards-information (anon) › ID-5 — left category menu lists exactly 6 items in design order (4.1s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  34 [authed] › e2e/authenticated.spec.ts:45:7 › Authenticated Routes (authed project) › C9 [FR-403, US004] — signing out redirects to /login and /todo thereafter bounces to /login (7.1s)
+  ✓  39 [anon] › e2e/homepage.spec.ts:128:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-15 [FR-106] — awards grid displays all 6 award category cards (3.5s)
+  ✓  40 [anon] › e2e/kudos-live-board.spec.ts:289:7 › Kudos Live Board screen — /kudos (anon) › K-6 — carousel arrows: prev disabled at slide 1, next disabled at last (3.5s)
+  ✓  42 [anon] › e2e/award-system.spec.ts:272:7 › Award System screen — /awards-information (anon) › ID-6 — all six awards render title, quantity, unit, prize amounts and notes (3.5s)
+  ✓  41 [anon] › e2e/login-screen.spec.ts:170:7 › Login Screen (anon project) › C3e [FR-203.c] — keyboard navigation (Arrow keys, Home, End, Escape, Enter) (5.0s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  44 [anon] › e2e/kudos-live-board.spec.ts:309:7 › Kudos Live Board screen — /kudos (anon) › K-7 — carousel next/prev buttons move the slide (3.2s)
+  ✓  43 [anon] › e2e/homepage.spec.ts:144:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-16 [FR-107] — awards grid is responsive: 3 columns at desktop, 2 columns at tablet/mobile (3.6s)
+  ✓  45 [anon] › e2e/award-system.spec.ts:320:7 › Award System screen — /awards-information (anon) › ID-7 — every award card renders its image with the award title as alt text, undistorted at 336x336 (3.1s)
+  ✘  32 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:66:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload (14.7s)
+  ✓  46 [anon] › e2e/login-screen.spec.ts:232:7 › Login Screen (anon project) › C4 [BR-003] — invalid NEXT_LOCALE value falls back to VN without blank page (2.8s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  48 [anon] › e2e/homepage.spec.ts:193:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-17 [FR-108] — footer displays logo, navigation links, and copyright text (3.8s)
+  ✓  49 [anon] › e2e/award-system.spec.ts:345:7 › Award System screen — /awards-information (anon) › ID-8 — Sun* Kudos block renders eyebrow, title, subtitle and the Chi tiết control (4.1s)
+  ✓  50 [homepage-authed] › e2e/homepage-authed.spec.ts:6:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-1 [FR-200] — authenticated user sees notification bell and account menu button in header (3.6s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  47 [anon] › e2e/kudos-live-board.spec.ts:326:7 › Kudos Live Board screen — /kudos (anon) › K-8 — filter selection resets carousel to slide 1 (4.9s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  51 [anon] › e2e/login-screen.spec.ts:256:7 › Login Screen (anon project) › C5 [FR-202, FR-601, SM-001, SC-003] — clicking login button initiates OAuth flow with provider=google (4.3s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  56 [anon] › e2e/login-screen.spec.ts:296:7 › Login Screen (anon project) › C10 — callback open-redirect protection rejects external next URL (2.2s)
+  ✓  55 [anon] › e2e/kudos-live-board.spec.ts:342:7 › Kudos Live Board screen — /kudos (anon) › K-9 — kudos card renders sender, receiver, badge, time, campaign, hashtags, heart (3.1s)
+  ✓  54 [homepage-authed] › e2e/homepage-authed.spec.ts:28:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-27 [FR-201] — clicking notification bell opens the notification panel (3.7s)
+  ✓  52 [anon] › e2e/homepage.spec.ts:221:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-18 [FR-108b] — header logo navigates to home from non-home route (4.6s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  53 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (5.6s)
+  ✓  57 [anon] › e2e/kudos-live-board.spec.ts:385:7 › Kudos Live Board screen — /kudos (anon) › K-24 — every kudos-heart is disabled for anon viewer (2.5s)
+  ✓  58 [homepage-authed] › e2e/homepage-authed.spec.ts:52:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-36 [FR-202] — clicking account button opens menu with Profile and Sign out (2.4s)
+  ✓  59 [anon] › e2e/homepage.spec.ts:246:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-19 [FR-108c] — footer logo navigates to home from non-home route (3.1s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  62 [homepage-authed] › e2e/homepage-authed.spec.ts:80:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-38 [FR-203] — regular user does not see Admin Dashboard in account menu (2.6s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  -  64 [homepage-authed] › e2e/homepage-authed.spec.ts:104:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-5/37 [FR-204] — admin user sees Admin Dashboard in account menu
+  ✓  60 [anon] › e2e/award-system.spec.ts:394:7 › Award System screen — /awards-information (anon) › ID-10 — menu items are interactive links that respond to hover (3.4s)
+  ✓  61 [anon] › e2e/kudos-live-board.spec.ts:409:7 › Kudos Live Board screen — /kudos (anon) › K-11 — Copy Link shows toast with correct message (2.9s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  66 [anon] › e2e/kudos-live-board.spec.ts:427:7 › Kudos Live Board screen — /kudos (anon) › K-12 — Xem chi tiết link present on highlight cards (1.3s)
+  ✓  63 [anon] › e2e/homepage.spec.ts:269:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-39 [FR-109] — countdown decreases in real time without a page reload (4.1s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  65 [anon] › e2e/award-system.spec.ts:411:7 › Award System screen — /awards-information (anon) › ID-12 — Kudos Chi tiết control navigates to /kudos (2.5s)
+  ✓  67 [anon] › e2e/kudos-live-board.spec.ts:442:7 › Kudos Live Board screen — /kudos (anon) › K-13 — SPOTLIGHT BOARD renders heading, count, and search (1.4s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  69 [anon] › e2e/award-system.spec.ts:423:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (2.1s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/abb54849-9641-4a60-9912-c4b04f8dfc1a/1788756672953-b9103878-b273-49d8-bc64-de142b8d2a73.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  70 [anon] › e2e/kudos-live-board.spec.ts:469:7 › Kudos Live Board screen — /kudos (anon) › K-14 — spotlight nodes present and search narrows them (1.9s)
+  ✓  68 [anon] › e2e/homepage.spec.ts:297:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-2/3/4/20 [FR-117] — nav items navigate to home from non-home route; clicking selected nav item scrolls to top instead of navigating (2.9s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  71 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (2.0s)
+  ✓  72 [anon] › e2e/kudos-live-board.spec.ts:489:7 › Kudos Live Board screen — /kudos (anon) › K-15 — spotlight pan/zoom and expand buttons have aria-pressed (1.8s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  74 [anon] › e2e/kudos-live-board.spec.ts:503:7 › Kudos Live Board screen — /kudos (anon) › K-16 — spotlight ticker rows present (837ms)
+  ✓  73 [anon] › e2e/homepage.spec.ts:332:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-20 [FR-118] — footer logo scrolls to top when clicked on homepage (2.2s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  75 [anon] › e2e/kudos-live-board.spec.ts:511:7 › Kudos Live Board screen — /kudos (anon) › K-17 — ALL KUDOS section renders heading and feed (1.2s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  77 [anon] › e2e/kudos-live-board.spec.ts:535:7 › Kudos Live Board screen — /kudos (anon) › K-18 — sidebar renders 5 stat rows in exact order (1.3s)
+  ✓  76 [anon] › e2e/homepage.spec.ts:360:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-41/42/43 [FR-110] — when event time passes, Coming soon hides and countdown holds at 00 (2.6s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  78 [anon] › e2e/kudos-live-board.spec.ts:553:7 › Kudos Live Board screen — /kudos (anon) › K-19 — Secret Box button present with correct label and href (1.2s)
+  ✓  79 [anon] › e2e/homepage.spec.ts:406:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-24/30-35 [FR-111] — language menu: click opens/closes, outside click closes, Enter/Space open, Esc closes (1.5s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  80 [anon] › e2e/kudos-live-board.spec.ts:565:7 › Kudos Live Board screen — /kudos (anon) › K-20 — gift leaderboard heading present (1.2s)
+  ✓  81 [anon] › e2e/homepage.spec.ts:448:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-25/26 [FR-112] — selecting EN in language menu switches UI to English, selecting VN reverts to Vietnamese (2.4s)
+  ✓  83 [anon] › e2e/homepage.spec.ts:494:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-44/45 [FR-113] — CTA buttons navigate to Awards Information and Kudos routes (2.3s)
+  ✓  84 [anon] › e2e/homepage.spec.ts:520:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-47/48/49/50/52 [FR-114] — award card (image, title, Chi tiết) navigates to /awards-information#<slug> (4.8s)
+  ✓  85 [anon] › e2e/homepage.spec.ts:551:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-53 [FR-115] — Kudos section Chi tiết button navigates to /kudos (1.4s)
+  ✓  82 [anon] › e2e/kudos-live-board.spec.ts:575:7 › Kudos Live Board screen — /kudos (anon) › K-21 — placeholder routes /kudos/secret-box and /kudos/[id] render ComingSoon (12.6s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  87 [anon] › e2e/kudos-live-board.spec.ts:595:7 › Kudos Live Board screen — /kudos (anon) › K-22 — compose bar links to /kudos/new (1.2s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  88 [anon] › e2e/kudos-live-board.spec.ts:604:7 › Kudos Live Board screen — /kudos (anon) › K-23 — Sunner search maxlength is 100 (1.2s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/1cb74846-4d0e-4cea-ab07-c144f294c99c/1788756817006-ce51e4a5-8936-4225-ba12-2d345470de19.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  86 [anon] › e2e/homepage.spec.ts:573:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-55/59 [FR-116] — all footer links resolve without 404 errors (11.0s)
+
+
+  1) [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:66:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByTestId('kudos-card').first().getByTestId('kudos-heart-count')
+    Expected: "1.000"
+    Received: "1.001"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveText" with timeout 5000ms
+      - waiting for getByTestId('kudos-card').first().getByTestId('kudos-heart-count')
+        14 × locator resolved to <span data-testid="kudos-heart-count" class="text-2xl leading-8 font-bold text-[#00101A]">1.001</span>
+           - unexpected value "1.001"
+
+
+      108 |     await expect(heartAfterReload).toHaveAttribute("aria-pressed", initialPressed ?? "");
+      109 |     // Verify count reverts
+    > 110 |     await expect(countAfterReload).toHaveText(initialCount ?? "");
+          |                                    ^
+      111 |
+      112 |     // Reload once more to verify the original values persist
+      113 |     await page.reload();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/kudos-live-board-authed.spec.ts:110:36
+
+    Error Context: test-results/kudos-live-board-authed-Ku-7c495-persists-across-page-reload-kudos-authed/error-context.md
+
+  1 failed
+    [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:66:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload 
+  1 skipped
+  86 passed (2.2m)
+EXIT_CODE=1
