@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "product": "ランニング習慣化アプリ Hashiru",
+    "users": "運動を始めたいのに続かない20〜30代の運動初心者（toC・スマホ中心）",
+    "primaryGoal": "低いハードルで走り始め、サボっても戻ってこられて、4週間続く",
+    "device": "responsive",
+    "appType": "mobile-app",
+    "stage": "MVP",
+    "sources": [
+      { "id": "src-um", "type": "um-spec", "path": "../uiux-model-users/examples/samples/running-habit.um-spec.json", "note": "ペルソナ（田村さやか）・ジャーニー（3日目の壁→再開）・インサイト・MVPストーリー" },
+      { "id": "src-dir", "type": "instruction", "path": "(チャット指示)", "note": "toCサンプル。デザイン方針は未指定→提案。Vite+React+shadcn構成" }
+    ],
+    "assumptions": [
+      "IA入力なし：画面構成はストーリーマップのMVP骨格（始める→走る→続ける→振り返る）から導出（仮定）",
+      "デザイン方針は未指定のため『前向きでやさしいエナジー』（テラコッタ系・大きめ角丸）を提案（仮定）",
+      "ラン中は初心者向けにペース等の数値を出さない（インサイト『数値は中級者以降に効く』からの判断）",
+      "comeback状態は最終ランから3日以上空いた場合に表示と仮定（ジャーニー『3日目の壁』より）"
+    ]
+  },
+  "design": {
+    "direction": "前向きでやさしいエナジー",
+    "source": "direction・配色・角丸は src-um のインサイト（低ハードル・承認・責めない）からの提案（仮定）。primary/textSub はコントラスト4.5:1確保のため調整済み",
+    "notes": [
+      "主ボタンは大きく1画面1つ・角丸大（押すハードルを下げる）",
+      "褒め・承認の文言を数値より先に置く",
+      "警告色は使っても責める文言は使わない"
+    ],
+    "colors": {
+      "primary": "#CC4420", "primaryText": "#FFFFFF",
+      "bg": "#FFF8F4", "surface": "#FFFFFF",
+      "text": "#2B2320", "textSub": "#7A6B62", "border": "#F3E5DC",
+      "success": "#2FA57B", "warning": "#E09B2D", "danger": "#E0524D",
+      "accent": "#FFD9CC"
+    },
+    "typography": { "family": "Noto Sans JP", "baseSize": "15px", "scale": { "xl": "26px", "lg": "18px", "md": "15px", "sm": "13px", "xs": "11px" } },
+    "shape": { "radius": "16px", "density": "comfortable", "shadow": "0 2px 10px rgba(80,40,20,.07)" }
+  },
+  "requirements": [
+    "3つの質問だけで完了する初期目標設定",
+    "5分から始められる音声ガイド付きラン",
+    "ラン完了時に努力を承認（褒める）",
+    "サボった後のやさしい復帰導線"
+  ],
+  "screens": [
+    {
+      "id": "onboarding",
+      "name": "はじめの設定",
+      "role": "input",
+      "primaryAction": "はじめる",
+      "states": ["default"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["3つの質問だけで目標設定が終わる"],
+        "reqs": ["3つの質問だけで完了する初期目標設定"],
+        "assumptions": ["質問の選択肢はインタビューの頻出回答から構成（仮定）"]
+      },
+      "mock": { "source": "src-um インサイト『機能の多さは拒否シグナル』→ 質問は3つだけ・選択式のみ", "notes": "入力欄ゼロ。タップ3回で完了する構成" }
+    },
+    {
+      "id": "home",
+      "name": "ホーム",
+      "role": "decide",
+      "primaryAction": "今日の5分ランを始める",
+      "states": ["default", "comeback"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["5分から始める音声ガイド付きランができる", "サボっても責めず、やさしく復帰へ導いてくれる"],
+        "reqs": ["5分から始められる音声ガイド付きラン", "サボった後のやさしい復帰導線"],
+        "assumptions": ["comeback状態は最終ランから3日以上空いた場合に表示と仮定"]
+      },
+      "mock": { "source": "src-um ペルソナの言葉（低いハードル『5分でOK』/ サボっても戻れる導線）とジャーニー段階（3日目の壁→再開）", "notes": "comeback はジャーニー由来のカスタム状態" }
+    },
+    {
+      "id": "run",
+      "name": "ラン中",
+      "role": "inform",
+      "primaryAction": "ランを終える",
+      "states": ["default"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["5分から始める音声ガイド付きランができる"],
+        "reqs": ["5分から始められる音声ガイド付きラン"],
+        "assumptions": ["初心者向けにペース・距離を表示しない（インサイト『数値は中級者以降』からの判断）"]
+      },
+      "mock": { "source": "src-um インサイト『承認は数値より努力へ』→ 残り時間と励ましだけの画面構成", "notes": "リングは残り時間の視覚化。数値の羅列を意図的に排除" }
+    },
+    {
+      "id": "done",
+      "name": "おつかれさま",
+      "role": "complete",
+      "primaryAction": "ホームへ戻る",
+      "states": ["default"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["走り終わりに努力を褒めてくれる"],
+        "reqs": ["ラン完了時に努力を承認（褒める）"]
+      },
+      "mock": { "source": "src-um インサイト『継続を支えるのは努力そのものへの承認』→ 褒めを最上部・数値は下部に控えめ", "notes": "記録値（5分12秒・0.8km）はモック。承認文言が主役" }
+    }
+  ],
+  "transitions": [
+    { "from": "onboarding", "to": "home", "condition": "はじめる（質問3つ）", "kind": "main", "flow": "はじめてフロー" },
+    { "from": "home", "to": "run", "condition": "5分ランを始める", "kind": "main", "flow": "ランフロー" },
+    { "from": "run", "to": "done", "condition": "ランを終える", "kind": "main", "flow": "ランフロー" },
+    { "from": "done", "to": "home", "condition": "ホームへ戻る", "kind": "main", "flow": "ランフロー" },
+    { "from": "home", "to": "run", "condition": "サボり後：ゆるく再開する", "kind": "sub", "flow": "復帰フロー" }
+  ]
+}

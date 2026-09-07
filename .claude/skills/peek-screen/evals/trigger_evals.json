@@ -1,0 +1,22 @@
+[
+  {"query": "https://www.figma.com/design/abc123/App?node-id=2881-8446 what does this screen say", "should_trigger": true},
+  {"query": "Xem nhanh màn hình Figma này nói gì, tôi chỉ cần hình dung thôi", "should_trigger": true},
+  {"query": "Peek at this Figma frame in Vietnamese", "should_trigger": true},
+  {"query": "この画面を日本語から訳して、ざっと読めるようにして", "should_trigger": true},
+  {"query": "Translate this mockup so I can read the labels, it is throwaway", "should_trigger": true},
+  {"query": "Dịch nhanh cái screen này sang tiếng Việt để tôi đọc", "should_trigger": true},
+  {"query": "I cannot read Japanese, show me what each field on this design is called", "should_trigger": true},
+  {"query": "Give me an interactive overlay of the English strings on this Figma screenshot", "should_trigger": true},
+  {"query": "Dịch cả flow 5 màn này sang tiếng Việt để tôi lướt xem một lượt", "should_trigger": true},
+  {"query": "Here are four Figma frames, put them in one page I can arrow through and read in English", "should_trigger": true},
+  {"query": "Export a pixel-perfect Vietnamese PNG of this frame to send to the client", "should_trigger": false},
+  {"query": "Write the screen specification document for this Figma frame", "should_trigger": false},
+  {"query": "Implement this Figma design as a React component", "should_trigger": false},
+  {"query": "Translate our business docs into Japanese", "should_trigger": false},
+  {"query": "Translate the i18n JSON files in locales/ to Korean", "should_trigger": false},
+  {"query": "Build an interactive page explaining this project's business domain", "should_trigger": false},
+  {"query": "Write a Chirpy blog post about Figma plugin development", "should_trigger": false},
+  {"query": "Generate a development guide covering our CI and branch strategy", "should_trigger": false},
+  {"query": "Review this pull request for security issues", "should_trigger": false},
+  {"query": "Evaluate the trigger accuracy of my skill", "should_trigger": false}
+]

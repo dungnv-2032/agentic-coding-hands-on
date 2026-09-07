@@ -1,0 +1,2906 @@
+{
+  "meta": {
+    "product": "SunFit — 集客Webサイト & 会員アプリ",
+    "users": "フィットネスクラブの見込み客・会員（20代学生〜60代シニア）",
+    "primaryGoal": "迷わず体験・入会でき、予約・入館・記録が1タップ圏内で完結して運動が続く",
+    "businessGoal": "Web経由入会60% / 体験→入会転換率50% / 12ヶ月継続率70%",
+    "device": "responsive",
+    "stage": "MVP",
+    "assumptions": [
+      "RFP・提案資料・ユーザーモデリング（UM）成果物をインプットとして統合（examples/sunfit-toc-web-app/inputs/）",
+      "決済はPCI DSS準拠の外部決済代行（カード情報非保持）— 決済画面のカード入力はトークン化フォームを想定",
+      "基幹会員システムとはAPI連携。既存会員のアプリ移行はメール案内＋店頭サポート併存（UMインサイト2より）",
+      "多言語対応・法人契約はスコープ外（RFP記載なし）",
+      "Webサイトはレスポンシブ、アプリはiOS/Android（Flutter）。各画面の platform フィールドで区別（web=ブラウザ表示 11画面 / app=ネイティブアプリ 21画面）",
+      "友だち紹介（R10）はPhase 3のためMVP画面には未配置 — PRDトレーサビリティ上は未カバー要件として明示"
+    ]
+  },
+  "navigation": {
+    "model": "tabbed",
+    "global": [
+      "Webサイト",
+      "はじめる",
+      "ホーム",
+      "レッスン予約",
+      "オンラインレッスン",
+      "からだの記録",
+      "マイページ"
+    ],
+    "notes": "アプリは下タブ5つ（ホーム/レッスン予約/オンラインレッスン/からだの記録/マイページ）のタブ型。Webサイトは階層型（グローバルナビ＋パンくず）で、全ページに体験予約CTAを常設。『はじめる』はログイン前の認証系でタブ外。",
+    "patterns": [
+      {
+        "type": "グローバルナビ",
+        "where": "Webサイト ヘッダー",
+        "notes": "プラン・店舗・プログラム・FAQ＋体験予約CTAボタンを常設"
+      },
+      {
+        "type": "タブ",
+        "where": "アプリ下部",
+        "notes": "ホーム/予約/オンライン/記録/マイページの5タブ。1タップで主要タスクへ"
+      },
+      {
+        "type": "検索",
+        "where": "店舗検索・ビデオ一覧",
+        "notes": "店舗はエリア/駅名、ビデオは部位・強度キーワードで検索"
+      },
+      {
+        "type": "フィルタ",
+        "where": "レッスン予約カレンダー",
+        "notes": "店舗/ジャンル/強度/時間帯で絞り込み。『初心者OK』フィルタを最前面（UM: 佐藤）"
+      },
+      {
+        "type": "パンくず",
+        "where": "Webサイト下層ページ",
+        "notes": "店舗詳細・申込ステップで現在地を明示"
+      },
+      {
+        "type": "CTA",
+        "where": "Web全ページ・体験予約完了",
+        "notes": "『無料体験を予約』を固定表示。完了画面からアプリDLへ直結"
+      },
+      {
+        "type": "関連リンク",
+        "where": "記録ダッシュボード下部",
+        "notes": "記録→おすすめレッスンへの回遊で継続を促す"
+      }
+    ]
+  },
+  "inventory": [
+    {
+      "item": "料金プラン比較",
+      "type": "page",
+      "group": "知る・比べる"
+    },
+    {
+      "item": "店舗情報（住所・営業時間・設備）",
+      "type": "content",
+      "group": "知る・比べる"
+    },
+    {
+      "item": "プログラム紹介（ヨガ/暗闇/マシン）",
+      "type": "content",
+      "group": "知る・比べる"
+    },
+    {
+      "item": "キャンペーン告知",
+      "type": "content",
+      "group": "知る・比べる"
+    },
+    {
+      "item": "体験予約フォーム",
+      "type": "function",
+      "group": "入会・契約"
+    },
+    {
+      "item": "入会申込・クレジット決済",
+      "type": "function",
+      "group": "入会・契約"
+    },
+    {
+      "item": "契約プラン・支払い履歴",
+      "type": "content",
+      "group": "入会・契約"
+    },
+    {
+      "item": "レッスンスケジュール・空き状況",
+      "type": "status",
+      "group": "予約・通う"
+    },
+    {
+      "item": "レッスン予約・キャンセル",
+      "type": "function",
+      "group": "予約・通う"
+    },
+    {
+      "item": "デジタル会員証（QR）",
+      "type": "function",
+      "group": "予約・通う"
+    },
+    {
+      "item": "予約リマインド通知",
+      "type": "notification",
+      "group": "予約・通う"
+    },
+    {
+      "item": "ライブレッスン配信",
+      "type": "function",
+      "group": "オンライン"
+    },
+    {
+      "item": "レッスンビデオ視聴（プレミアム限定あり）",
+      "type": "permission",
+      "group": "オンライン"
+    },
+    {
+      "item": "体重・体脂肪率・メモ入力",
+      "type": "field",
+      "group": "記録・成果"
+    },
+    {
+      "item": "トレーニング履歴・月次レポート",
+      "type": "content",
+      "group": "記録・成果"
+    },
+    {
+      "item": "FAQ・問い合わせ",
+      "type": "content",
+      "group": "サポート"
+    },
+    {
+      "item": "体験予約〜入会の業務フロー",
+      "type": "flow",
+      "group": "入会・契約"
+    }
+  ],
+  "cardSort": {
+    "method": "hybrid",
+    "categories": [
+      {
+        "name": "知る・はじめる（Web）",
+        "cards": [
+          "料金プラン比較",
+          "店舗検索",
+          "プログラム紹介",
+          "体験予約",
+          "FAQ"
+        ],
+        "rationale": "入会前のユーザーが『比較→試す』順で辿る情報。会員向け機能と混ぜない"
+      },
+      {
+        "name": "通う（予約・入館）",
+        "cards": [
+          "レッスン予約",
+          "予約の確認・キャンセル",
+          "デジタル会員証",
+          "店舗の混雑状況"
+        ],
+        "rationale": "来店当日に使うものを1カテゴリに。ソートで全員が『会員証は予約の近く』に置いた"
+      },
+      {
+        "name": "続ける（記録・オンライン）",
+        "cards": [
+          "からだの記録",
+          "トレーニング履歴",
+          "月次レポート",
+          "オンラインレッスン"
+        ],
+        "rationale": "成果実感と店舗外利用。『家でやる』と『振り返る』は同じ動機圏"
+      },
+      {
+        "name": "契約・支払い",
+        "cards": [
+          "プラン変更",
+          "支払い履歴",
+          "アカウント設定"
+        ],
+        "rationale": "低頻度・高慎重の管理タスク。マイページ配下に集約"
+      }
+    ],
+    "unsorted": [
+      "友だち紹介",
+      "イベント告知"
+    ]
+  },
+  "objects": [
+    {
+      "name": "会員",
+      "attributes": [
+        "氏名",
+        "会員番号",
+        "ステータス"
+      ],
+      "relations": [
+        {
+          "to": "契約",
+          "kind": "has-one"
+        },
+        {
+          "to": "予約",
+          "kind": "has-many"
+        },
+        {
+          "to": "からだの記録",
+          "kind": "has-many"
+        },
+        {
+          "to": "支払い",
+          "kind": "has-many"
+        }
+      ]
+    },
+    {
+      "name": "契約",
+      "attributes": [
+        "プラン",
+        "開始日",
+        "支払い方法"
+      ],
+      "relations": [
+        {
+          "to": "プラン",
+          "kind": "relates"
+        }
+      ]
+    },
+    {
+      "name": "プラン",
+      "attributes": [
+        "月会費",
+        "利用可能店舗",
+        "オンライン可否"
+      ],
+      "relations": []
+    },
+    {
+      "name": "店舗",
+      "attributes": [
+        "住所",
+        "営業時間",
+        "設備"
+      ],
+      "relations": [
+        {
+          "to": "レッスン",
+          "kind": "has-many"
+        }
+      ]
+    },
+    {
+      "name": "レッスン",
+      "attributes": [
+        "名称",
+        "日時",
+        "定員",
+        "強度"
+      ],
+      "relations": [
+        {
+          "to": "インストラクター",
+          "kind": "relates"
+        },
+        {
+          "to": "予約",
+          "kind": "has-many"
+        }
+      ]
+    },
+    {
+      "name": "予約",
+      "attributes": [
+        "状態（確定/キャンセル待ち）",
+        "予約日時"
+      ],
+      "relations": []
+    },
+    {
+      "name": "からだの記録",
+      "attributes": [
+        "体重",
+        "体脂肪率",
+        "記録日"
+      ],
+      "relations": [
+        {
+          "to": "月次レポート",
+          "kind": "relates"
+        }
+      ]
+    },
+    {
+      "name": "支払い",
+      "attributes": [
+        "請求月",
+        "金額",
+        "状態"
+      ],
+      "relations": []
+    }
+  ],
+  "labels": [
+    {
+      "term": "レッスン",
+      "alternatives": [
+        "クラス",
+        "プログラム"
+      ],
+      "rationale": "会員インタビューで最多の呼称。『プログラム』はWeb紹介ページの総称に限定して使い分け"
+    },
+    {
+      "term": "デジタル会員証",
+      "alternatives": [
+        "メンバーズカード",
+        "入館QR"
+      ],
+      "rationale": "機能名でなく『持ち物』のメタファーで。シニアにも通じる（UM: 鈴木）"
+    },
+    {
+      "term": "からだの記録",
+      "alternatives": [
+        "ヘルスログ",
+        "ボディデータ"
+      ],
+      "rationale": "カタカナ専門語を避け平易に。60代の語彙に合わせる"
+    },
+    {
+      "term": "無料体験",
+      "alternatives": [
+        "トライアル",
+        "見学予約"
+      ],
+      "rationale": "『無料』を明示すると予約率が上がる（提案資料KPI設計より）"
+    },
+    {
+      "term": "マイページ",
+      "alternatives": [
+        "アカウント",
+        "設定"
+      ],
+      "rationale": "Webとアプリで同一ラベルに統一し、概念の二重化を防ぐ"
+    }
+  ],
+  "businessFlow": {
+    "asIs": {
+      "title": "現状（As-Is）: 入会は店頭・紙、予約は電話",
+      "lanes": [
+        "見込み客",
+        "店舗スタッフ",
+        "本部"
+      ],
+      "steps": [
+        {
+          "id": "a1",
+          "lane": "見込み客",
+          "name": "チラシ・旧サイトで店舗を知る",
+          "type": "start"
+        },
+        {
+          "id": "a2",
+          "lane": "見込み客",
+          "name": "店舗へ電話で体験申込",
+          "type": "action"
+        },
+        {
+          "id": "a3",
+          "lane": "店舗スタッフ",
+          "name": "予約台帳に手書きで記入",
+          "type": "action"
+        },
+        {
+          "id": "a4",
+          "lane": "見込み客",
+          "name": "来店して体験",
+          "type": "action"
+        },
+        {
+          "id": "a5",
+          "lane": "店舗スタッフ",
+          "name": "紙の申込書で入会手続き",
+          "type": "action"
+        },
+        {
+          "id": "a6",
+          "lane": "店舗スタッフ",
+          "name": "書類不備チェック",
+          "type": "decision",
+          "branch": "不備あり→再記入依頼"
+        },
+        {
+          "id": "a7",
+          "lane": "本部",
+          "name": "会員システムへ手入力登録",
+          "type": "system"
+        },
+        {
+          "id": "a8",
+          "lane": "見込み客",
+          "name": "後日、カード会員証を受取",
+          "type": "end"
+        }
+      ]
+    },
+    "toBe": {
+      "title": "提案（To-Be）: Web完結入会 + アプリで利用開始",
+      "lanes": [
+        "見込み客",
+        "Webサイト",
+        "会員システム",
+        "店舗スタッフ"
+      ],
+      "steps": [
+        {
+          "id": "t1",
+          "lane": "見込み客",
+          "name": "検索・SNSからサイト訪問",
+          "type": "start"
+        },
+        {
+          "id": "t2",
+          "lane": "Webサイト",
+          "name": "プラン比較・店舗検索を提示",
+          "type": "action"
+        },
+        {
+          "id": "t3",
+          "lane": "見込み客",
+          "name": "無料体験をWeb予約",
+          "type": "action"
+        },
+        {
+          "id": "t4",
+          "lane": "会員システム",
+          "name": "予約登録・前日リマインド送信",
+          "type": "system"
+        },
+        {
+          "id": "t5",
+          "lane": "見込み客",
+          "name": "来店して体験",
+          "type": "action"
+        },
+        {
+          "id": "t6",
+          "lane": "店舗スタッフ",
+          "name": "体験後フォロー（その場で入会案内）",
+          "type": "action"
+        },
+        {
+          "id": "t7",
+          "lane": "見込み客",
+          "name": "Webで入会申込・決済",
+          "type": "action"
+        },
+        {
+          "id": "t8",
+          "lane": "会員システム",
+          "name": "即時会員登録・デジタル会員証発行",
+          "type": "system"
+        },
+        {
+          "id": "t9",
+          "lane": "見込み客",
+          "name": "アプリをDLしてその日から利用開始",
+          "type": "end"
+        }
+      ]
+    }
+  },
+  "userStoryMap": {
+    "releases": [
+      "MVP",
+      "Release 2",
+      "Later"
+    ],
+    "activities": [
+      {
+        "name": "知る・比べる",
+        "persona": "佐藤 美咲（29・会社員）",
+        "tasks": [
+          {
+            "name": "プランを比較する",
+            "stories": [
+              {
+                "title": "料金プランを一覧で比較できる",
+                "release": "MVP",
+                "priority": "Must"
+              },
+              {
+                "title": "キャンペーン情報を見られる",
+                "release": "MVP",
+                "priority": "Should"
+              }
+            ]
+          },
+          {
+            "name": "店舗を探す",
+            "stories": [
+              {
+                "title": "通える店舗をエリアで検索できる",
+                "release": "MVP",
+                "priority": "Must"
+              },
+              {
+                "title": "店舗の混雑状況を見られる",
+                "release": "Later",
+                "priority": "Could"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "体験して入会する",
+        "persona": "田中 健一（45・メーカー管理職）",
+        "tasks": [
+          {
+            "name": "無料体験を予約する",
+            "stories": [
+              {
+                "title": "Webから3分で体験予約できる",
+                "release": "MVP",
+                "priority": "Must"
+              },
+              {
+                "title": "前日に持ち物つきリマインドが届く",
+                "release": "Release 2",
+                "priority": "Should"
+              }
+            ]
+          },
+          {
+            "name": "入会する",
+            "stories": [
+              {
+                "title": "Webで入会申込と決済を完結できる",
+                "release": "MVP",
+                "priority": "Must"
+              },
+              {
+                "title": "家族分をまとめて契約できる",
+                "release": "Later",
+                "priority": "Could"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "予約して通う",
+        "persona": "佐藤 美咲（29・会社員）",
+        "tasks": [
+          {
+            "name": "レッスンを予約する",
+            "stories": [
+              {
+                "title": "カレンダーから空きを見て予約できる",
+                "release": "MVP",
+                "priority": "Must"
+              },
+              {
+                "title": "満席時にキャンセル待ちできる",
+                "release": "Release 2",
+                "priority": "Should"
+              }
+            ]
+          },
+          {
+            "name": "入館する",
+            "stories": [
+              {
+                "title": "デジタル会員証のQRでチェックインできる",
+                "release": "MVP",
+                "priority": "Must"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "オンラインで受講する",
+        "persona": "山本 大輔（22・大学生）",
+        "tasks": [
+          {
+            "name": "ライブレッスンを受ける",
+            "stories": [
+              {
+                "title": "自宅からライブレッスンに参加できる",
+                "release": "Release 2",
+                "priority": "Should"
+              }
+            ]
+          },
+          {
+            "name": "ビデオで学ぶ",
+            "stories": [
+              {
+                "title": "部位・強度でビデオを検索して視聴できる",
+                "release": "Release 2",
+                "priority": "Should"
+              },
+              {
+                "title": "倍速再生・続きから再生できる",
+                "release": "Later",
+                "priority": "Could"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "記録して続ける",
+        "persona": "鈴木 正雄（64・定年退職）",
+        "tasks": [
+          {
+            "name": "からだを記録する",
+            "stories": [
+              {
+                "title": "体重・体脂肪率を入力して推移を見られる",
+                "release": "MVP",
+                "priority": "Must"
+              }
+            ]
+          },
+          {
+            "name": "成果を振り返る",
+            "stories": [
+              {
+                "title": "月次レポートで変化を確認できる",
+                "release": "Release 2",
+                "priority": "Should"
+              },
+              {
+                "title": "AIが次のおすすめを提案してくれる",
+                "release": "Later",
+                "priority": "Could"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "契約を管理する",
+        "persona": "田中 健一（45・メーカー管理職）",
+        "tasks": [
+          {
+            "name": "プランを見直す",
+            "stories": [
+              {
+                "title": "アプリからプラン変更を申し込める",
+                "release": "Release 2",
+                "priority": "Should"
+              }
+            ]
+          },
+          {
+            "name": "支払いを確認する",
+            "stories": [
+              {
+                "title": "支払い履歴を照会できる",
+                "release": "MVP",
+                "priority": "Should"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "id": "web-home",
+      "name": "トップページ（Web）",
+      "summary": "見込み客の入口。価値提案と体験予約CTAへ最短で誘導する",
+      "section": "Webサイト",
+      "role": "inform",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "キャッチコピーと無料体験CTA",
+        "選ばれる理由・プログラム概要",
+        "キャンペーン・店舗一覧への導線"
+      ],
+      "primaryAction": "無料体験を予約する",
+      "states": [
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（グローバルナビ）",
+        "Hero（価値提案＋CTA）",
+        "選ばれる理由",
+        "プログラム紹介",
+        "キャンペーン",
+        "Footer"
+      ],
+      "components": [
+        {
+          "type": "header",
+          "label": "SunFit",
+          "items": [
+            "プラン・料金",
+            "店舗を探す",
+            "プログラム",
+            "FAQ",
+            "無料体験を予約"
+          ]
+        },
+        {
+          "type": "image",
+          "label": "仕事帰りに、今日から変わる。",
+          "items": [
+            "スタジオレッスンのヒーロー写真"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "SunFitが選ばれる理由",
+          "items": [
+            "駅チカ24店舗",
+            "初心者OKレッスン多数",
+            "アプリで予約も記録も"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "人気プログラム",
+          "items": [
+            "暗闇フィットネス",
+            "はじめてヨガ",
+            "マシントレーニング",
+            "健康体操（シニア）"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "キャンペーン",
+          "items": [
+            "いま入会で初月会費0円（10/31まで）"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "無料体験を予約する",
+          "items": []
+        },
+        {
+          "type": "footer",
+          "label": "会社情報・利用規約・プライバシーポリシー",
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "web-plans",
+      "name": "プラン・料金（Web）",
+      "summary": "月会費と利用範囲を横並び比較させ、迷いを解消して入会・体験へ進める",
+      "section": "Webサイト",
+      "role": "compare",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "プラン別の月会費と利用範囲の比較表",
+        "学割・キャンペーン適用後価格",
+        "よくある質問（解約・休会）"
+      ],
+      "primaryAction": "このプランで入会に進む",
+      "states": [
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "プラン比較表",
+        "料金シミュレーション",
+        "CTA",
+        "Footer"
+      ],
+      "components": [
+        {
+          "type": "header",
+          "label": "プラン・料金",
+          "items": []
+        },
+        {
+          "type": "table",
+          "label": "プラン比較",
+          "items": [
+            "プラン名",
+            "月会費",
+            "利用時間",
+            "利用店舗",
+            "オンライン"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "学割・のりかえ割",
+          "items": [
+            "学生証提示で月会費 ¥2,200 OFF"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "このプランで入会に進む",
+          "items": []
+        },
+        {
+          "type": "button",
+          "label": "まずは無料体験",
+          "items": []
+        }
+      ],
+      "covers": [
+        "プラン・料金を比較して選べる"
+      ]
+    },
+    {
+      "id": "web-clubs",
+      "name": "店舗検索（Web）",
+      "summary": "エリア・駅名・設備で通える店舗を絞り込み比較する",
+      "section": "Webサイト",
+      "role": "compare",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "検索条件（エリア/駅/設備）",
+        "該当店舗リストと距離",
+        "地図表示"
+      ],
+      "primaryAction": "店舗詳細を見る",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "検索フォーム",
+        "地図",
+        "店舗リスト",
+        "Footer"
+      ],
+      "components": [
+        {
+          "type": "search",
+          "label": "エリア・駅名で探す",
+          "items": [
+            "渋谷",
+            "横浜",
+            "大宮"
+          ]
+        },
+        {
+          "type": "image",
+          "label": "店舗マップ",
+          "items": [
+            "首都圏24店舗のピン表示"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "検索結果",
+          "items": [
+            "SunFit渋谷（渋谷駅3分・24h）",
+            "SunFit恵比寿（プール有）",
+            "SunFit自由が丘（女性専用エリア有）"
+          ]
+        }
+      ],
+      "covers": [
+        "通える店舗を検索して詳細を確認できる"
+      ]
+    },
+    {
+      "id": "web-club-detail",
+      "name": "店舗詳細（Web）",
+      "summary": "営業時間・設備・スケジュールを確認し、この店舗での体験予約へ進める",
+      "section": "Webサイト",
+      "parent": "web-clubs",
+      "role": "inform",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "店舗名・アクセス・営業時間",
+        "設備・レッスンスケジュール",
+        "体験予約CTA"
+      ],
+      "primaryAction": "この店舗で無料体験を予約する",
+      "states": [
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（パンくず）",
+        "店舗写真",
+        "基本情報",
+        "週間スケジュール",
+        "CTA"
+      ],
+      "components": [
+        {
+          "type": "image",
+          "label": "SunFit渋谷",
+          "items": [
+            "店内・スタジオ写真"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "基本情報",
+          "items": [
+            "渋谷駅ハチ公口 徒歩3分",
+            "6:00-23:00（土日 8:00-21:00）",
+            "マシン120台・スタジオ2面・シャワー"
+          ]
+        },
+        {
+          "type": "table",
+          "label": "今週のレッスン",
+          "items": [
+            "曜日",
+            "時間",
+            "レッスン名",
+            "強度",
+            "空き"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "この店舗で無料体験を予約する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "通える店舗を検索して詳細を確認できる"
+      ]
+    },
+    {
+      "id": "web-programs",
+      "name": "プログラム紹介（Web）",
+      "summary": "レッスンジャンルを強度・対象者つきで紹介し、自分に合う運動のイメージを作る",
+      "section": "Webサイト",
+      "role": "inform",
+      "platform": "web",
+      "priority": "Should",
+      "infoPriority": [
+        "ジャンル別プログラム一覧（強度・対象者）",
+        "初心者OK・シニア向けの明示",
+        "体験予約への導線"
+      ],
+      "primaryAction": "気になるプログラムで体験を予約する",
+      "states": [
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "プログラムカード一覧",
+        "CTA",
+        "Footer"
+      ],
+      "components": [
+        {
+          "type": "cards",
+          "label": "プログラム一覧",
+          "items": [
+            "はじめてヨガ（強度1・初心者OK）",
+            "暗闇フィットネス（強度3）",
+            "健康体操（シニア向け・昼間）",
+            "パワーリフティング講座（強度4）"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "無料体験を予約する",
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "web-trial",
+      "name": "無料体験予約（Web）",
+      "summary": "店舗・日時・連絡先の最小入力で体験を予約させる（3分完了が目標）",
+      "section": "Webサイト",
+      "role": "input",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "店舗と日時の選択",
+        "氏名・連絡先の入力",
+        "当日の持ち物案内"
+      ],
+      "primaryAction": "この内容で体験を予約する",
+      "states": [
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（ステップ表示）",
+        "予約フォーム",
+        "持ち物案内",
+        "送信ボタン"
+      ],
+      "components": [
+        {
+          "type": "form",
+          "label": "体験予約フォーム",
+          "items": [
+            "店舗",
+            "希望日時（第1・第2希望）",
+            "氏名",
+            "メールアドレス",
+            "電話番号",
+            "気になるプログラム（任意）"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "当日の持ち物",
+          "items": [
+            "運動できる服装・室内シューズ・タオル（レンタル有 ¥330）"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "この内容で体験を予約する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "無料体験をWebから予約できる"
+      ]
+    },
+    {
+      "id": "web-trial-done",
+      "name": "体験予約完了（Web）",
+      "summary": "予約確定を安心させ、当日案内とアプリDLへつなげる",
+      "section": "Webサイト",
+      "parent": "web-trial",
+      "role": "complete",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "予約確定メッセージと日時",
+        "当日の流れ・持ち物",
+        "アプリDL・カレンダー追加"
+      ],
+      "primaryAction": "アプリをダウンロードする",
+      "states": [
+        "success"
+      ],
+      "layoutBlocks": [
+        "完了メッセージ",
+        "予約内容",
+        "当日の流れ",
+        "アプリ導線"
+      ],
+      "components": [
+        {
+          "type": "text",
+          "label": "体験予約が完了しました",
+          "items": [
+            "10/18（土）14:00 SunFit渋谷",
+            "確認メールを送信しました"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "当日の流れ",
+          "items": [
+            "受付で名前を伝える",
+            "館内見学（15分）",
+            "体験レッスンor マシン利用（45分）"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "アプリをダウンロードする",
+          "items": []
+        }
+      ],
+      "covers": [
+        "無料体験をWebから予約できる"
+      ]
+    },
+    {
+      "id": "web-signup",
+      "name": "入会申込（Web）",
+      "summary": "プラン・店舗・個人情報をステップ形式で入力させる（ウィザード1/3）",
+      "section": "Webサイト",
+      "role": "input",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "選択中プランと月会費",
+        "個人情報入力フォーム",
+        "ステップ進捗（1/3）"
+      ],
+      "primaryAction": "決済情報の入力へ進む",
+      "states": [
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（ステップ1/3）",
+        "プラン確認",
+        "個人情報フォーム",
+        "次へボタン"
+      ],
+      "components": [
+        {
+          "type": "text",
+          "label": "選択中のプラン",
+          "items": [
+            "スタンダード（全店利用）¥8,800/月・初月0円"
+          ]
+        },
+        {
+          "type": "form",
+          "label": "お客様情報",
+          "items": [
+            "氏名",
+            "フリガナ",
+            "生年月日",
+            "住所",
+            "メールアドレス",
+            "電話番号",
+            "緊急連絡先"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "決済情報の入力へ進む",
+          "items": []
+        }
+      ],
+      "covers": [
+        "入会手続きと決済をWebで完結できる"
+      ]
+    },
+    {
+      "id": "web-signup-payment",
+      "name": "決済情報入力（Web）",
+      "summary": "クレジットカード情報をトークン化フォームで安全に入力させる（ウィザード2/3）",
+      "section": "Webサイト",
+      "parent": "web-signup",
+      "role": "input",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "請求内容（初月0円・翌月から¥8,800）",
+        "カード情報入力",
+        "セキュリティの安心表示"
+      ],
+      "primaryAction": "申込を確定する",
+      "states": [
+        "error",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（ステップ2/3）",
+        "請求内容",
+        "カード入力フォーム",
+        "確定ボタン"
+      ],
+      "components": [
+        {
+          "type": "table",
+          "label": "ご請求内容",
+          "items": [
+            "項目",
+            "金額",
+            "請求日"
+          ]
+        },
+        {
+          "type": "form",
+          "label": "クレジットカード情報",
+          "items": [
+            "カード番号",
+            "有効期限",
+            "セキュリティコード",
+            "カード名義"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "安心表示",
+          "items": [
+            "カード情報は決済代行会社で暗号化され、当社は保持しません"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "申込を確定する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "入会手続きと決済をWebで完結できる"
+      ]
+    },
+    {
+      "id": "web-signup-done",
+      "name": "入会完了（Web）",
+      "summary": "会員番号発行を伝え、アプリDL→ログインまでを完了画面内で完結させる（ウィザード3/3）",
+      "section": "Webサイト",
+      "parent": "web-signup",
+      "role": "complete",
+      "platform": "web",
+      "priority": "Must",
+      "infoPriority": [
+        "入会完了と会員番号",
+        "アプリDLと初回ログイン手順",
+        "初回来店の案内"
+      ],
+      "primaryAction": "アプリをダウンロードしてはじめる",
+      "states": [
+        "success"
+      ],
+      "layoutBlocks": [
+        "完了メッセージ",
+        "会員番号",
+        "アプリ導線",
+        "初回来店案内"
+      ],
+      "components": [
+        {
+          "type": "text",
+          "label": "ご入会ありがとうございます",
+          "items": [
+            "会員番号: 24-108-55321",
+            "登録メールに詳細を送信しました"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "次のステップ",
+          "items": [
+            "アプリをダウンロード",
+            "メールのリンクから初回ログイン",
+            "デジタル会員証で入館"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "アプリをダウンロードしてはじめる",
+          "items": []
+        }
+      ],
+      "covers": [
+        "入会手続きと決済をWebで完結できる"
+      ]
+    },
+    {
+      "id": "web-faq",
+      "name": "FAQ・お問い合わせ（Web）",
+      "summary": "解約・休会・持ち物など不安要素を自己解決させ、解決しなければ問い合わせへ",
+      "section": "Webサイト",
+      "role": "inform",
+      "platform": "web",
+      "priority": "Should",
+      "infoPriority": [
+        "よくある質問（解約・休会・料金）",
+        "カテゴリ・キーワード検索",
+        "電話・フォームの問い合わせ先"
+      ],
+      "primaryAction": "質問を検索する",
+      "states": [
+        "empty",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "FAQ検索",
+        "カテゴリ別FAQ",
+        "問い合わせ導線"
+      ],
+      "components": [
+        {
+          "type": "search",
+          "label": "質問を検索",
+          "items": [
+            "解約",
+            "休会",
+            "持ち物"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "よくある質問",
+          "items": [
+            "解約はいつまでに手続きが必要？",
+            "休会はできますか？",
+            "体験当日の持ち物は？",
+            "支払い方法は変更できますか？"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "解決しない場合",
+          "items": [
+            "各店舗窓口・電話（10:00-18:00）でもご案内します"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app-onboarding",
+      "name": "オンボーディング（App）",
+      "summary": "初回起動時にアプリでできること3つを紹介し、ログインへ導く",
+      "section": "はじめる",
+      "role": "inform",
+      "standalone": true,
+      "priority": "Should",
+      "infoPriority": [
+        "アプリの価値3つ（予約・会員証・記録）",
+        "スキップ導線",
+        "ログインへの導線"
+      ],
+      "primaryAction": "ログインしてはじめる",
+      "states": [
+        "success"
+      ],
+      "layoutBlocks": [
+        "紹介スライド",
+        "ページインジケータ",
+        "開始ボタン"
+      ],
+      "components": [
+        {
+          "type": "image",
+          "label": "1タップでレッスン予約",
+          "items": [
+            "予約カレンダーのイラスト"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "できること",
+          "items": [
+            "レッスン予約",
+            "スマホが会員証に",
+            "からだの記録で成果が見える"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "ログインしてはじめる",
+          "items": []
+        }
+      ]
+    },
+    {
+      "id": "app-login",
+      "name": "ログイン（App）",
+      "summary": "会員番号またはメールでログインさせる。つまずいた人を再設定へ逃がす",
+      "section": "はじめる",
+      "role": "input",
+      "standalone": true,
+      "priority": "Must",
+      "infoPriority": [
+        "メール・パスワード入力",
+        "パスワードを忘れた導線",
+        "入会がまだの人向けWeb導線"
+      ],
+      "primaryAction": "ログイン",
+      "states": [
+        "error",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "ロゴ",
+        "ログインフォーム",
+        "補助導線"
+      ],
+      "components": [
+        {
+          "type": "form",
+          "label": "ログイン",
+          "items": [
+            "メールアドレスまたは会員番号",
+            "パスワード"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "ログイン",
+          "items": []
+        },
+        {
+          "type": "text",
+          "label": "補助導線",
+          "items": [
+            "パスワードをお忘れの方",
+            "入会がまだの方はWebサイトへ"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app-password-reset",
+      "name": "パスワード再設定（App）",
+      "summary": "メール宛の再設定リンクでログイン不能状態から復帰させる",
+      "section": "はじめる",
+      "parent": "app-login",
+      "role": "recover",
+      "standalone": true,
+      "priority": "Must",
+      "infoPriority": [
+        "登録メールアドレス入力",
+        "送信結果の明示",
+        "届かない場合の案内（店頭・電話）"
+      ],
+      "primaryAction": "再設定メールを送信する",
+      "states": [
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "説明",
+        "メール入力フォーム",
+        "送信ボタン",
+        "サポート案内"
+      ],
+      "components": [
+        {
+          "type": "form",
+          "label": "パスワード再設定",
+          "items": [
+            "登録メールアドレス"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "再設定メールを送信する",
+          "items": []
+        },
+        {
+          "type": "text",
+          "label": "メールが届かない場合",
+          "items": [
+            "店舗窓口・電話（10:00-18:00）でも再設定できます"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "app-home",
+      "name": "ホーム（App）",
+      "summary": "『今日行けるか』を最初に答えるダッシュボード。次の予約と継続状況が即見える",
+      "section": "ホーム",
+      "role": "inform",
+      "priority": "Must",
+      "infoPriority": [
+        "次の予約（日時・場所・持ち物）",
+        "今日これから空きのあるレッスン",
+        "継続日数・今週の運動量"
+      ],
+      "primaryAction": "次の予約を確認する / 今日のレッスンを予約する",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（お知らせアイコン）",
+        "次の予約カード",
+        "今日行けるレッスン",
+        "継続サマリ",
+        "下タブ"
+      ],
+      "components": [
+        {
+          "type": "header",
+          "label": "こんにちは、美咲さん",
+          "items": [
+            "お知らせ"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "次の予約",
+          "items": [
+            "10/21（火）19:30 暗闇フィットネス @渋谷",
+            "持ち物: シューズ・タオル"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "今日これから行けるレッスン",
+          "items": [
+            "19:00 はじめてヨガ（残り3席）",
+            "20:00 マシンエリア（空きあり）",
+            "20:30 ストレッチ30（残り8席）"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "継続サマリ",
+          "items": [
+            "継続 6週目",
+            "今週 2回 / 目標 2回 達成"
+          ]
+        }
+      ],
+      "covers": [
+        "お知らせ・リマインド通知を受け取れる"
+      ]
+    },
+    {
+      "id": "app-notifications",
+      "name": "お知らせ（App）",
+      "summary": "予約リマインド・キャンペーン・重要連絡を時系列で確認する",
+      "section": "ホーム",
+      "parent": "app-home",
+      "role": "inform",
+      "priority": "Should",
+      "infoPriority": [
+        "未読のリマインド・重要連絡",
+        "キャンペーン情報",
+        "過去のお知らせ"
+      ],
+      "primaryAction": "お知らせを開く",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "未読一覧",
+        "既読一覧"
+      ],
+      "components": [
+        {
+          "type": "list",
+          "label": "お知らせ",
+          "items": [
+            "【リマインド】明日19:30 暗闇フィットネス",
+            "【キャンペーン】友だち紹介で1ヶ月無料（準備中）",
+            "【重要】渋谷店 10/25 設備点検のため休館"
+          ]
+        }
+      ],
+      "covers": [
+        "お知らせ・リマインド通知を受け取れる"
+      ]
+    },
+    {
+      "id": "app-lesson-calendar",
+      "name": "レッスン予約カレンダー（App）",
+      "summary": "月間カレンダーで空き状況を俯瞰し、条件で絞って受けたいレッスンを選ぶ",
+      "section": "レッスン予約",
+      "role": "decide",
+      "priority": "Must",
+      "infoPriority": [
+        "日付ごとのレッスンと空き状況",
+        "絞り込み（店舗・ジャンル・強度・初心者OK）",
+        "選択したレッスンの概要"
+      ],
+      "primaryAction": "レッスンを選んで詳細を見る",
+      "states": [
+        "empty",
+        "loading",
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（店舗切替）",
+        "フィルタ",
+        "月間カレンダー",
+        "下タブ"
+      ],
+      "components": [
+        {
+          "type": "search",
+          "label": "絞り込み",
+          "items": [
+            "渋谷",
+            "ヨガ",
+            "初心者OK"
+          ]
+        },
+        {
+          "type": "tabs",
+          "label": "表示切替",
+          "items": [
+            "月",
+            "週",
+            "リスト"
+          ]
+        },
+        {
+          "type": "calendar",
+          "label": "10月のレッスン",
+          "items": [
+            "ヨガ 19:00 ◎",
+            "暗闇 19:30 △",
+            "健康体操 13:00 ◎",
+            "ストレッチ 20:30 ◎",
+            "パワー講座 18:00 満席"
+          ]
+        }
+      ],
+      "covers": [
+        "レッスンをアプリから予約・キャンセルできる"
+      ]
+    },
+    {
+      "id": "app-lesson-detail",
+      "name": "レッスン詳細（App）",
+      "summary": "強度・インストラクター・持ち物を見て『自分に合うか』を判断させる",
+      "section": "レッスン予約",
+      "parent": "app-lesson-calendar",
+      "role": "decide",
+      "priority": "Must",
+      "infoPriority": [
+        "レッスン名・日時・場所・空き",
+        "強度と対象者（初心者OK等）",
+        "インストラクター・持ち物"
+      ],
+      "primaryAction": "このレッスンを予約する",
+      "states": [
+        "loading",
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "レッスン画像",
+        "基本情報",
+        "強度・対象者",
+        "インストラクター",
+        "予約ボタン"
+      ],
+      "components": [
+        {
+          "type": "image",
+          "label": "はじめてヨガ",
+          "items": [
+            "スタジオ写真"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "基本情報",
+          "items": [
+            "10/21（火）19:00-19:45 @渋谷 スタジオA",
+            "残り3席 / 定員20名",
+            "強度1（初心者OK）"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "インストラクター",
+          "items": [
+            "AYAKA — ヨガ歴12年。はじめての方向けの声かけが好評"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "このレッスンを予約する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "レッスンをアプリから予約・キャンセルできる"
+      ]
+    },
+    {
+      "id": "app-reserve-confirm",
+      "name": "予約内容確認（App）",
+      "summary": "予約内容とキャンセル規定を確認させてから確定する",
+      "section": "レッスン予約",
+      "parent": "app-lesson-calendar",
+      "role": "confirm",
+      "priority": "Must",
+      "infoPriority": [
+        "予約内容（レッスン・日時・場所）",
+        "キャンセル規定（開始2時間前まで無料）",
+        "確定ボタン"
+      ],
+      "primaryAction": "予約を確定する",
+      "states": [
+        "error",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "予約内容",
+        "キャンセル規定",
+        "確定ボタン"
+      ],
+      "components": [
+        {
+          "type": "text",
+          "label": "予約内容",
+          "items": [
+            "はじめてヨガ",
+            "10/21（火）19:00-19:45",
+            "SunFit渋谷 スタジオA"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "キャンセル規定",
+          "items": [
+            "開始2時間前まで無料。以降は当日キャンセル扱い"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "予約を確定する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "レッスンをアプリから予約・キャンセルできる"
+      ]
+    },
+    {
+      "id": "app-reserve-done",
+      "name": "予約完了（App）",
+      "summary": "予約確定を伝え、リマインド設定とホームへの復帰を促す",
+      "section": "レッスン予約",
+      "parent": "app-lesson-calendar",
+      "role": "complete",
+      "priority": "Must",
+      "infoPriority": [
+        "予約確定メッセージ",
+        "前日リマインドの案内",
+        "ホームへ戻る導線"
+      ],
+      "primaryAction": "ホームに戻る",
+      "states": [
+        "success"
+      ],
+      "layoutBlocks": [
+        "完了メッセージ",
+        "リマインド案内",
+        "戻るボタン"
+      ],
+      "components": [
+        {
+          "type": "text",
+          "label": "予約が完了しました",
+          "items": [
+            "10/21（火）19:00 はじめてヨガ @渋谷",
+            "前日20:00にリマインドをお届けします"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "ホームに戻る",
+          "items": []
+        }
+      ],
+      "covers": [
+        "レッスンをアプリから予約・キャンセルできる"
+      ]
+    },
+    {
+      "id": "app-my-reservations",
+      "name": "予約の確認・キャンセル（App）",
+      "summary": "今後の予約を一覧し、予定変更時にその場でキャンセルできる",
+      "section": "レッスン予約",
+      "role": "manage",
+      "priority": "Must",
+      "infoPriority": [
+        "今後の予約一覧（日時順）",
+        "各予約のキャンセル操作",
+        "過去の受講履歴"
+      ],
+      "primaryAction": "予約をキャンセルする",
+      "states": [
+        "empty",
+        "loading",
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "今後の予約リスト",
+        "過去の履歴",
+        "下タブ"
+      ],
+      "components": [
+        {
+          "type": "tabs",
+          "label": "予約",
+          "items": [
+            "今後の予約",
+            "過去の履歴"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "今後の予約",
+          "items": [
+            "10/21（火）19:00 はじめてヨガ @渋谷",
+            "10/25（土）10:30 暗闇フィットネス @渋谷"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "キャンセルする",
+          "items": []
+        }
+      ],
+      "covers": [
+        "レッスンをアプリから予約・キャンセルできる"
+      ]
+    },
+    {
+      "id": "app-online-lessons",
+      "name": "オンラインレッスン一覧（App）",
+      "summary": "ライブ配信の予定とビデオライブラリをタブで切り替えて選ぶ",
+      "section": "オンラインレッスン",
+      "role": "compare",
+      "priority": "Should",
+      "infoPriority": [
+        "本日・今週のライブ配信予定",
+        "ビデオの検索（部位・強度・時間）",
+        "視聴中・続きのビデオ"
+      ],
+      "primaryAction": "レッスンを選んで視聴する",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "タブ（ライブ/ビデオ）",
+        "検索・フィルタ",
+        "コンテンツ一覧",
+        "下タブ"
+      ],
+      "components": [
+        {
+          "type": "tabs",
+          "label": "オンライン",
+          "items": [
+            "ライブ配信",
+            "ビデオ"
+          ]
+        },
+        {
+          "type": "search",
+          "label": "ビデオを探す",
+          "items": [
+            "腹筋",
+            "10分",
+            "強度2"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "今日のライブ配信",
+          "items": [
+            "21:00 夜ヨガLIVE（30分）",
+            "22:00 自宅筋トレ上級（45分）"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "人気のビデオ",
+          "items": [
+            "朝の目覚めストレッチ 10分",
+            "ビッグ3フォーム解説 25分",
+            "健康体操 やさしい15分"
+          ]
+        }
+      ],
+      "covers": [
+        "ライブ／ビデオのオンラインレッスンを受講できる"
+      ]
+    },
+    {
+      "id": "app-video-player",
+      "name": "レッスン視聴（App）",
+      "summary": "ライブ・ビデオを全画面で視聴する。プレミアム限定コンテンツは制限表示",
+      "section": "オンラインレッスン",
+      "parent": "app-online-lessons",
+      "role": "inform",
+      "priority": "Should",
+      "infoPriority": [
+        "プレイヤー（再生・シーク・画質）",
+        "レッスン情報・チャプター",
+        "関連ビデオ"
+      ],
+      "primaryAction": "再生する",
+      "states": [
+        "loading",
+        "error",
+        "permission-restricted",
+        "success"
+      ],
+      "layoutBlocks": [
+        "プレイヤー",
+        "レッスン情報",
+        "チャプター",
+        "関連ビデオ"
+      ],
+      "components": [
+        {
+          "type": "image",
+          "label": "夜ヨガLIVE",
+          "items": [
+            "動画プレイヤー"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "レッスン情報",
+          "items": [
+            "AYAKA / 30分 / 強度1",
+            "プレミアムプラン限定コンテンツはアップグレードで視聴可"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "チャプター",
+          "items": [
+            "0:00 ウォームアップ",
+            "5:00 呼吸と姿勢",
+            "20:00 クールダウン"
+          ]
+        }
+      ],
+      "covers": [
+        "ライブ／ビデオのオンラインレッスンを受講できる"
+      ]
+    },
+    {
+      "id": "app-records",
+      "name": "からだの記録（App）",
+      "summary": "体重・体脂肪率の推移と今週の運動量を一目で見せ、継続の実感を作る",
+      "section": "からだの記録",
+      "role": "inform",
+      "fab": true,
+      "priority": "Must",
+      "infoPriority": [
+        "体重・体脂肪率の推移グラフ",
+        "今週の運動量（回数・時間）",
+        "記録を追加する導線"
+      ],
+      "primaryAction": "今日の記録を追加する",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "推移グラフ",
+        "今週のサマリ",
+        "記録追加ボタン",
+        "下タブ"
+      ],
+      "components": [
+        {
+          "type": "tabs",
+          "label": "期間",
+          "items": [
+            "週",
+            "月",
+            "3ヶ月"
+          ]
+        },
+        {
+          "type": "image",
+          "label": "体重・体脂肪率の推移",
+          "items": [
+            "折れ線グラフ（68.2kg → 66.8kg）"
+          ]
+        },
+        {
+          "type": "cards",
+          "label": "今週のサマリ",
+          "items": [
+            "運動 2回 / 90分",
+            "レッスン 1回・マシン 1回"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "今日の記録を追加する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "体重・体組成・トレーニングを記録し推移を確認できる"
+      ]
+    },
+    {
+      "id": "app-record-input",
+      "name": "記録の入力（App）",
+      "summary": "体重・体脂肪率・メモを最小タップで入力させる（前回値を初期表示）",
+      "section": "からだの記録",
+      "parent": "app-records",
+      "role": "input",
+      "priority": "Must",
+      "infoPriority": [
+        "体重・体脂肪率の入力（前回値プリセット）",
+        "運動メモ（任意）",
+        "保存ボタン"
+      ],
+      "primaryAction": "記録を保存する",
+      "states": [
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "入力フォーム",
+        "保存ボタン"
+      ],
+      "components": [
+        {
+          "type": "form",
+          "label": "今日の記録",
+          "items": [
+            "体重（kg）",
+            "体脂肪率（%）",
+            "今日の運動メモ（任意）"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "記録を保存する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "体重・体組成・トレーニングを記録し推移を確認できる"
+      ]
+    },
+    {
+      "id": "app-workout-history",
+      "name": "トレーニング履歴（App）",
+      "summary": "受講レッスン・入館履歴を時系列テーブルで振り返る",
+      "section": "からだの記録",
+      "parent": "app-records",
+      "role": "inform",
+      "priority": "Should",
+      "infoPriority": [
+        "日付順の運動履歴（種目・時間）",
+        "月ごとの合計回数",
+        "詳細（消費目安）"
+      ],
+      "primaryAction": "履歴を月で切り替える",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header（月切替）",
+        "履歴テーブル",
+        "月間合計"
+      ],
+      "components": [
+        {
+          "type": "table",
+          "label": "10月の履歴",
+          "items": [
+            "日付",
+            "内容",
+            "店舗",
+            "時間",
+            "消費目安"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "月間合計",
+          "items": [
+            "8回 / 6時間30分"
+          ]
+        }
+      ],
+      "covers": [
+        "体重・体組成・トレーニングを記録し推移を確認できる"
+      ]
+    },
+    {
+      "id": "app-monthly-report",
+      "name": "月次レポート（App）",
+      "summary": "1ヶ月の変化と頑張りをまとめて見せ、停滞期の退会を防ぐ",
+      "section": "からだの記録",
+      "parent": "app-records",
+      "role": "inform",
+      "priority": "Should",
+      "infoPriority": [
+        "今月のハイライト（体重変化・運動回数）",
+        "先月との比較",
+        "来月のおすすめ"
+      ],
+      "primaryAction": "来月の目標を設定する",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "ハイライトカード",
+        "比較グラフ",
+        "おすすめ"
+      ],
+      "components": [
+        {
+          "type": "cards",
+          "label": "10月のハイライト",
+          "items": [
+            "体重 -1.4kg",
+            "運動 8回（先月 +2回）",
+            "継続 6週連続"
+          ]
+        },
+        {
+          "type": "image",
+          "label": "先月との比較",
+          "items": [
+            "棒グラフ（運動回数 6→8）"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "来月のおすすめ",
+          "items": [
+            "同じペースなら12月に目標体重に到達します"
+          ]
+        }
+      ],
+      "covers": [
+        "月次レポートで成果を振り返られる"
+      ]
+    },
+    {
+      "id": "app-mypage",
+      "name": "マイページ（App）",
+      "summary": "会員情報と契約・設定系メニューのハブ。低頻度タスクをここに集約する",
+      "section": "マイページ",
+      "role": "manage",
+      "priority": "Must",
+      "infoPriority": [
+        "会員情報（氏名・会員番号・プラン）",
+        "デジタル会員証への導線",
+        "契約・設定メニュー"
+      ],
+      "primaryAction": "デジタル会員証を表示する",
+      "states": [
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "会員情報カード",
+        "会員証ボタン",
+        "メニューリスト",
+        "下タブ"
+      ],
+      "components": [
+        {
+          "type": "cards",
+          "label": "会員情報",
+          "items": [
+            "佐藤 美咲",
+            "会員番号 24-108-55321",
+            "スタンダードプラン"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "デジタル会員証を表示",
+          "items": []
+        },
+        {
+          "type": "list",
+          "label": "メニュー",
+          "items": [
+            "プラン変更",
+            "支払い履歴",
+            "通知・アカウント設定",
+            "FAQ・お問い合わせ",
+            "ログアウト"
+          ]
+        }
+      ],
+      "covers": [
+        "プラン変更と支払い履歴の確認ができる"
+      ]
+    },
+    {
+      "id": "app-member-card",
+      "name": "デジタル会員証（App）",
+      "summary": "入館ゲートにかざすQRを最大サイズ・最大輝度で表示する",
+      "section": "マイページ",
+      "parent": "app-mypage",
+      "role": "inform",
+      "priority": "Must",
+      "infoPriority": [
+        "入館用QRコード（大きく・明るく）",
+        "会員番号・有効プラン",
+        "うまく読み取れない時の案内"
+      ],
+      "primaryAction": "ゲートにかざしてチェックイン",
+      "states": [
+        "loading",
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "QRコード",
+        "会員情報",
+        "ヘルプ"
+      ],
+      "components": [
+        {
+          "type": "image",
+          "label": "入館QRコード",
+          "items": [
+            "フルサイズQR（自動で画面輝度アップ）"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "会員情報",
+          "items": [
+            "佐藤 美咲 / 24-108-55321",
+            "スタンダード（全店利用可）"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "読み取れない場合",
+          "items": [
+            "受付スタッフに会員番号をお伝えください"
+          ]
+        }
+      ],
+      "covers": [
+        "デジタル会員証で入館チェックインできる"
+      ]
+    },
+    {
+      "id": "app-plan-change",
+      "name": "プラン変更（App）",
+      "summary": "現在プランと変更候補を比較し、適用月を確認して変更を申し込む",
+      "section": "マイページ",
+      "parent": "app-mypage",
+      "role": "decide",
+      "priority": "Should",
+      "infoPriority": [
+        "現在のプランと月会費",
+        "変更候補の比較（差額・適用月）",
+        "変更確定ボタン"
+      ],
+      "primaryAction": "このプランに変更する",
+      "states": [
+        "loading",
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "現在プラン",
+        "比較表",
+        "適用月の注意",
+        "確定ボタン"
+      ],
+      "components": [
+        {
+          "type": "text",
+          "label": "現在のプラン",
+          "items": [
+            "スタンダード（全店）¥8,800/月"
+          ]
+        },
+        {
+          "type": "table",
+          "label": "変更候補",
+          "items": [
+            "プラン名",
+            "月会費",
+            "差額",
+            "適用開始月"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "このプランに変更する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "プラン変更と支払い履歴の確認ができる"
+      ]
+    },
+    {
+      "id": "app-payment-history",
+      "name": "支払い履歴（App）",
+      "summary": "月ごとの請求・支払い状況を確認し、領収書を発行する",
+      "section": "マイページ",
+      "parent": "app-mypage",
+      "role": "inform",
+      "priority": "Should",
+      "infoPriority": [
+        "直近の請求（金額・状態）",
+        "過去12ヶ月の履歴",
+        "領収書発行"
+      ],
+      "primaryAction": "領収書を発行する",
+      "states": [
+        "empty",
+        "loading",
+        "success"
+      ],
+      "layoutBlocks": [
+        "Header",
+        "履歴テーブル",
+        "領収書ボタン"
+      ],
+      "components": [
+        {
+          "type": "table",
+          "label": "支払い履歴",
+          "items": [
+            "請求月",
+            "内容",
+            "金額",
+            "状態"
+          ]
+        },
+        {
+          "type": "button",
+          "label": "領収書を発行する",
+          "items": []
+        }
+      ],
+      "covers": [
+        "プラン変更と支払い履歴の確認ができる"
+      ]
+    },
+    {
+      "id": "app-settings",
+      "name": "通知・アカウント設定（App）",
+      "summary": "リマインド通知のON/OFF、メール・パスワードの変更を行う",
+      "section": "マイページ",
+      "parent": "app-mypage",
+      "role": "manage",
+      "priority": "Could",
+      "infoPriority": [
+        "通知設定（リマインド・キャンペーン別）",
+        "メール・パスワード変更",
+        "退会・休会の案内導線"
+      ],
+      "primaryAction": "設定を保存する",
+      "states": [
+        "error",
+        "success"
+      ],
+      "layoutBlocks": [
+        "通知設定",
+        "アカウント設定",
+        "その他"
+      ],
+      "components": [
+        {
+          "type": "form",
+          "label": "通知設定",
+          "items": [
+            "予約リマインド（前日20:00）",
+            "キャンペーン情報",
+            "お知らせ"
+          ]
+        },
+        {
+          "type": "list",
+          "label": "アカウント",
+          "items": [
+            "メールアドレス変更",
+            "パスワード変更"
+          ]
+        },
+        {
+          "type": "text",
+          "label": "その他",
+          "items": [
+            "休会・退会をご検討の方はこちら（Webへ）"
+          ]
+        }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "from": "web-home",
+      "to": "web-clubs",
+      "condition": "店舗を探す",
+      "kind": "main",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-clubs",
+      "to": "web-club-detail",
+      "condition": "店舗を選択",
+      "kind": "main",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-club-detail",
+      "to": "web-trial",
+      "condition": "無料体験を予約する",
+      "kind": "main",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-trial",
+      "to": "web-trial-done",
+      "condition": "入力完了・送信",
+      "kind": "main",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-home",
+      "to": "web-programs",
+      "condition": "プログラムを見る",
+      "kind": "sub",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-programs",
+      "to": "web-trial",
+      "condition": "このプログラムで体験",
+      "kind": "sub",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-home",
+      "to": "web-faq",
+      "condition": "不安を解消したい",
+      "kind": "sub",
+      "flow": "体験予約フロー（Web）"
+    },
+    {
+      "from": "web-home",
+      "to": "web-plans",
+      "condition": "料金を見る",
+      "kind": "main",
+      "flow": "入会フロー（Web）"
+    },
+    {
+      "from": "web-plans",
+      "to": "web-signup",
+      "condition": "プランを選んで入会へ",
+      "kind": "main",
+      "flow": "入会フロー（Web）"
+    },
+    {
+      "from": "web-signup",
+      "to": "web-signup-payment",
+      "condition": "個人情報入力完了",
+      "kind": "main",
+      "flow": "入会フロー（Web）"
+    },
+    {
+      "from": "web-signup-payment",
+      "to": "web-signup-done",
+      "condition": "決済成功",
+      "kind": "main",
+      "flow": "入会フロー（Web）"
+    },
+    {
+      "from": "web-signup-payment",
+      "to": "web-signup-payment",
+      "condition": "決済エラー→再入力",
+      "kind": "sub",
+      "flow": "入会フロー（Web）"
+    },
+    {
+      "from": "web-trial-done",
+      "to": "web-signup",
+      "condition": "体験後、入会を決意",
+      "kind": "sub",
+      "flow": "入会フロー（Web）"
+    },
+    {
+      "from": "web-signup-done",
+      "to": "app-onboarding",
+      "condition": "アプリDL→初回起動",
+      "kind": "main",
+      "flow": "はじめてのログイン（App）"
+    },
+    {
+      "from": "app-onboarding",
+      "to": "app-login",
+      "condition": "ログインしてはじめる",
+      "kind": "main",
+      "flow": "はじめてのログイン（App）"
+    },
+    {
+      "from": "app-login",
+      "to": "app-home",
+      "condition": "認証成功",
+      "kind": "main",
+      "flow": "はじめてのログイン（App）"
+    },
+    {
+      "from": "app-login",
+      "to": "app-password-reset",
+      "condition": "パスワードを忘れた",
+      "kind": "sub",
+      "flow": "はじめてのログイン（App）"
+    },
+    {
+      "from": "app-password-reset",
+      "to": "app-login",
+      "condition": "再設定完了",
+      "kind": "sub",
+      "flow": "はじめてのログイン（App）"
+    },
+    {
+      "from": "app-home",
+      "to": "app-lesson-calendar",
+      "condition": "レッスンを予約する",
+      "kind": "main",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-lesson-calendar",
+      "to": "app-lesson-detail",
+      "condition": "レッスンを選択",
+      "kind": "main",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-lesson-detail",
+      "to": "app-reserve-confirm",
+      "condition": "このレッスンを予約する",
+      "kind": "main",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-reserve-confirm",
+      "to": "app-reserve-done",
+      "condition": "予約を確定",
+      "kind": "main",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-reserve-done",
+      "to": "app-home",
+      "condition": "ホームに戻る",
+      "kind": "main",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-lesson-detail",
+      "to": "app-lesson-calendar",
+      "condition": "満席→別の日時を探す",
+      "kind": "sub",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-home",
+      "to": "app-my-reservations",
+      "condition": "予約を確認・変更",
+      "kind": "sub",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-my-reservations",
+      "to": "app-lesson-calendar",
+      "condition": "キャンセル後、別日で再予約",
+      "kind": "sub",
+      "flow": "レッスン予約フロー（App）"
+    },
+    {
+      "from": "app-home",
+      "to": "app-records",
+      "condition": "からだの記録を見る",
+      "kind": "main",
+      "flow": "記録・振り返りフロー（App）"
+    },
+    {
+      "from": "app-records",
+      "to": "app-record-input",
+      "condition": "今日の記録を追加",
+      "kind": "main",
+      "flow": "記録・振り返りフロー（App）"
+    },
+    {
+      "from": "app-record-input",
+      "to": "app-records",
+      "condition": "保存完了",
+      "kind": "main",
+      "flow": "記録・振り返りフロー（App）"
+    },
+    {
+      "from": "app-records",
+      "to": "app-workout-history",
+      "condition": "履歴を見る",
+      "kind": "sub",
+      "flow": "記録・振り返りフロー（App）"
+    },
+    {
+      "from": "app-records",
+      "to": "app-monthly-report",
+      "condition": "月次レポートを見る",
+      "kind": "sub",
+      "flow": "記録・振り返りフロー（App）"
+    },
+    {
+      "from": "app-home",
+      "to": "app-online-lessons",
+      "condition": "オンラインで受講",
+      "kind": "main",
+      "flow": "オンライン受講フロー（App）"
+    },
+    {
+      "from": "app-online-lessons",
+      "to": "app-video-player",
+      "condition": "レッスンを選択",
+      "kind": "main",
+      "flow": "オンライン受講フロー（App）"
+    },
+    {
+      "from": "app-video-player",
+      "to": "app-plan-change",
+      "condition": "プレミアム限定→アップグレード",
+      "kind": "sub",
+      "flow": "オンライン受講フロー（App）"
+    },
+    {
+      "from": "app-home",
+      "to": "app-mypage",
+      "condition": "マイページ",
+      "kind": "main",
+      "flow": "入館・契約管理フロー（App）"
+    },
+    {
+      "from": "app-mypage",
+      "to": "app-member-card",
+      "condition": "会員証を表示",
+      "kind": "main",
+      "flow": "入館・契約管理フロー（App）"
+    },
+    {
+      "from": "app-mypage",
+      "to": "app-plan-change",
+      "condition": "プラン変更",
+      "kind": "sub",
+      "flow": "入館・契約管理フロー（App）"
+    },
+    {
+      "from": "app-mypage",
+      "to": "app-payment-history",
+      "condition": "支払い履歴",
+      "kind": "sub",
+      "flow": "入館・契約管理フロー（App）"
+    },
+    {
+      "from": "app-mypage",
+      "to": "app-settings",
+      "condition": "設定",
+      "kind": "sub",
+      "flow": "入館・契約管理フロー（App）"
+    },
+    {
+      "from": "app-home",
+      "to": "app-notifications",
+      "condition": "お知らせアイコン",
+      "kind": "sub",
+      "flow": "入館・契約管理フロー（App）"
+    }
+  ],
+  "sitemap": null,
+  "prd": {
+    "background": "首都圏24店舗・会員48,000名のフィットネスクラブSunFit。入会は店頭・紙のみ、予約は電話のみで機会損失が大きく、12ヶ月継続率55%。退会理由の上位は『予約・手続きの面倒さ』『成果が見えない』（退会者アンケート340件）。Webでの入会完結と会員アプリによる継続支援で、入会増と退会抑止を同時に実現する。",
+    "goals": [
+      "体験予約〜入会をWebで完結し、Web経由入会を全入会の60%にする",
+      "予約・入館・記録をアプリの1タップ圏内に置き、12ヶ月継続率を55%→70%へ",
+      "オンラインレッスンで店舗外の利用機会を作る（Phase 2）"
+    ],
+    "nonGoals": [
+      "店頭・電話サポートの廃止（シニア層のため併存させる — UMインサイト2）",
+      "法人契約・多言語対応（RFPスコープ外）",
+      "パーソナルトレーニング予約・食事指導（将来検討）"
+    ],
+    "personas": [
+      {
+        "name": "佐藤 美咲（29・会社員）",
+        "image": "../../assets/persona-pool/p4.jpg",
+        "who": "都内勤務の会社員。運動は学生以来ほぼゼロ。SNSで暗闇フィットネスに興味",
+        "goal": "仕事帰りに無理なく運動を習慣化してリフレッシュしたい",
+        "context": "平日20時前後、退勤直前にスマホで『今日行けるか』を確認して直行",
+        "needs": [
+          "仕事帰りに間に合うレッスンの空き",
+          "強度が自分に合うかの目安",
+          "持ち物・レンタルの有無"
+        ],
+        "infoOrder": [
+          "今日これから行けるレッスン",
+          "場所と開始時間",
+          "空き状況と強度"
+        ],
+        "vocabulary": [
+          "ヨガ",
+          "暗闇フィットネス",
+          "仕事帰り",
+          "初心者OK"
+        ],
+        "decisions": [
+          {
+            "point": "レッスン選び",
+            "note": "強度が自分に合うか不安 → 強度表示と『初心者OK』フィルタで解消"
+          },
+          {
+            "point": "入会プラン",
+            "note": "続くか分からないので高いプランが怖い → 初月0円と比較表で後押し"
+          }
+        ]
+      },
+      {
+        "name": "田中 健一（45・メーカー管理職）",
+        "image": "../../assets/persona-pool/p2.jpg",
+        "who": "健康診断で要改善判定。多忙で出張が多く、ジムは10年ぶり。過去2回、成果が見えず退会",
+        "goal": "体重・血圧の数値を改善して健診を乗り切りたい",
+        "context": "週末中心で不定期。成果はスマホでサッと確認したい",
+        "needs": [
+          "短時間で効果のあるメニュー",
+          "体組成の推移グラフ",
+          "費用対効果の納得感"
+        ],
+        "infoOrder": [
+          "体重・体脂肪率の推移",
+          "今月の運動回数",
+          "次に何をすべきか"
+        ],
+        "vocabulary": [
+          "体脂肪率",
+          "健診",
+          "コスパ"
+        ],
+        "decisions": [
+          {
+            "point": "継続するか",
+            "note": "3ヶ月目の停滞期に『金の無駄では』と感じる → 月次レポートで小さな変化を可視化"
+          }
+        ]
+      },
+      {
+        "name": "山本 大輔（22・大学生）",
+        "image": "../../assets/persona-pool/p6.jpg",
+        "who": "筋トレ歴2年。YouTubeでフォーム研究するコスパ重視派",
+        "goal": "安くマシンジムを使い、足りない分はオンラインで補いたい",
+        "context": "授業の空きコマと深夜。オンラインは自宅で視聴",
+        "needs": [
+          "学割・オンライン専用の安いプラン",
+          "混雑していない時間帯",
+          "ビデオの検索性"
+        ],
+        "infoOrder": [
+          "月額いくらか（学割後）",
+          "オンラインで何が見られるか",
+          "混雑状況"
+        ],
+        "vocabulary": [
+          "ビッグ3",
+          "学割",
+          "サブスク"
+        ],
+        "decisions": [
+          {
+            "point": "プラン選択",
+            "note": "オンラインのみで足りるか迷う → プラン比較表にオンライン可否列を明示"
+          }
+        ]
+      },
+      {
+        "name": "鈴木 正雄（64・定年退職）",
+        "image": "../../assets/persona-pool/p3.jpg",
+        "who": "医師の勧めで運動を始める。スマホは使えるが複雑な操作は苦手",
+        "goal": "無理のない運動を長く続けて健康寿命を延ばしたい",
+        "context": "平日昼間に通う。分からないことは電話か店頭で人に聞きたい",
+        "needs": [
+          "迷わない大きな画面表示",
+          "シニア向けプログラム",
+          "電話・店頭サポートの併存"
+        ],
+        "infoOrder": [
+          "次にやること1つ",
+          "今日のレッスン",
+          "困ったときの連絡先"
+        ],
+        "vocabulary": [
+          "健康体操",
+          "無理なく",
+          "かかりつけ"
+        ],
+        "decisions": [
+          {
+            "point": "アプリを使うか",
+            "note": "アプリ必須と言われると不安 → 全画面に電話・店頭の代替導線を残す"
+          }
+        ]
+      }
+    ],
+    "userStories": [
+      "会社員として、仕事帰りに行けるレッスンをすぐ見つけて予約したい。なぜなら迷う時間があると行かなくなるから",
+      {
+        "as": "多忙な管理職",
+        "want": "体組成の推移を月次レポートで見たい",
+        "why": "成果が見えれば続けられるから",
+        "persona": "田中 健一（45・メーカー管理職）"
+      },
+      {
+        "as": "大学生",
+        "want": "学割プランとオンライン専用プランを比較したい",
+        "why": "出費を最小にしたいから",
+        "persona": "山本 大輔（22・大学生）"
+      },
+      {
+        "as": "定年後のシニア",
+        "want": "迷わない画面で予約と入館をしたい",
+        "why": "操作が複雑だと通うのをやめてしまうから",
+        "persona": "鈴木 正雄（64・定年退職）"
+      },
+      {
+        "as": "見込み客",
+        "want": "3分で無料体験を予約したい",
+        "why": "電話は心理的ハードルが高いから",
+        "persona": "佐藤 美咲（29・会社員）"
+      }
+    ],
+    "scopeIn": [
+      "公式Webサイト全面刷新（プラン比較・店舗検索・体験予約・入会決済）",
+      "会員アプリ iOS/Android（予約・デジタル会員証・記録・オンラインレッスン）",
+      "基幹会員システムとのAPI連携・既存会員データ移行"
+    ],
+    "scopeOut": [
+      "店頭・電話チャネルの廃止（併存させる）",
+      "法人契約・多言語対応",
+      "パーソナルトレーニング予約・食事指導"
+    ],
+    "functionalReqs": [
+      "プラン・料金を比較して選べる",
+      "通える店舗を検索して詳細を確認できる",
+      "無料体験をWebから予約できる",
+      "入会手続きと決済をWebで完結できる",
+      "レッスンをアプリから予約・キャンセルできる",
+      "ライブ／ビデオのオンラインレッスンを受講できる",
+      "体重・体組成・トレーニングを記録し推移を確認できる",
+      "月次レポートで成果を振り返られる",
+      "デジタル会員証で入館チェックインできる",
+      "プラン変更と支払い履歴の確認ができる",
+      "お知らせ・リマインド通知を受け取れる",
+      "友だち紹介で特典を受け取れる"
+    ],
+    "nonFunctionalReqs": [
+      "決済はPCI DSS準拠の決済代行を利用（カード情報非保持）",
+      "稼働率99.5%以上（予約ピーク: 平日18-21時に耐える）",
+      "主要画面3秒以内表示（4G回線）",
+      "WCAG 2.1 AA相当を努力目標（シニア会員配慮: 文字サイズ・コントラスト）",
+      "個人情報保護: Pマーク運用準拠"
+    ],
+    "metrics": [
+      "Web経由入会: 全入会の60%（現状ほぼ0%）",
+      "体験→入会 転換率: 35% → 50%",
+      "12ヶ月継続率: 55% → 70%",
+      "レッスン予約のアプリ化率: 90%（電話予約からの移行）"
+    ],
+    "risks": [
+      "既存会員のアプリ移行が進まないリスク → 店頭サポートデスク・電話併存で段階移行",
+      "予約ピーク（平日18-21時）の負荷 → カレンダーAPIのキャッシュ設計を先行検証",
+      "基幹会員システムAPIの仕様確定遅延 → Phase 1はデータ同期をバッチ併用で開始",
+      "友だち紹介（R10）はPhase 3のためMVP画面未配置 — トレーサビリティ上の未カバーとして管理"
+    ],
+    "milestones": [
+      "2026-10: Phase 1（MVP）— Web刷新＋アプリ基本機能（予約・会員証・記録）",
+      "2027-01: Phase 2 — オンラインレッスン・月次レポート・プラン変更",
+      "2027-04: Phase 3 — 友だち紹介・AIアドバイス・混雑状況表示"
+    ]
+  }
+}

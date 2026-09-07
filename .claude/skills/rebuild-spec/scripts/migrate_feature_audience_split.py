@@ -1,0 +1,520 @@
+#!/usr/bin/env python3
+"""migrate_feature_audience_split.py -- v26 (4-file) -> v27 (2-file) feature-dir migration.
+
+Phase 06 (plans/260814-1106-rebuild-spec-audience-split/phase-06-migration-scripts.md).
+PASS A shipped the safety machinery (staging, sentinels, atomic swap, `--dry-run`,
+`--rollback`, the fail-closed hand-edit probe). PASS B (this revision) wires in the real
+Mode A/B/C composition and the sampled-review delete gate:
+
+  - Mode A (per feature): `migrate_feature()` below, using
+    `_audience_split_compose_a_lib.compose_mode_a` -- parses the 4 v26 files and
+    composes functional-spec.md + a reshaped technical-spec.md. `migrate_feature` stays
+    in THIS module (not split out) because its `compose_fn` default resolves the bare
+    name `compose_mode_a` from the calling module's own globals at CALL time -- moving
+    it to another module would silently break every caller (existing tests included)
+    that monkeypatches `cli.compose_mode_a` expecting `main()` to pick it up.
+  - Mode B (once, project-level): `_audience_split_orchestrate_bc_lib.migrate_business_rules`
+    -- folds docs/system/business-rules.md into docs/generated/behavior-logic.md.
+  - Mode C (per screen): `_audience_split_orchestrate_bc_lib.migrate_screen` -- reorders
+    docs/screens/{slug}/spec.md to the Phase 02 BA-first order. No LLM pass.
+
+Pass A's original seam docstring proposed `compose_mode_b(system_dir) -> str` /
+`compose_mode_c(screen_dir) -> str` as directory-in-string-out placeholders. The real
+shapes differ: Mode B reads TWO files (a source and a target), not one `system_dir`;
+Mode C's natural unit is the screen-spec TEXT, not a directory. `compose_mode_c(old_text:
+str) -> str` in `_audience_split_mode_c_lib.py` is a pure function on text; Mode B's
+fold plus the staging/validate/swap/sentinel orchestration for both live in
+`_audience_split_orchestrate_bc_lib.py`, which this CLI calls directly -- a disclosed
+deviation from pass A's placeholder signatures, not an oversight.
+
+CONSTRAINT 1 (deliberate deviation from repo precedent, ADR-0004 pending in Phase 08):
+the 5 existing `migrate-*.py` scripts mutate live files in place with no staging, no
+backup, and no dry-run -- safety rests on idempotency alone. The v15 in-place MOVE
+design lost real customer data that way. THIS script never writes a live file before a
+staged, validated replacement exists, and never deletes an original before validating
+AND swapping AND writing the per-feature sentinel. It mirrors `migrate_docs_layout.py`'s
+sentinel + advisory-lock pattern instead -- see `_audience_split_migrate_lib.py` for the
+two deliberate quirks carried forward (POSIX lock file left on disk; see that module's
+docstring) and the one deliberate deviation from that precedent that is ours alone (a
+NON-BLOCKING lock, for deterministic testability).
+
+CLI:
+  --docs-root PATH       Path to the project's docs/ directory itself (contains
+                         features/*, screens/*, system/business-rules.md; this is also
+                         where .migrate-v27/ staging and the run-level sentinel are
+                         written)  (required)
+  --project-root PATH    Repo root for validator/git-trail context. Default (phase-06
+                         B5): --docs-root's OWN git toplevel, not the CWD's, so a
+                         cross-repo invocation just works; falls back to CWD-based
+                         resolution when --docs-root has no git toplevel of its own.
+  --dry-run              Print the per-feature plan; writes NOTHING (no lock, no staging).
+                         Scoped to Mode A features today -- Mode B/C previews are not yet
+                         included (documented limitation, not a silent gap). Prints the
+                         same `[SUMMARY]` shape a real run would.
+  --rollback             Undo PARTIAL (sentinel-absent) per-feature Mode A migrations
+  --reviewed MANIFEST     Path to a file listing reviewed feature slugs (one per line,
+                          '#' comments allowed). Gated by Requirement 5's SAMPLE-SIZE
+                          arithmetic (>=10% of this run's v26-eligible features, minimum
+                          3) -- a manifest that lists fewer slugs than the threshold is
+                          treated as ABSENT for the whole run (delete skipped for every
+                          feature, WARN), not honored for the slugs it does list.
+
+Exit codes:
+  0  fully migrated, or a genuine no-op (a valid run sentinel was honored, or every
+     unit was already ALREADY/PROGRESS with nothing FAILED/INERT left)
+  1  one or more units FAILED (composed-but-invalid, refused-invalid-v27, or a raised
+     UnrecognizedShapeError) -- outranks exit 4 even when INERT units are also present
+  2  arg/IO error: --docs-root missing, assert_under violated (message names
+     --project-root as the remedy), or --docs-root refused as a language-mirror tree
+     (phase-06 B5 -- docs/vi, docs/jp are regenerated by the translate pipeline, not
+     migrated)
+  3  the run-level lock is already held by another invocation (I5)
+  4  (phase-06 B2/B3, NEW) nothing FAILED, but one or more units are INERT (still in
+     pre-v27 shape, e.g. skipped-hand-edited) -- the run sentinel is NOT written, and the
+     corpus remains migratable on the next invocation. Distinct from exit 1: "the tool
+     refused/hasn't finished" vs. "the tool broke".
+
+Every exit path prints a `[SUMMARY]` line (phase-06 B3) -- see
+`_audience_split_tally_lib.Tally.summary_line`. The run sentinel
+(`.migrate-v27/.migration-complete`) is JSON carrying that same tally (phase-06 B2); it
+is written iff FAILED == 0 and INERT == 0, and an unparseable or zero-progress sentinel
+self-heals as POISONED (a WARN, then a real re-run) rather than locking the corpus out
+-- see `_audience_split_migrate_lib.read_run_sentinel` / `write_run_sentinel`.
+"""
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+from typing import Callable
+
+sys.path.insert(0, str(Path(__file__).parent))
+from _audience_split_cli_lib import (  # noqa: E402
+    dry_run as _dry_run, git_toplevel as _git_toplevel,
+    load_reviewed_manifest as _load_reviewed_manifest,
+    mirror_refusal_reason as _mirror_refusal_reason,
+    resolve_project_root_for_docs as _resolve_project_root_for_docs,
+    resolve_reviewed_gate as _resolve_reviewed_gate,
+    rollback_all as _rollback_all, run_screens as _run_screens,
+    split_valid_slugs as _split_valid_slugs,
+)
+from _audience_split_compose_a_lib import compose_mode_a  # noqa: E402  (Mode A -- see module docstring)
+from _audience_split_shape_lib import (  # noqa: E402
+    SHAPE_UNKNOWN, SHAPE_V25, SHAPE_V26, SHAPE_V27, SHAPE_V27_HYBRID, TECHNICAL_SPEC,
+    V26_SATELLITE_FILES, UnrecognizedShapeError, describe_shape, detect_shape,
+)
+from _audience_split_probe_lib import CLEAN, CLEAN_LEGACY, HAND_EDITED, probe_feature  # noqa: E402
+from _audience_split_migrate_lib import (  # noqa: E402
+    LOCK_NAME, Lock, LockHeldError, MigrationOutcome, SENTINEL_POISONED, SENTINEL_VALID,
+    backup_path_for, delete_originals, has_feature_sentinel, read_run_sentinel,
+    run_sentinel_path, stage_feature, staging_feature_dir, staging_root,
+    swap_functional_spec, swap_technical_spec, validate_feature_dir, write_feature_sentinel,
+    write_run_sentinel,
+)
+from _audience_split_orchestrate_bc_lib import migrate_business_rules  # noqa: E402
+from _audience_split_tally_lib import (  # noqa: E402
+    Tally, action_required_block, count_retained_satellite_dirs,
+)
+from _slug_lib import assert_under, is_valid_slug  # noqa: E402
+
+ComposeFn = Callable[[Path], dict[str, str]]
+
+# phase-05: resolved once, reused by every `[ACTION REQUIRED]` print site below, so the
+# printed `python3 <path>` command is always this exact file regardless of how the
+# operator invoked it (relative path, absolute path, or via a wrapper).
+_SCRIPT_PATH = Path(__file__).resolve()
+
+
+# --------------------------------------------------------------------------- #
+# Per-feature orchestration (Mode A)
+# --------------------------------------------------------------------------- #
+def migrate_feature(
+    feature_dir: Path,
+    *,
+    project_root: Path,
+    docs_root: Path,
+    compose_fn: ComposeFn | None = None,
+    reviewed: set[str] | None = None,
+) -> MigrationOutcome:
+    """Run the full safety pipeline for one feature dir. Raises UnrecognizedShapeError
+    for a shape the migration refuses to touch (I6) -- callers decide the exit code.
+
+    `compose_fn` defaults to the module-level `compose_mode_a` looked up at CALL time
+    (not bound eagerly as a default value) so a caller can replace `compose_mode_a`'s
+    module attribute (`cli.compose_mode_a`) and every caller -- including `main()`'s
+    CLI path -- picks it up without changing this signature.
+
+    Gate 8 (pass B decision): a feature ALREADY in v27 (2-file) shape never calls
+    `compose_fn` and never runs the LLM compaction pass, by design -- see the
+    SHAPE_V27 branch below for the reasoning, not just the behavior.
+
+    Gate 8b (adversarial-review HIGH fix): a feature already COMPOSED but still
+    carrying its v26 satellites (SHAPE_V27_HYBRID -- the documented common case of a
+    default run, and also what the corpus looks like if the per-feature sentinel is
+    ever lost) is handled the SAME way as Gate 8: validate-and-seal, never
+    re-compose. Re-running `compose_fn` here would re-derive functional-spec.md
+    content from the still-present satellites and could silently overwrite reviewed
+    edits -- the exact data-loss shape this migration's staging/sentinel machinery
+    exists to prevent (see CONSTRAINT 1, module docstring). The one difference from
+    Gate 8: a hybrid dir DOES have satellites to delete, so this branch still honors
+    `--reviewed` for cleanup, unlike the no-satellites SHAPE_V27 branch."""
+    if compose_fn is None:
+        compose_fn = compose_mode_a
+    slug = feature_dir.name
+    if not is_valid_slug(slug):
+        # M-SEC3: an invalid slug is never composed into a staging path.
+        return MigrationOutcome(
+            slug, "rejected-bad-slug", False,
+            f"feature dir name {slug!r} fails SLUG_RE -- skipped, never staged",
+        )
+
+    feat_staging_dir = staging_feature_dir(docs_root, slug)
+
+    if has_feature_sentinel(feat_staging_dir):
+        # Gate 8c (phase-05 fix, GAP 2(a)): composition already happened and sealed --
+        # that alone must not make a LATER --reviewed manifest naming this slug
+        # permanently unreachable. Without this branch, the per-feature sentinel
+        # written the moment satellites were first RETAINED (not just once deleted --
+        # see the SHAPE_V26 and SHAPE_V27_HYBRID branches below, both of which call
+        # `write_feature_sentinel` before checking `reviewed`) made every subsequent
+        # invocation return `no-op` here unconditionally, so the documented "review
+        # more later, re-run with an expanded manifest" workflow
+        # (references/migration-audience-split.md, "What a reader should expect from
+        # the default run") was silent, permanent dead code -- the very command this
+        # phase's `[ACTION REQUIRED]` block tells the operator to run would never
+        # actually delete anything on an already-migrated corpus. Re-validate (cheap,
+        # idempotent, same call as Gate 8b) before deleting, never re-compose; if
+        # satellites are already gone there is nothing to authorize, so the fast
+        # no-op path below is unchanged for every other case.
+        has_satellites = any((feature_dir / f).is_file() for f in V26_SATELLITE_FILES)
+        if reviewed is not None and slug in reviewed and has_satellites:
+            ok, issues = validate_feature_dir(feature_dir, project_root)
+            if not ok:
+                return MigrationOutcome(
+                    slug, "refused-invalid-v27", False,
+                    f"already migrated but fails validation: {issues}; refusing to "
+                    f"delete retained satellites against unvalidated live content",
+                )
+            deleted = delete_originals(feature_dir, V26_SATELLITE_FILES)
+            return MigrationOutcome(
+                slug, "migrated", True,
+                f"already migrated; --reviewed authorized delete of retained "
+                f"satellites on a later invocation: {deleted}",
+            )
+        return MigrationOutcome(slug, "no-op", True, "already migrated (sentinel present)")
+
+    # I1: a staged pre-swap backup with no sentinel is a CRASHED prior run, resumable --
+    # never re-derived from shape (the live dir may be in an in-between state that
+    # matches no recognized shape at all).
+    resuming = backup_path_for(feat_staging_dir).is_file()
+
+    # phase-06 CLEAN_LEGACY wiring: set below, before compose, from the probe verdict --
+    # stays "" on a resume (no fresh probe run) or an already-v27 confirm (no probe at
+    # all). Purely informational (MigrationOutcome.provenance), never gates anything.
+    provenance = ""
+
+    if not resuming:
+        shape = detect_shape(feature_dir)
+
+        if shape in (SHAPE_UNKNOWN, SHAPE_V25):
+            raise UnrecognizedShapeError(
+                feature_dir, shape, [p.name for p in feature_dir.iterdir() if p.is_file()],
+            )
+
+        if shape == SHAPE_V27:
+            # Already 2-file, but I1 forbids inferring "done" from file presence alone --
+            # confirm via the validator, then let the tool's own sentinel make it official.
+            #
+            # Gate 8: this branch deliberately does NOT consult `compose_fn` and does NOT
+            # run the LLM compaction pass on a dir that reached 2-file shape by some other
+            # route. Requirement 1 scopes Mode A's composition to CONTENT DRAWN FROM the 4
+            # v26 files (business-context/screens/edge-cases -> functional-spec.md's § 1/
+            # 2/5/8); a dir with no v26 satellites has nothing for Mode A to compose FROM.
+            # Requirement 5 scopes the LLM pass to staging Mode A/B just produced, gated by
+            # I4/I5 re-validation -- there is no such staging here, and inventing one to run
+            # compaction against arbitrary pre-existing v27 content would be a DIFFERENT,
+            # unscoped feature (general-purpose doc-shrinking), not this migration's job.
+            # Confirm-and-seal is therefore the correct, complete behavior for this branch,
+            # not a gap -- a genuinely over-long already-v27 file is Wave 6.5's/the
+            # reviewer's concern, not this migration's.
+            ok, issues = validate_feature_dir(feature_dir, project_root)
+            if not ok:
+                return MigrationOutcome(
+                    slug, "refused-invalid-v27", False,
+                    f"already {describe_shape(shape)} but fails validation: {issues}",
+                )
+            feat_staging_dir.mkdir(parents=True, exist_ok=True)
+            write_feature_sentinel(feat_staging_dir)
+            return MigrationOutcome(slug, "confirmed-v27", True,
+                                     "already in target shape; sentinel written")
+
+        if shape == SHAPE_V27_HYBRID:
+            # Gate 8b (see docstring above): already composed, satellites still
+            # retained -- validate the existing 2-file pair and seal, but NEVER call
+            # compose_fn. A dir reaches this shape either as the documented default-run
+            # outcome, or because a prior run's sentinel was lost (docs/.migrate-v27/
+            # deleted) -- either way the live functional-spec.md/technical-spec.md
+            # content is the thing of record and must not be re-derived from the
+            # satellites sitting next to it.
+            ok, issues = validate_feature_dir(feature_dir, project_root)
+            if not ok:
+                return MigrationOutcome(
+                    slug, "refused-invalid-v27", False,
+                    f"already {describe_shape(shape)} but fails validation: {issues}; "
+                    f"refusing to guess -- hand-restructure or restore a known-good pair",
+                )
+            feat_staging_dir.mkdir(parents=True, exist_ok=True)
+            write_feature_sentinel(feat_staging_dir)
+            if reviewed is not None and slug in reviewed:
+                deleted = delete_originals(feature_dir, V26_SATELLITE_FILES)
+                return MigrationOutcome(
+                    slug, "migrated", True,
+                    f"already composed (hybrid); confirmed valid; --reviewed authorized "
+                    f"delete of retained satellites: {deleted}",
+                )
+            return MigrationOutcome(
+                slug, "confirmed-v27", True,
+                "already composed (hybrid); confirmed valid; satellites retained "
+                "(--reviewed manifest absent, insufficient sample, or slug not listed); "
+                "sentinel (re)written -- never re-composed",
+            )
+
+        assert shape == SHAPE_V26, f"unreachable: {shape!r} is neither refused nor v27"
+        # probe BEFORE composing (I3): every downstream decision reads this verdict.
+        probe_paths = [feature_dir / TECHNICAL_SPEC] + [feature_dir / f for f in V26_SATELLITE_FILES]
+        verdict = probe_feature(probe_paths, project_root)
+        if verdict.verdict == HAND_EDITED:
+            # I4: hand-edited/locked content is never composed or passed downstream --
+            # compose_fn is not even called. Originals retained, flagged for manual review.
+            return MigrationOutcome(
+                slug, "skipped-hand-edited", True,
+                f"hand-edited ({verdict.reason}) -- retained, never composed, "
+                f"flagged for manual handling",
+            )
+        assert verdict.verdict in (CLEAN, CLEAN_LEGACY)  # exhaustive: probe_feature's third case
+        provenance = verdict.verdict
+
+        composed = compose_fn(feature_dir)
+        stage_feature(feature_dir, feat_staging_dir, composed)
+
+    # C1 fix (I1): validation is re-run UNCONDITIONALLY here, whether this run just
+    # staged fresh content above or is resuming a crashed prior run. "A pre-swap backup
+    # exists in staging" is NOT "validation already passed" -- that was exactly the
+    # implicit, file-presence-inferred state I1 forbids. A crash between `stage_feature()`
+    # writing the backup+staged files and this validate call completing must never let
+    # the next invocation treat the staged content as already-confirmed-safe: it is
+    # populated but UNCONFIRMED, and unconfirmed staging is always re-validated, never
+    # swapped on trust. Validation is a cheap, idempotent read of small on-disk files, so
+    # there is no correctness reason to skip it on resume -- only the expensive/already-
+    # done steps (detect_shape/probe_feature/compose_fn/stage_feature) are resume-gated.
+    ok, issues = validate_feature_dir(feat_staging_dir, project_root)
+    if not ok:
+        # Non-PASS = hard stop: originals untouched, no swap, no sentinel.
+        return MigrationOutcome(
+            slug, "failed-validation", False,
+            f"staged output failed validation: {issues}; originals untouched",
+        )
+
+    # Validation just PASSED (freshly, above -- never inferred) -- swap is idempotent
+    # whether this is a fresh success or a resume (I1).
+    swap_functional_spec(feature_dir, feat_staging_dir)
+    swap_technical_spec(feature_dir, feat_staging_dir)
+    write_feature_sentinel(feat_staging_dir)
+
+    if reviewed is not None and slug in reviewed:
+        deleted = delete_originals(feature_dir, V26_SATELLITE_FILES)
+        return MigrationOutcome(slug, "migrated", True, f"migrated; deleted originals: {deleted}",
+                                 provenance=provenance)
+    return MigrationOutcome(
+        slug, "migrated-originals-retained", True,
+        "migrated; --reviewed manifest absent, insufficient sample, or slug not listed "
+        "-- originals retained (WARN)",
+        provenance=provenance,
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Run orchestration -- Mode A (features) + Mode B (business-rules, once) +
+# Mode C (screens, per-screen; `_run_screens` lives in `_audience_split_cli_lib.py`),
+# all under the one run-level lock/sentinel (I5), tallied by `_audience_split_tally_lib`
+# (phase-06 B2/B3).
+# --------------------------------------------------------------------------- #
+def _run_features(candidates: list[Path], project_root: Path, docs_root: Path,
+                   reviewed: set[str] | None, tally: Tally) -> None:
+    for fd in candidates:
+        try:
+            outcome = migrate_feature(fd, project_root=project_root, docs_root=docs_root,
+                                       reviewed=reviewed)
+        except UnrecognizedShapeError as exc:
+            print(f"[ERROR] {exc}", file=sys.stderr)
+            tally.add_refused("refused-unrecognized-shape")
+            continue
+        except NotImplementedError as exc:  # pragma: no cover -- no seam left unwired
+            print(f"[ERROR] {fd.name}: {exc}", file=sys.stderr)
+            tally.add_refused("refused-not-implemented")
+            continue
+        print(f"[INFO] {outcome.slug}: {outcome.action} -- {outcome.message}")
+        tally.add(outcome.action, provenance=outcome.provenance)
+
+
+def _run_migration(candidates: list[Path], project_root: Path, docs_root: Path,
+                    reviewed: set[str] | None) -> int:
+    tally = Tally()
+    _run_features(candidates, project_root, docs_root, reviewed, tally)
+
+    bl_outcome = migrate_business_rules(docs_root, project_root)
+    print(f"[INFO] {bl_outcome.slug}: {bl_outcome.action} -- {bl_outcome.message}")
+    tally.add(bl_outcome.action)
+
+    _run_screens(project_root, docs_root, tally)
+
+    # B2 fix: the run sentinel is written iff FAILED == 0 and INERT == 0 -- a run that
+    # left any unit un-migrated or broken never seals the corpus, no matter how many
+    # units DID advance (T3: 1 migrated + 1 skipped is still "not fully migrated").
+    sentinel_written = tally.sentinel_worthy
+    if sentinel_written:
+        write_run_sentinel(docs_root, tally.to_dict())
+
+    for line in tally.inert_breakdown_lines():
+        print(line)
+    # ONE disk-derived count feeds BOTH the summary and the action block -- printing
+    # `tally.retained` here while the block below counts the corpus produced two
+    # disagreeing numbers for one fact on adjacent lines.
+    retained_on_disk = count_retained_satellite_dirs(candidates)
+    print(tally.summary_line(
+        sentinel_state="WRITTEN" if sentinel_written else "NOT WRITTEN",
+        retained_on_disk=retained_on_disk,
+    ))
+
+    block = action_required_block(
+        retained_on_disk,
+        script_path=_SCRIPT_PATH, docs_root=docs_root, project_root=project_root,
+    )
+    if block:
+        print(block)
+
+    exit_code = tally.exit_code()
+    if exit_code == 4:
+        print(tally.accomplished_nothing_message(), file=sys.stderr)
+    return exit_code
+
+
+def _print_early_summary(sentinel_state: str) -> None:
+    """B3: every exit path prints a `[SUMMARY]` line (T15), even the ones that never
+    reached a real tally -- an arg/IO error, a refused mirror, or a held lock is still
+    "zero units assessed", not silence."""
+    print(Tally().summary_line(sentinel_state=sentinel_state))
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                      formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--docs-root", required=True,
+                        help="Path to the project's docs/ directory (contains features/*)")
+    parser.add_argument("--project-root", default=None)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--rollback", action="store_true")
+    parser.add_argument("--reviewed", default=None, metavar="MANIFEST")
+    args = parser.parse_args(argv)
+
+    docs_root = Path(args.docs_root).resolve()
+    if not docs_root.is_dir():
+        print(f"[ERROR] --docs-root is not a directory: {docs_root}", file=sys.stderr)
+        _print_early_summary("N/A (arg/IO error)")
+        return 2
+
+    # B5 change 1: default --project-root from --docs-root's OWN git toplevel, not the
+    # CWD's, so the common cross-repo invocation just works.
+    project_root = _resolve_project_root_for_docs(args.project_root, docs_root)
+    try:
+        assert_under(docs_root, project_root)
+    except ValueError as exc:
+        # B5 change 2: actionable failure -- name the remedy and what was detected.
+        toplevel = _git_toplevel(docs_root) or "<none detected>"
+        print(
+            f"[ERROR] {exc} Pass --project-root <repo root containing the docs tree>. "
+            f"Detected git toplevel of --docs-root: {toplevel}.",
+            file=sys.stderr,
+        )
+        _print_early_summary("N/A (arg/IO error)")
+        return 2
+
+    # B5 change 3: refuse a language-mirror docs root loudly rather than half-work it.
+    mirror_reason = _mirror_refusal_reason(docs_root)
+    if mirror_reason:
+        print(f"[ERROR] {mirror_reason}", file=sys.stderr)
+        _print_early_summary("N/A (refused: language mirror)")
+        return 2
+
+    candidates, rejected = _split_valid_slugs(docs_root)
+    if rejected:
+        print(f"[WARN] rejected feature dir name(s) failing SLUG_RE (never staged): {rejected}",
+              file=sys.stderr)
+
+    if args.dry_run:
+        return _dry_run(candidates, project_root, docs_root)
+
+    if args.rollback:
+        exit_code = _rollback_all(candidates, docs_root)
+        _print_early_summary("N/A (rollback mode)")
+        return exit_code
+
+    # B2/phase-00 decision 2: a JSON sentinel with progress+already>0 is honored as-is;
+    # an unparseable (legacy plain-text) or zero-progress sentinel is POISONED and
+    # self-heals -- re-run with a WARN, never silently locked out forever.
+    sentinel_state, sentinel_data = read_run_sentinel(docs_root)
+    if sentinel_state == SENTINEL_VALID and not args.reviewed:
+        print(f"[INFO] run sentinel present ({run_sentinel_path(docs_root)}) -- already migrated.")
+        retained_on_disk = count_retained_satellite_dirs(candidates)
+        print(Tally.from_dict(sentinel_data).summary_line(
+            sentinel_state="WRITTEN (honored)", retained_on_disk=retained_on_disk,
+        ))
+        # phase-05: re-derived from disk even on this short-circuit path -- nothing in
+        # this branch re-scans the corpus otherwise, and a sentinel is exactly the kind
+        # of cached state that must never stand in for the artifact (phase-00 lesson).
+        block = action_required_block(
+            retained_on_disk,
+            script_path=_SCRIPT_PATH, docs_root=docs_root, project_root=project_root,
+        )
+        if block:
+            print(block)
+        return 0
+    if sentinel_state == SENTINEL_VALID:
+        # phase-05 fix (GAP 2(a)): a sealed run sentinel means COMPOSITION finished for
+        # every unit, not that no retained satellite can ever be deleted later --
+        # `--reviewed` answers a different question ("clear these satellites today")
+        # from the one the run sentinel answers ("did the run as a whole succeed").
+        # Falling through here (instead of returning 0 above) is what makes Gate 8c in
+        # `migrate_feature()` reachable at all on a later invocation; without it, the
+        # `[ACTION REQUIRED]` block's own printed `--reviewed` command was silent,
+        # permanent dead code against an already-migrated corpus -- exactly the
+        # sharetribe corpus this phase targets.
+        print(f"[INFO] run sentinel present ({run_sentinel_path(docs_root)}) -- re-running to "
+              f"apply --reviewed against any still-retained satellites.")
+    if sentinel_state == SENTINEL_POISONED:
+        print(
+            f"[WARN] run sentinel records zero migrated units -- treating as POISONED and "
+            f"re-running. Delete {run_sentinel_path(docs_root)} manually to reset state.",
+            file=sys.stderr,
+        )
+        # fall through -- proceed with a real run, exactly as if the sentinel were absent.
+
+    try:
+        reviewed = _load_reviewed_manifest(args.reviewed) if args.reviewed else None
+    except ValueError as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        _print_early_summary("N/A (arg/IO error)")
+        return 2
+    reviewed = _resolve_reviewed_gate(candidates, reviewed)
+
+    try:
+        with Lock(staging_root(docs_root) / LOCK_NAME):
+            return _run_migration(candidates, project_root, docs_root, reviewed)
+    except LockHeldError as exc:
+        print(f"[ERROR] {exc}", file=sys.stderr)
+        _print_early_summary("N/A (lock held)")
+        return 3
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

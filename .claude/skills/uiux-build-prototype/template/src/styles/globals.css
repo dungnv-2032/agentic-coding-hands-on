@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — pt-spec.json の design をここに写像する（唯一の編集箇所）
+   shadcn/ui の変数系に合わせているので、そのまま実装に持ち越せる。
+   ============================================================ */
+:root {
+  --background: #f6f8fa;        /* design.colors.bg */
+  --foreground: #1a2233;        /* design.colors.text */
+  --card: #ffffff;              /* design.colors.surface */
+  --card-foreground: #1a2233;
+  --primary: #0f6fde;           /* design.colors.primary */
+  --primary-foreground: #ffffff;/* design.colors.primaryText */
+  --secondary: #eef2f6;
+  --secondary-foreground: #1a2233;
+  --muted: #eef2f6;
+  --muted-foreground: #5a6478;  /* design.colors.textSub */
+  --accent: #e8f1fc;            /* design.colors.accent (wash) */
+  --accent-foreground: #1a2233;
+  --destructive: #d6455d;       /* design.colors.danger */
+  --destructive-foreground: #ffffff;
+  --success: #1b9e63;           /* design.colors.success */
+  --warning: #b87514;           /* design.colors.warning */
+  --border: #e3e8ef;            /* design.colors.border */
+  --input: #e3e8ef;
+  --ring: #0f6fde;
+  --radius: 10px;               /* design.shape.radius */
+  --font-jp: "Noto Sans JP", "Hiragino Kaku Gothic ProN", sans-serif; /* design.typography.family */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 6px);
+  --font-sans: var(--font-jp);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    line-height: 1.65; /* JP本文の既定（ui-craft §3） */
+  }
+}
+
+/* 画面遷移のエンター（シェルが付与） */
+@keyframes pt-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.pt-enter { animation: pt-enter 0.22s ease; }
+
+/* 金額・回数などの数値（ui-craft §3） */
+.tabular { font-variant-numeric: tabular-nums; }

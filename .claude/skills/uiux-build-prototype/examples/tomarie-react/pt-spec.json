@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "product": "民泊CtoC Tomarie",
+    "users": "週末の小旅行で個性的な宿を探すゲスト（20〜40代）と、空き部屋を貸すホスト",
+    "primaryGoal": "気になる宿を見つけて、その場で日程・人数を決めて予約リクエストまで完了する",
+    "device": "responsive",
+    "appType": "both",
+    "stage": "idea",
+    "sources": [
+      { "id": "src-dir", "type": "instruction", "path": "(チャット指示)", "note": "Airbnb型CtoCのサンプル。多様な体験（検索・お気に入り・人数選択・予約・支払い）を確認する目的" }
+    ],
+    "assumptions": [
+      "上流入力（um-spec / ia-spec）なし：要件・画面構成・ペルソナ・物件データはすべて未検証のサンプル値（仮定）",
+      "ゲスト側の予約フローのみをスコープとする（ホスト側・お気に入り/予約/プロフィールのタブ先は対象外と仮定）",
+      "予約は即時確定ではなくリクエスト制と仮定（CtoCの一般的な形）",
+      "支払いはクレジットカードとコンビニ払いの2種と仮定"
+    ]
+  },
+  "design": {
+    "direction": "写真が主役の、あたたかいマーケットプレイス",
+    "source": "src-dir（Airbnb型）からの提案（仮定）。primary はコントラスト4.5:1確保のため #E31C5F に調整",
+    "notes": [
+      "写真（手描きSVGシーンイラスト・オフライン自己完結）を最大面積に。UIは白ベースで写真を邪魔しない",
+      "Web表示=グローバルヘッダー / アプリ表示=ヘッダーなし＋ボトムタブバー（appType: both）",
+      "価格は常に「¥/泊」を併記。合計は予約確認まで隠さない",
+      "お気に入り・人数などの操作は即時フィードバック（マイクロインタラクション）"
+    ],
+    "colors": {
+      "primary": "#E31C5F", "primaryText": "#FFFFFF",
+      "bg": "#FAFAFA", "surface": "#FFFFFF",
+      "text": "#222222", "textSub": "#6B6B6B", "border": "#EBEBEB",
+      "success": "#1B9E63", "warning": "#B87514", "danger": "#C13515",
+      "accent": "#FFE9EF"
+    },
+    "typography": { "family": "Noto Sans JP", "baseSize": "14px", "scale": { "xl": "24px", "lg": "18px", "md": "14px", "sm": "12px", "xs": "11px" } },
+    "shape": { "radius": "14px", "density": "comfortable", "shadow": "0 1px 4px rgba(0,0,0,.08)" }
+  },
+  "requirements": [
+    "滞在先の検索・カテゴリ絞り込み",
+    "物件のお気に入り登録",
+    "物件詳細と料金内訳の確認",
+    "日程・人数を指定した予約リクエスト",
+    "支払い方法の選択と予約の確定"
+  ],
+  "screens": [
+    {
+      "id": "stay-search",
+      "name": "さがす",
+      "role": "compare",
+      "primaryAction": "宿を選ぶ",
+      "states": ["default", "loading", "empty"],
+      "grounding": {
+        "reqs": ["滞在先の検索・カテゴリ絞り込み", "物件のお気に入り登録"],
+        "assumptions": ["カテゴリ・物件・価格はサンプル値（上流入力なし）"]
+      },
+      "mock": { "source": "上流入力なし — Airbnb型の一般的な情報設計（写真・タイトル・評価・価格/泊）を仮定", "notes": "お気に入り♥はローカル状態で実際にトグルできる" }
+    },
+    {
+      "id": "stay-detail",
+      "name": "宿の詳細",
+      "role": "decide",
+      "primaryAction": "予約リクエストへ進む",
+      "states": ["default"],
+      "grounding": {
+        "reqs": ["物件詳細と料金内訳の確認", "日程・人数を指定した予約リクエスト"],
+        "assumptions": ["設備・レビューはサンプル値", "日程は候補2択のチップで簡略化（カレンダーはMVP外と仮定）"]
+      },
+      "mock": { "source": "上流入力なし — 写真ギャラリー・評価・設備・料金内訳の一般的構成を仮定", "notes": "人数ステッパーと日程チップは実際に操作できる。デスクトップは右側固定の予約パネル、モバイルは下部固定バー" }
+    },
+    {
+      "id": "booking-confirm",
+      "name": "予約の確認",
+      "role": "confirm",
+      "primaryAction": "予約リクエストを確定する",
+      "states": ["default", "error"],
+      "grounding": {
+        "reqs": ["支払い方法の選択と予約の確定"],
+        "assumptions": ["支払い2種・キャンセル規定の文言はサンプル値"]
+      },
+      "mock": { "source": "上流入力なし — 内訳（泊数×単価+清掃料+手数料）の一般的構成を仮定", "notes": "支払い方法はラジオ選択が実際に動く。error=支払い未選択" }
+    },
+    {
+      "id": "booking-done",
+      "name": "リクエスト完了",
+      "role": "complete",
+      "primaryAction": "さがすに戻る",
+      "states": ["default"],
+      "grounding": {
+        "reqs": ["支払い方法の選択と予約の確定"],
+        "assumptions": ["ホスト承認まで24時間の文言はサンプル値"]
+      },
+      "mock": { "source": "booking-confirm の内容をそのまま反映", "notes": "リクエスト制のため「承認待ち」の期待値を明示" }
+    }
+  ],
+  "transitions": [
+    { "from": "stay-search", "to": "stay-detail", "condition": "物件カードを選ぶ", "kind": "main", "flow": "予約フロー" },
+    { "from": "stay-detail", "to": "booking-confirm", "condition": "予約リクエストへ進む", "kind": "main", "flow": "予約フロー" },
+    { "from": "booking-confirm", "to": "booking-done", "condition": "予約リクエストを確定", "kind": "main", "flow": "予約フロー" },
+    { "from": "booking-done", "to": "stay-search", "condition": "さがすに戻る", "kind": "main", "flow": "予約フロー" },
+    { "from": "stay-detail", "to": "stay-search", "condition": "‹ 戻る", "kind": "sub", "flow": "回遊" },
+    { "from": "booking-confirm", "to": "stay-detail", "condition": "‹ 内容を直す", "kind": "sub", "flow": "回遊" }
+  ]
+}

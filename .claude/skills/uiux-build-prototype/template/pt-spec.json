@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "product": "Prototype",
+    "users": "",
+    "primaryGoal": "",
+    "device": "responsive",
+    "appType": "web-app",
+    "stage": "MVP",
+    "sources": [],
+    "assumptions": []
+  },
+  "design": {
+    "direction": "",
+    "source": "",
+    "notes": [],
+    "colors": {
+      "primary": "#0F6FDE", "primaryText": "#FFFFFF",
+      "bg": "#F6F8FA", "surface": "#FFFFFF",
+      "text": "#1A2233", "textSub": "#5A6478", "border": "#E3E8EF",
+      "success": "#1B9E63", "warning": "#B87514", "danger": "#D6455D",
+      "accent": "#E8F1FC"
+    },
+    "typography": { "family": "Noto Sans JP", "baseSize": "14px", "scale": { "xl": "22px", "lg": "17px", "md": "14px", "sm": "12px", "xs": "11px" } },
+    "shape": { "radius": "10px", "density": "comfortable", "shadow": "0 1px 3px rgba(16,24,40,.08)" }
+  },
+  "requirements": [],
+  "screens": [
+    { "id": "home", "name": "ホーム", "role": "inform", "primaryAction": "", "states": ["default", "loading"] }
+  ],
+  "transitions": []
+}

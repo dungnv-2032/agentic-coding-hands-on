@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "product": "ランニング習慣化アプリ Hashiru",
+    "users": "運動を始めたいのに続かない20〜30代の運動初心者（toC・スマホ中心）",
+    "primaryGoal": "低いハードルで走り始め、サボっても戻ってこられて、4週間続く",
+    "device": "responsive",
+    "stage": "MVP",
+    "sources": [
+      { "id": "src-um", "type": "um-spec", "path": "../uiux-model-users/examples/samples/running-habit.um-spec.json", "note": "ペルソナ（田村さやか）・ジャーニー（3日目の壁→再開）・インサイト・MVPストーリー" },
+      { "id": "src-dir", "type": "instruction", "path": "(チャット指示)", "note": "toCサービスのサンプル。デザイン方針は未指定→提案" }
+    ],
+    "assumptions": [
+      "IA入力なし：画面構成はストーリーマップのMVP骨格（始める→走る→続ける→振り返る）から導出（仮定）",
+      "デザイン方針は未指定のため『前向きでやさしいエナジー』（コーラル系・大きめ角丸）を提案（仮定）",
+      "ラン中は初心者向けにペース等の数値を出さない（インサイト『数値は中級者以降に効く』からの判断）"
+    ]
+  },
+
+  "design": {
+    "direction": "前向きでやさしいエナジー",
+    "colors": {
+      "primary": "#CC4420", "primaryText": "#FFFFFF",
+      "bg": "#FFF8F4", "surface": "#FFFFFF",
+      "text": "#2B2320", "textSub": "#7A6B62", "border": "#F3E5DC",
+      "success": "#2FA57B", "warning": "#E09B2D", "danger": "#E0524D",
+      "accent": "#FFD9CC"
+    },
+    "typography": {
+      "family": "Noto Sans JP",
+      "baseSize": "15px",
+      "scale": { "xl": "26px", "lg": "18px", "md": "15px", "sm": "13px", "xs": "11px" }
+    },
+    "shape": { "radius": "16px", "density": "comfortable", "shadow": "0 2px 10px rgba(80,40,20,.07)" },
+    "notes": ["主ボタンは大きく1画面1つ・角丸大（押すハードルを下げる）", "褒め・承認の文言を数値より先に置く", "警告色は使っても責める文言は使わない"],
+    "source": "direction・配色・角丸は src-um のインサイト（低ハードル・承認・責めない）からの提案（仮定）。primary/textSub はコントラスト4.5:1確保のため調整済み",
+    "components": [
+      {
+        "id": "cta-big",
+        "name": "ビッグCTA",
+        "usage": "1画面1つの主操作。大きく・やさしい文言で押すハードルを下げる（インサイト『低いハードル』）",
+        "usedIn": ["onboarding", "home", "run", "done"],
+        "html": "<button style=\"background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:16px 34px;font-size:var(--fs-lg);font-weight:800;box-shadow:var(--shadow)\">5分ランを始める</button>"
+      },
+      {
+        "id": "option-chip",
+        "name": "選択チップ",
+        "usage": "設定は入力させず選ばせる（インサイト『機能の多さは拒否シグナル』）。選択中はaccent塗り",
+        "usedIn": ["onboarding"],
+        "html": "<div style=\"display:flex;gap:8px\"><span style=\"background:var(--c-accent);border:1.5px solid var(--c-primary);border-radius:999px;padding:10px 16px;font-size:var(--fs-sm);font-weight:700\">5分でOK</span><span style=\"background:var(--c-surface);border:1.5px solid var(--c-border);border-radius:999px;padding:10px 16px;font-size:var(--fs-sm)\">10分</span></div>"
+      },
+      {
+        "id": "stat-card",
+        "name": "実績カード",
+        "usage": "回数など『やった事実』のみ表示。ペース等の性能数値は初心者に出さない",
+        "usedIn": ["home", "done"],
+        "html": "<div style=\"background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);padding:var(--space) 24px;text-align:center\"><div style=\"font-size:var(--fs-lg);font-weight:800\">2回</div><div style=\"font-size:var(--fs-xs);color:var(--c-text-sub);margin-top:2px\">今週走れた日</div></div>"
+      },
+      {
+        "id": "encourage-banner",
+        "name": "励ましバナー",
+        "usage": "サボり復帰・承認の場面で使用。accent背景＋責めない文言（『それでいいんです』）",
+        "usedIn": ["home"],
+        "html": "<div style=\"width:100%;max-width:320px;background:var(--c-accent);border:1px solid var(--c-border);border-radius:var(--radius);padding:var(--space);text-align:center\"><div style=\"font-size:var(--fs-lg);font-weight:800\">3日ぶり。それでいいんです</div><div style=\"font-size:var(--fs-sm);color:var(--c-text-sub);margin-top:4px\">みんな途切れながら続けています</div></div>"
+      },
+      {
+        "id": "guide-pill",
+        "name": "音声ガイドピル",
+        "usage": "ラン中の声かけ表示。丸ピル・穏やかなtextSubで（急かさない）",
+        "usedIn": ["run"],
+        "html": "<div style=\"background:var(--c-surface);border:1px solid var(--c-border);border-radius:999px;padding:10px 18px;font-size:var(--fs-sm);color:var(--c-text-sub);box-shadow:var(--shadow)\">🎧 いいペースです。歩いてもかまいませんよ</div>"
+      },
+      {
+        "id": "praise-block",
+        "name": "承認ブロック",
+        "usage": "完了画面の主役。褒めを最上部・最大サイズで、記録値より先に置く（インサイト『承認は努力へ』）",
+        "usedIn": ["done"],
+        "html": "<div style=\"text-align:center\"><div style=\"width:56px;height:56px;margin:0 auto;border-radius:50%;background:var(--c-primary);color:var(--c-primary-text);font-size:26px;display:flex;align-items:center;justify-content:center\">🎉</div><div style=\"font-size:var(--fs-lg);font-weight:800;margin-top:10px\">今日も走れた。それがいちばんすごい</div></div>"
+      }
+    ]
+  },
+
+  "requirements": [
+    "3つの質問だけで完了する初期目標設定",
+    "5分から始められる音声ガイド付きラン",
+    "ラン完了時に努力を承認（褒める）",
+    "サボった後のやさしい復帰導線"
+  ],
+
+  "screens": [
+    {
+      "id": "onboarding",
+      "name": "はじめの設定",
+      "role": "input",
+      "primaryAction": "はじめる",
+      "states": ["default"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["3つの質問だけで目標設定が終わる"],
+        "reqs": ["3つの質問だけで完了する初期目標設定"],
+        "assumptions": ["質問の選択肢はインタビューの頻出回答から構成（仮定）"]
+      },
+      "mock": {
+        "source": "src-um インサイト『機能の多さは拒否シグナル』→ 質問は3つだけ・選択式のみ",
+        "notes": "入力欄ゼロ。タップ3回で完了する構成"
+      },
+      "html": "<div class=\"s-ob\"><style>.s-ob{min-height:100%;display:flex;flex-direction:column}.s-ob .bd{flex:1;width:100%;max-width:520px;margin:0 auto;padding:calc(var(--space)*1.5) var(--space);box-sizing:border-box}.s-ob .hi{font-size:var(--fs-xl);font-weight:800;line-height:1.4}.s-ob .sub{color:var(--c-text-sub);font-size:var(--fs-sm);margin-top:6px}.s-ob .q{margin-top:22px}.s-ob .qt{font-weight:700;margin-bottom:10px}.s-ob .opts{display:flex;gap:8px;flex-wrap:wrap}.s-ob .opt{background:var(--c-surface);border:1.5px solid var(--c-border);border-radius:999px;padding:10px 16px;font-size:var(--fs-sm);color:var(--c-text)}.s-ob .opt.on{border-color:var(--c-primary);background:var(--c-accent);font-weight:700}.s-ob .acts{width:100%;max-width:520px;margin:0 auto;padding:var(--space);box-sizing:border-box}.s-ob .go{display:block;width:100%;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:16px;font-size:var(--fs-lg);font-weight:800;box-shadow:var(--shadow)}</style><main class=\"bd\"><div class=\"hi\">3つだけ、教えてください</div><div class=\"sub\">あとで全部変えられます。気楽にどうぞ</div><div class=\"q\"><div class=\"qt\">1. なんのために走る？</div><div class=\"opts\"><span class=\"opt on\">健康のため</span><span class=\"opt\">気分転換</span><span class=\"opt\">体力づくり</span></div></div><div class=\"q\"><div class=\"qt\">2. 走りやすい時間は？</div><div class=\"opts\"><span class=\"opt\">朝・出勤前</span><span class=\"opt on\">夜・帰宅後</span><span class=\"opt\">休日</span></div></div><div class=\"q\"><div class=\"qt\">3. 1回どのくらいなら続けられそう？</div><div class=\"opts\"><span class=\"opt on\">5分でOK</span><span class=\"opt\">10分</span><span class=\"opt\">15分</span></div></div></main><div class=\"acts\"><button class=\"go\" data-goto=\"home\">はじめる</button></div></div>"
+    },
+    {
+      "id": "home",
+      "name": "ホーム",
+      "role": "decide",
+      "primaryAction": "今日の5分ランを始める",
+      "states": ["default", "comeback"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["5分から始める音声ガイド付きランができる", "サボっても責めず、やさしく復帰へ導いてくれる"],
+        "reqs": ["5分から始められる音声ガイド付きラン", "サボった後のやさしい復帰導線"],
+        "assumptions": ["comeback状態は最終ランから3日以上空いた場合に表示と仮定（ジャーニー『3日目の壁』より）"]
+      },
+      "mock": {
+        "source": "src-um ペルソナの言葉（低いハードル『5分でOK』/ サボっても戻れる導線）とジャーニー段階（3日目の壁→再開）",
+        "notes": "comeback は empty/error と同じ data-when 機構で表現したジャーニー由来のカスタム状態"
+      },
+      "html": "<div class=\"s-hm\"><style>.s-hm{min-height:100%;display:flex;flex-direction:column}.s-hm .bd{flex:1;width:100%;max-width:560px;margin:0 auto;padding:calc(var(--space)*1.5) var(--space);box-sizing:border-box}.s-hm .hi{font-size:var(--fs-lg);font-weight:800}.s-hm .date{color:var(--c-text-sub);font-size:var(--fs-xs)}.s-hm .today{margin-top:16px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:calc(var(--space)*1.4);text-align:center}.s-hm .big{font-size:var(--fs-xl);font-weight:800;line-height:1.4}.s-hm .note{color:var(--c-text-sub);font-size:var(--fs-sm);margin-top:6px}.s-hm .go{display:block;width:100%;margin-top:18px;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:16px;font-size:var(--fs-lg);font-weight:800;box-shadow:var(--shadow)}.s-hm .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.s-hm .stat{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);padding:var(--space);text-align:center}.s-hm .sv{font-size:var(--fs-lg);font-weight:800}.s-hm .sk{font-size:var(--fs-xs);color:var(--c-text-sub);margin-top:2px}.s-hm .cb{margin-top:16px;background:var(--c-accent);border:1px solid var(--c-border);border-radius:var(--radius);padding:calc(var(--space)*1.4);text-align:center}.s-hm .cb .big{font-size:var(--fs-lg)}@container (min-width:760px){.s-hm .row{grid-template-columns:1fr 1fr 1fr}}</style><main class=\"bd\"><div class=\"hi\">こんばんは、さやかさん</div><div class=\"date\">7/3（金）夜・帰宅後の時間ですね</div><div data-when=\"default\"><div class=\"today\"><div class=\"big\">今日は5分だけ、<br>走ってみませんか</div><div class=\"note\">ゆっくりでOK。音声ガイドがついています</div><button class=\"go\" data-goto=\"run\">5分ランを始める</button></div><div class=\"row\"><div class=\"stat\"><div class=\"sv\">2回</div><div class=\"sk\">今週走れた日</div></div><div class=\"stat\"><div class=\"sv\">6回</div><div class=\"sk\">はじめてから</div></div></div></div><div data-when=\"comeback\"><div class=\"cb\"><div class=\"big\">3日ぶり。<br>それでいいんです</div><div class=\"note\">続けている人もみんな、途切れながら続けています。<br>今日はいちばん軽いメニューにしました</div><button class=\"go\" data-goto=\"run\">5分だけ、ゆるく再開する</button></div></div></main></div>"
+    },
+    {
+      "id": "run",
+      "name": "ラン中",
+      "role": "inform",
+      "primaryAction": "ランを終える",
+      "states": ["default"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["5分から始める音声ガイド付きランができる"],
+        "reqs": ["5分から始められる音声ガイド付きラン"],
+        "assumptions": ["初心者向けにペース・距離を表示しない（インサイト『数値は中級者以降』からの判断）"]
+      },
+      "mock": {
+        "source": "src-um インサイト『承認は数値より努力へ』→ 残り時間と励ましだけの画面構成",
+        "notes": "リングは残り時間の視覚化。数値の羅列を意図的に排除"
+      },
+      "html": "<div class=\"s-rn\"><style>.s-rn{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--space);box-sizing:border-box}.s-rn .ring{width:210px;height:210px}.s-rn .tm{font-size:40px;font-weight:800}.s-rn .tk{font-size:var(--fs-xs);color:var(--c-text-sub)}.s-rn .guide{margin-top:18px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:999px;padding:10px 18px;font-size:var(--fs-sm);color:var(--c-text-sub);box-shadow:var(--shadow)}.s-rn .end{margin-top:26px;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:15px 40px;font-size:var(--fs-lg);font-weight:800;box-shadow:var(--shadow)}</style><svg class=\"ring\" viewBox=\"0 0 120 120\"><circle cx=\"60\" cy=\"60\" r=\"52\" fill=\"none\" stroke=\"var(--c-accent)\" stroke-width=\"10\"/><circle cx=\"60\" cy=\"60\" r=\"52\" fill=\"none\" stroke=\"var(--c-primary)\" stroke-width=\"10\" stroke-linecap=\"round\" stroke-dasharray=\"327\" stroke-dashoffset=\"120\" transform=\"rotate(-90 60 60)\"/><text x=\"60\" y=\"57\" text-anchor=\"middle\" font-size=\"20\" font-weight=\"800\" fill=\"var(--c-text)\">03:12</text><text x=\"60\" y=\"74\" text-anchor=\"middle\" font-size=\"8\" fill=\"var(--c-text-sub)\">のこり</text></svg><div class=\"guide\">🎧 いいペースです。歩いてもかまいませんよ</div><button class=\"end\" data-goto=\"done\">ランを終える</button></div>"
+    },
+    {
+      "id": "done",
+      "name": "おつかれさま",
+      "role": "complete",
+      "primaryAction": "ホームへ戻る",
+      "states": ["default"],
+      "grounding": {
+        "personas": ["田村さやか（27・事務職 / primary）"],
+        "stories": ["走り終わりに努力を褒めてくれる"],
+        "reqs": ["ラン完了時に努力を承認（褒める）"],
+        "assumptions": []
+      },
+      "mock": {
+        "source": "src-um インサイト『継続を支えるのは努力そのものへの承認』→ 褒めを最上部・数値は下部に控えめ",
+        "notes": "記録値（5分12秒・0.8km）はモック。承認文言が主役"
+      },
+      "html": "<div class=\"s-dn\"><style>.s-dn{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--space);box-sizing:border-box}.s-dn .mark{width:76px;height:76px;border-radius:50%;background:var(--c-primary);color:var(--c-primary-text);font-size:36px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}.s-dn .ttl{font-size:var(--fs-xl);font-weight:800;margin-top:18px;line-height:1.4}.s-dn .sub{color:var(--c-text-sub);font-size:var(--fs-sm);margin-top:8px}.s-dn .rec{display:flex;gap:10px;margin-top:20px}.s-dn .rc{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);padding:12px 18px}.s-dn .rv{font-weight:800}.s-dn .rk{font-size:var(--fs-xs);color:var(--c-text-sub)}.s-dn .back{margin-top:26px;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:14px 36px;font-size:var(--fs-md);font-weight:800;box-shadow:var(--shadow)}</style><div class=\"mark\">🎉</div><div class=\"ttl\">今日も走れた。<br>それがいちばんすごい</div><div class=\"sub\">忙しい平日の夜に、自分との約束を守れました</div><div class=\"rec\"><div class=\"rc\"><div class=\"rv\">5分12秒</div><div class=\"rk\">時間</div></div><div class=\"rc\"><div class=\"rv\">0.8km</div><div class=\"rk\">距離</div></div><div class=\"rc\"><div class=\"rv\">7回目</div><div class=\"rk\">通算</div></div></div><button class=\"back\" data-goto=\"home\">ホームへ戻る</button></div>"
+    }
+  ],
+
+  "transitions": [
+    { "from": "onboarding", "to": "home", "condition": "はじめる（質問3つ）", "kind": "main", "flow": "はじめてフロー" },
+    { "from": "home", "to": "run", "condition": "5分ランを始める", "kind": "main", "flow": "ランフロー" },
+    { "from": "run", "to": "done", "condition": "ランを終える", "kind": "main", "flow": "ランフロー" },
+    { "from": "done", "to": "home", "condition": "ホームへ戻る", "kind": "main", "flow": "ランフロー" },
+    { "from": "home", "to": "run", "condition": "サボり後：ゆるく再開する", "kind": "sub", "flow": "復帰フロー" }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "IAC_ROOT": "examples/aws/terraform",
+  "ENV_DIR": "{IAC_ROOT}/envs/{env}",
+  "MODULE_DIR": "{IAC_ROOT}/modules",
+  "MODULE_DEPTH": "../../../modules/{service}",
+  "DEPS_ROOT": "examples/aws/terraform-dependencies",
+  "SOPS_PATH": "../../../../{DEPS_ROOT-basename}/sops/secrets.{env}.yaml",
+  "STATE_BUCKET_PATTERN": "{project}-{env}-iac-state-{account-id}",
+  "PROFILE_PATTERN": "{project}-{env}",
+  "SOPS_ALIAS_PATTERN": "alias/{project}-{env}-sops-key",
+  "LAYERS": [
+    "1.general",
+    "2.frontend",
+    "3.backend",
+    "4.database",
+    "5.messaging",
+    "6.delivery",
+    "7.monitoring"
+  ],
+  "DEFAULT_REGION": "ap-northeast-1",
+  "PRICING_API_REGION": "us-east-1",
+  "WORK_DIR": ".aidd",
+  "DOCS_DIR": "docs",
+  "ORG": "sun-asterisk-internal",
+  "REPO": "sun-infra-iac",
+  "MAKE_ROOT": "examples/aws",
+  "DRAWSUN_ENDPOINT": null
+}

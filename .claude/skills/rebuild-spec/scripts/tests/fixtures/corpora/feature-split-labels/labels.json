@@ -1,0 +1,261 @@
+{
+  "provenance": {
+    "raters": [
+      "A",
+      "B",
+      "C"
+    ],
+    "rater_kind": "independent blind LLM labelers, one prompt, no cross-talk",
+    "blind_to": [
+      "cap.promote_candidate",
+      "all thresholds",
+      "which features any rule flagged",
+      "the \u00a72 CAP partition"
+    ],
+    "isolated_from_repo": "plan.md in this repo names the flagged features; labelers were restricted to a single file outside the repo",
+    "fleiss_kappa": 0.481,
+    "unanimous": 11,
+    "n": 18,
+    "adjudicated_by_user": [
+      "F001",
+      "F006",
+      "F015",
+      "F032",
+      "F058"
+    ],
+    "adjudications_overturning_majority": [],
+    "adjudicated_on": "2026-08-20",
+    "sample_is_enriched": true,
+    "enrichment_warning": "The 18 were deliberately chosen across suspicion bands (flagged / near-miss / high-CAP / background / small control). The 56% SPLIT rate is the SAMPLE's rate and must never be read as the corpus rate."
+  },
+  "final_split": [
+    "F001",
+    "F006",
+    "F020",
+    "F030",
+    "F034",
+    "F041",
+    "F046",
+    "F048",
+    "F058",
+    "F063"
+  ],
+  "features": {
+    "F001": {
+      "item": "ITEM-01",
+      "votes": {
+        "A": "SPLIT",
+        "B": "KEEP",
+        "C": "SPLIT"
+      },
+      "unanimous": false,
+      "majority": "SPLIT",
+      "adjudicated": "SPLIT",
+      "final": "SPLIT"
+    },
+    "F020": {
+      "item": "ITEM-02",
+      "votes": {
+        "A": "KEEP",
+        "B": "SPLIT",
+        "C": "SPLIT"
+      },
+      "unanimous": false,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F048": {
+      "item": "ITEM-03",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "SPLIT"
+      },
+      "unanimous": true,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F004": {
+      "item": "ITEM-04",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": true,
+      "majority": "KEEP",
+      "adjudicated": null,
+      "final": "KEEP"
+    },
+    "F034": {
+      "item": "ITEM-05",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "SPLIT"
+      },
+      "unanimous": true,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F063": {
+      "item": "ITEM-06",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "SPLIT"
+      },
+      "unanimous": true,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F018": {
+      "item": "ITEM-07",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": true,
+      "majority": "KEEP",
+      "adjudicated": null,
+      "final": "KEEP"
+    },
+    "F046": {
+      "item": "ITEM-08",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "KEEP"
+      },
+      "unanimous": false,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F003": {
+      "item": "ITEM-09",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": true,
+      "majority": "KEEP",
+      "adjudicated": null,
+      "final": "KEEP"
+    },
+    "F032": {
+      "item": "ITEM-10",
+      "votes": {
+        "A": "SPLIT",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": false,
+      "majority": "KEEP",
+      "adjudicated": "KEEP",
+      "final": "KEEP"
+    },
+    "F059": {
+      "item": "ITEM-11",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": true,
+      "majority": "KEEP",
+      "adjudicated": null,
+      "final": "KEEP"
+    },
+    "F015": {
+      "item": "ITEM-12",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "SPLIT"
+      },
+      "unanimous": false,
+      "majority": "KEEP",
+      "adjudicated": "KEEP",
+      "final": "KEEP"
+    },
+    "F041": {
+      "item": "ITEM-13",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "SPLIT"
+      },
+      "unanimous": true,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F002": {
+      "item": "ITEM-14",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": true,
+      "majority": "KEEP",
+      "adjudicated": null,
+      "final": "KEEP"
+    },
+    "F030": {
+      "item": "ITEM-15",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "SPLIT"
+      },
+      "unanimous": true,
+      "majority": "SPLIT",
+      "adjudicated": null,
+      "final": "SPLIT"
+    },
+    "F058": {
+      "item": "ITEM-16",
+      "votes": {
+        "A": "SPLIT",
+        "B": "SPLIT",
+        "C": "KEEP"
+      },
+      "unanimous": false,
+      "majority": "SPLIT",
+      "adjudicated": "SPLIT",
+      "final": "SPLIT"
+    },
+    "F006": {
+      "item": "ITEM-17",
+      "votes": {
+        "A": "SPLIT",
+        "B": "KEEP",
+        "C": "SPLIT"
+      },
+      "unanimous": false,
+      "majority": "SPLIT",
+      "adjudicated": "SPLIT",
+      "final": "SPLIT"
+    },
+    "F039": {
+      "item": "ITEM-18",
+      "votes": {
+        "A": "KEEP",
+        "B": "KEEP",
+        "C": "KEEP"
+      },
+      "unanimous": true,
+      "majority": "KEEP",
+      "adjudicated": null,
+      "final": "KEEP"
+    }
+  }
+}

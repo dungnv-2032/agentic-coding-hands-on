@@ -1,0 +1,50 @@
+mermaid.min.js — vendored third-party asset
+=============================================
+
+Package:  mermaid
+Version:  10.9.6  (pinned — last 10.x release; classic global/UMD `dist/mermaid.min.js`
+          bundle confirmed present at this version)
+Source:   https://registry.npmjs.org/mermaid/-/mermaid-10.9.6.tgz
+Upstream: https://github.com/mermaid-js/mermaid
+License:  MIT (per mermaid's own package.json `"license": "MIT"`)
+
+Provenance
+----------
+Fetched via `npm pack mermaid@10` (resolved 10.9.6) and extracted `package/dist/mermaid.min.js`
+verbatim — no modification. This is the classic UMD/global bundle (`(function(root, factory){...
+typeof exports == "object" ... : (root = typeof globalThis < "u" ? globalThis : root || self,
+root.mermaid = factory())})(this, function () {...})`), which exposes `window.mermaid` when loaded
+via a plain `<script src="...">` tag. It contains no `import`/`export` statements and does not
+require `type="module"`, so it renders diagrams correctly when the page is opened directly from
+`file://` (ES-module imports are blocked cross-origin under `file://` in Chromium-based browsers;
+this classic bundle has no such restriction).
+
+Why 10.9.6, not the latest mermaid
+-----------------------------------
+Newer mermaid major versions (11+) have trended toward ESM-first distribution; 10.9.6 is the last
+release confirmed to ship a full classic `dist/mermaid.min.js` UMD bundle. If mermaid's packaging
+changes in a way that removes this file in the 10.x line, re-pin to the last 10.x version that still
+ships it and update this note.
+
+Re-vendoring instructions
+--------------------------
+```
+npm pack mermaid@10        # resolves to the latest 10.x release
+tar --transform 's/dist/mermaid-build/' -xzf mermaid-10.*.tgz
+cp package/mermaid-build/mermaid.min.js claude/skills/rebuild-spec/extensions/assets/mermaid.min.js
+```
+Update the pinned version above after re-vendoring, and re-verify the file still starts with a UMD
+wrapper (no bare `import` statements) before committing.
+
+Usage in generated bundles
+---------------------------
+`build_client_package.cjs` copies this file verbatim into `<bundle>/assets/mermaid.min.js`. Every
+generated page loads it via a plain script tag and initializes it directly:
+
+```html
+<script src="./assets/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+```
+
+Never load this asset with `type="module"` and never replace it with a CDN URL — both break the
+"opens from file:// with no network" requirement this vendoring exists to satisfy.

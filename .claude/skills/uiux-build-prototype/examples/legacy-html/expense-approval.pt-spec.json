@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "product": "経費精算アプリ Keihi",
+    "users": "外回りの多い営業担当者と、承認する営業マネージャー",
+    "primaryGoal": "立替経費を移動中の隙間時間に申請し、その日のうちに承認まで進める",
+    "device": "responsive",
+    "stage": "MVP",
+    "sources": [
+      { "id": "src-ia", "type": "ia-spec", "path": "../uiux-design-information-architecture/plans/sample/ia-spec.json", "note": "画面構成・遷移・機能要件（サンプルとして仮参照）" },
+      { "id": "src-um", "type": "um-spec", "path": "../uiux-model-users/examples/samples/freelance-invoicing.um-spec.json", "note": "ペルソナ語彙・情報順（サンプルとして仮参照）" },
+      { "id": "src-dir", "type": "instruction", "path": "(チャット指示)", "note": "デザイン方針「信頼感のあるミニマル」・レスポンシブ対応" }
+    ],
+    "assumptions": [
+      "一覧の並び順は申請日の新しい順と仮定（入力に指定なし）",
+      "領収書は写真1枚のみ添付と仮定（MVPスコープ判断）",
+      "ブレークポイントは 760px（タブレット以上で2カラム/中央寄せ）と仮定"
+    ]
+  },
+
+  "design": {
+    "direction": "信頼感のあるミニマル",
+    "colors": {
+      "primary": "#0F6FDE", "primaryText": "#FFFFFF",
+      "bg": "#F6F8FA", "surface": "#FFFFFF",
+      "text": "#1A2233", "textSub": "#5A6478", "border": "#E3E8EF",
+      "success": "#1B9E63", "warning": "#B87514", "danger": "#D6455D",
+      "accent": ""
+    },
+    "typography": {
+      "family": "Noto Sans JP",
+      "baseSize": "14px",
+      "scale": { "xl": "22px", "lg": "17px", "md": "14px", "sm": "12px", "xs": "11px" }
+    },
+    "shape": { "radius": "10px", "density": "comfortable", "shadow": "0 1px 3px rgba(16,24,40,.08)" },
+    "notes": ["ボタンは primary 塗り一色・角丸大", "ステータスは色＋文字ラベルの併記（色だけに頼らない）", "760px以上ではコンテンツ幅を制限し中央寄せ"],
+    "source": "src-dir（direction・レスポンシブ）／ 配色・タイポは方針語からの提案（仮定）",
+    "components": [
+      {
+        "id": "btn-primary",
+        "name": "プライマリボタン",
+        "usage": "主操作専用。1画面1つ。文言は動詞（〜する）で終える",
+        "usedIn": ["expense-list", "expense-form", "expense-complete"],
+        "html": "<button style=\"background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:14px 26px;font-size:var(--fs-md);font-weight:700;box-shadow:var(--shadow)\">申請を送信する</button>"
+      },
+      {
+        "id": "btn-secondary",
+        "name": "セカンダリボタン",
+        "usage": "キャンセル・戻る等の副操作。塗りなし・枠線のみ",
+        "usedIn": ["expense-form"],
+        "html": "<button style=\"background:var(--c-surface);color:var(--c-text-sub);border:1px solid var(--c-border);border-radius:var(--radius);padding:14px 26px;font-size:var(--fs-md)\">キャンセル</button>"
+      },
+      {
+        "id": "btn-danger-outline",
+        "name": "取り消し系ボタン",
+        "usage": "取り下げ・削除など不可逆寄りの操作。danger枠線で塗らない（誤タップ防止）",
+        "usedIn": ["expense-detail"],
+        "html": "<button style=\"background:var(--c-surface);color:var(--c-danger);border:1px solid var(--c-danger);border-radius:var(--radius);padding:13px 26px;font-size:var(--fs-md)\">申請を取り下げる</button>"
+      },
+      {
+        "id": "card-expense",
+        "name": "経費カード",
+        "usage": "一覧の1明細。左=用途と日付 / 右=金額とステータス。タップで詳細へ",
+        "usedIn": ["expense-list"],
+        "html": "<div style=\"width:100%;max-width:340px;background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--space)\"><div style=\"display:flex;justify-content:space-between;align-items:baseline;gap:8px\"><span style=\"font-weight:700\">タクシー代（顧客訪問）</span><strong style=\"font-size:var(--fs-lg)\">¥3,200</strong></div><div style=\"display:flex;justify-content:space-between;margin-top:4px;font-size:var(--fs-sm);color:var(--c-text-sub)\"><span>7/1（火）</span><span style=\"color:var(--c-warning);font-weight:700\">● 承認待ち</span></div></div>"
+      },
+      {
+        "id": "status-label",
+        "name": "ステータスラベル",
+        "usage": "warning=承認待ち / success=承認済み / danger=差し戻し。色＋文字を必ず併記",
+        "usedIn": ["expense-list", "expense-detail"],
+        "html": "<div style=\"display:flex;gap:14px;font-size:var(--fs-sm)\"><span style=\"color:var(--c-warning);font-weight:700\">● 承認待ち</span><span style=\"color:var(--c-success);font-weight:700\">● 承認済み</span><span style=\"color:var(--c-danger);font-weight:700\">● 差し戻し</span></div>"
+      },
+      {
+        "id": "input-field",
+        "name": "入力フィールド",
+        "usage": "ラベル上置き・必須はdangerで明示。エラー文は下ではなく画面上部のエラーカードに集約",
+        "usedIn": ["expense-form"],
+        "html": "<div style=\"width:100%;max-width:300px\"><label style=\"display:block;font-size:var(--fs-sm);color:var(--c-text-sub);margin-bottom:4px\">金額 <span style=\"color:var(--c-danger)\">必須</span></label><input readonly value=\"¥3,200\" style=\"width:100%;box-sizing:border-box;font-size:var(--fs-lg);font-weight:700;padding:12px;border:1px solid var(--c-border);border-radius:var(--radius);background:var(--c-surface);color:var(--c-text);font-family:var(--font)\"></div>"
+      },
+      {
+        "id": "empty-state",
+        "name": "空状態",
+        "usage": "見出し＋次の一歩の一文＋主操作ボタン。責めない文言で",
+        "usedIn": ["expense-list"],
+        "html": "<div style=\"text-align:center;color:var(--c-text-sub)\"><div style=\"font-size:var(--fs-lg)\">まだ申請がありません</div><div style=\"font-size:var(--fs-sm);margin-top:6px\">立替が発生したらその場で申請しましょう</div><button style=\"margin-top:12px;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:11px 20px;font-size:var(--fs-md);font-weight:700\">最初の申請を作成</button></div>"
+      }
+    ]
+  },
+
+  "requirements": [
+    "経費の一覧・状態確認",
+    "経費の新規申請（金額・日付・領収書）",
+    "申請内容の詳細確認",
+    "申請の取り下げ"
+  ],
+
+  "screens": [
+    {
+      "id": "expense-list",
+      "name": "経費一覧",
+      "role": "manage",
+      "primaryAction": "経費を申請する",
+      "states": ["default", "empty", "loading", "error"],
+      "grounding": {
+        "iaScreen": "expense-list",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、立替の状態を一目で確認したい"],
+        "reqs": ["経費の一覧・状態確認"],
+        "assumptions": ["並び順は新しい順と仮定"]
+      },
+      "mock": {
+        "source": "src-ia components.items（列: 用途/金額/日付/状態）＋src-um の営業文脈（タクシー・会食）",
+        "notes": "金額は資料の平均立替額 3,000〜15,000 円のレンジに合わせた"
+      },
+      "html": "<div class=\"s-el\"><style>.s-el{min-height:100%;display:flex;flex-direction:column}.s-el .hd{background:var(--c-surface);border-bottom:1px solid var(--c-border)}.s-el .hd-in{max-width:1040px;margin:0 auto;padding:var(--space);display:flex;justify-content:space-between;align-items:center;gap:12px}.s-el .ttl{font-size:var(--fs-lg);font-weight:700}.s-el .sum{font-size:var(--fs-sm);color:var(--c-text-sub)}.s-el .hd-btn{display:none;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:10px 18px;font-size:var(--fs-md);font-weight:700;white-space:nowrap}.s-el .bd{flex:1;width:100%;max-width:1040px;margin:0 auto;padding:var(--space);box-sizing:border-box}.s-el .list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:10px}.s-el .card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--space)}.s-el .r1{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.s-el .nm{font-weight:700}.s-el .amt{font-size:var(--fs-lg);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}.s-el .sk{height:14px;border-radius:4px;background:var(--c-border)}.s-el .sk2{height:11px;width:38%;border-radius:4px;background:var(--c-border);opacity:.55;margin-top:9px}.s-el .r2{display:flex;justify-content:space-between;margin-top:4px;font-size:var(--fs-sm);color:var(--c-text-sub)}.s-el .st-wait{color:var(--c-warning);font-weight:700}.s-el .st-ok{color:var(--c-success);font-weight:700}.s-el .cta{position:sticky;bottom:0;padding:var(--space);background:linear-gradient(transparent,var(--c-bg) 40%)}.s-el .cta button{display:block;width:100%;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:14px;font-size:var(--fs-md);font-weight:700;box-shadow:var(--shadow)}.s-el .center{text-align:center;color:var(--c-text-sub);padding:48px 0}@container (min-width:760px){.s-el .list{grid-template-columns:1fr 1fr}.s-el .hd-btn{display:inline-block}.s-el .cta{display:none}}</style><header class=\"hd\"><div class=\"hd-in\"><div><div class=\"ttl\">経費一覧</div><div class=\"sum\">今月の立替合計 ¥21,400</div></div><button class=\"hd-btn\" data-goto=\"expense-form\">＋ 経費を申請する</button></div></header><main class=\"bd\"><ul data-when=\"loading\" class=\"list\" aria-hidden=\"true\"><li class=\"card\"><div class=\"sk\" style=\"width:62%\"></div><div class=\"sk2\"></div></li><li class=\"card\"><div class=\"sk\" style=\"width:48%\"></div><div class=\"sk2\"></div></li><li class=\"card\"><div class=\"sk\" style=\"width:55%\"></div><div class=\"sk2\"></div></li></ul><div data-when=\"error\" class=\"center\"><div style=\"color:var(--c-danger);font-weight:700\">エラー：読み込みに失敗しました</div><div style=\"font-size:var(--fs-sm);margin-top:6px\">通信環境を確認して再試行してください</div><button style=\"margin-top:12px;background:var(--c-surface);color:var(--c-primary);border:1px solid var(--c-primary);border-radius:var(--radius);padding:9px 18px;font-size:var(--fs-md)\">再試行</button></div><div data-when=\"empty\" class=\"center\"><div style=\"font-size:var(--fs-lg)\">まだ申請がありません</div><div style=\"font-size:var(--fs-sm);margin-top:6px\">立替が発生したらその場で申請しましょう</div><button data-goto=\"expense-form\" style=\"margin-top:14px;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:11px 20px;font-size:var(--fs-md);font-weight:700\">最初の申請を作成</button></div><ul data-when=\"default\" class=\"list\"><li class=\"card\" data-goto=\"expense-detail\"><div class=\"r1\"><span class=\"nm\">タクシー代（顧客訪問）</span><strong class=\"amt\">¥3,200</strong></div><div class=\"r2\"><span>7/1（火）</span><span class=\"st-wait\">● 承認待ち</span></div></li><li class=\"card\"><div class=\"r1\"><span class=\"nm\">会食費（○○商事様）</span><strong class=\"amt\">¥12,800</strong></div><div class=\"r2\"><span>6/27（金）</span><span class=\"st-ok\">● 承認済み</span></div></li><li class=\"card\"><div class=\"r1\"><span class=\"nm\">駐車場代</span><strong class=\"amt\">¥5,400</strong></div><div class=\"r2\"><span>6/25（水）</span><span class=\"st-ok\">● 承認済み</span></div></li></ul></main><div class=\"cta\" data-when=\"default\"><button data-goto=\"expense-form\">＋ 経費を申請する</button></div></div>"
+    },
+    {
+      "id": "expense-form",
+      "name": "経費申請",
+      "role": "input",
+      "primaryAction": "申請を送信する",
+      "states": ["default", "error"],
+      "grounding": {
+        "iaScreen": "expense-form",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、移動中に最小の入力で申請を出したい"],
+        "reqs": ["経費の新規申請（金額・日付・領収書）"]
+      },
+      "mock": {
+        "source": "src-ia components.items（フィールド: 用途/金額/日付/領収書）",
+        "notes": "入力例はペルソナの直近利用シーン（タクシー）を採用"
+      },
+      "html": "<div class=\"s-ef\"><style>.s-ef{min-height:100%;display:flex;flex-direction:column}.s-ef .hd{background:var(--c-surface);border-bottom:1px solid var(--c-border)}.s-ef .hd-in{max-width:560px;margin:0 auto;padding:var(--space);display:flex;align-items:center;gap:10px}.s-ef .bk{color:var(--c-primary);font-size:var(--fs-lg)}.s-ef .ttl{font-size:var(--fs-lg);font-weight:700}.s-ef .bd{flex:1;width:100%;max-width:560px;margin:0 auto;padding:var(--space);box-sizing:border-box}.s-ef label{display:block;font-size:var(--fs-sm);color:var(--c-text-sub);margin-bottom:4px}.s-ef .req{color:var(--c-danger)}.s-ef input{width:100%;box-sizing:border-box;font-size:var(--fs-md);padding:12px;border:1px solid var(--c-border);border-radius:var(--radius);background:var(--c-surface);color:var(--c-text);margin-bottom:14px;font-family:var(--font)}.s-ef .amt{font-size:var(--fs-lg);font-weight:700}.s-ef .up{border:1.5px dashed var(--c-border);border-radius:var(--radius);padding:22px;text-align:center;color:var(--c-text-sub);font-size:var(--fs-sm);background:var(--c-surface)}.s-ef .err{background:var(--c-surface);border:1px solid var(--c-danger);border-radius:var(--radius);padding:12px;margin-bottom:12px;font-size:var(--fs-sm)}.s-ef .acts{width:100%;max-width:560px;margin:0 auto;padding:var(--space);box-sizing:border-box;display:flex;gap:10px}.s-ef .cancel{flex:1;background:var(--c-surface);color:var(--c-text-sub);border:1px solid var(--c-border);border-radius:var(--radius);padding:14px;font-size:var(--fs-md)}.s-ef .submit{flex:2;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:14px;font-size:var(--fs-md);font-weight:700}@container (min-width:760px){.s-ef .acts{justify-content:flex-end}.s-ef .cancel{flex:0 0 auto;padding:14px 26px}.s-ef .submit{flex:0 0 auto;padding:14px 34px}}</style><header class=\"hd\"><div class=\"hd-in\"><span class=\"bk\" data-goto=\"expense-list\">‹</span><div class=\"ttl\">経費申請</div></div></header><main class=\"bd\"><div data-when=\"error\" class=\"err\"><span style=\"color:var(--c-danger);font-weight:700\">エラー：金額を入力してください</span><br><span style=\"color:var(--c-text-sub)\">半角数字で入力します（例: 3200）</span></div><label>用途 <span class=\"req\">必須</span></label><input readonly value=\"タクシー代（顧客訪問）\"><label>金額 <span class=\"req\">必須</span></label><input readonly class=\"amt\" value=\"¥3,200\"><label>日付</label><input readonly value=\"2026/07/01（火）\"><label>領収書</label><div class=\"up\">📷 タップして領収書を撮影<br><span style=\"font-size:var(--fs-xs)\">あとから追加もできます</span></div></main><div class=\"acts\"><button class=\"cancel\" data-goto=\"expense-list\">キャンセル</button><button class=\"submit\" data-goto=\"expense-complete\">申請を送信する</button></div></div>"
+    },
+    {
+      "id": "expense-detail",
+      "name": "申請詳細",
+      "role": "inform",
+      "primaryAction": "申請を取り下げる",
+      "states": ["default"],
+      "grounding": {
+        "iaScreen": "expense-detail",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、差し戻し前に内容を見直したい"],
+        "reqs": ["申請内容の詳細確認", "申請の取り下げ"]
+      },
+      "mock": {
+        "source": "expense-list と同一エンティティ（タクシー代 ¥3,200）を参照し整合",
+        "notes": ""
+      },
+      "html": "<div class=\"s-ed\"><style>.s-ed{min-height:100%;display:flex;flex-direction:column}.s-ed .hd{background:var(--c-surface);border-bottom:1px solid var(--c-border)}.s-ed .hd-in{max-width:640px;margin:0 auto;padding:var(--space);display:flex;align-items:center;gap:10px}.s-ed .bk{color:var(--c-primary);font-size:var(--fs-lg)}.s-ed .ttl{font-size:var(--fs-lg);font-weight:700}.s-ed .bd{flex:1;width:100%;max-width:640px;margin:0 auto;padding:var(--space);box-sizing:border-box}.s-ed .card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius);box-shadow:var(--shadow);padding:var(--space)}.s-ed .stat{font-size:var(--fs-sm);color:var(--c-warning);font-weight:700}.s-ed .amt{font-size:var(--fs-xl);font-weight:700;margin:8px 0;font-variant-numeric:tabular-nums}.s-ed hr{border:0;border-top:1px solid var(--c-border);margin:12px 0}.s-ed table{width:100%;font-size:var(--fs-sm);color:var(--c-text)}.s-ed td{padding:4px 0}.s-ed td:first-child{color:var(--c-text-sub);width:80px}.s-ed .note{margin-top:14px;font-size:var(--fs-xs);color:var(--c-text-sub)}.s-ed .acts{width:100%;max-width:640px;margin:0 auto;padding:var(--space);box-sizing:border-box}.s-ed .wd{display:block;width:100%;background:var(--c-surface);color:var(--c-danger);border:1px solid var(--c-danger);border-radius:var(--radius);padding:13px;font-size:var(--fs-md)}@container (min-width:760px){.s-ed .wd{width:auto;margin-left:auto;padding:13px 28px}}</style><header class=\"hd\"><div class=\"hd-in\"><span class=\"bk\" data-goto=\"expense-list\">‹</span><div class=\"ttl\">申請詳細</div></div></header><main class=\"bd\"><div class=\"card\"><div class=\"stat\">● 承認待ち（承認者: 佐藤マネージャー）</div><div class=\"amt\">¥3,200</div><div style=\"font-weight:700\">タクシー代（顧客訪問）</div><hr><table><tr><td>日付</td><td>2026/07/01（火）</td></tr><tr><td>申請日</td><td>2026/07/01（火）18:24</td></tr><tr><td>領収書</td><td style=\"color:var(--c-primary)\">receipt_0701.jpg（添付済み）</td></tr></table></div><div class=\"note\">承認されると翌月給与と合わせて振り込まれます</div></main><div class=\"acts\"><button class=\"wd\" data-goto=\"expense-list\">申請を取り下げる</button></div></div>"
+    },
+    {
+      "id": "expense-complete",
+      "name": "申請完了",
+      "role": "complete",
+      "primaryAction": "一覧に戻る",
+      "states": ["default"],
+      "grounding": {
+        "iaScreen": "expense-complete",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、出したことを確信してすぐ次の行動に移りたい"],
+        "reqs": ["経費の新規申請（金額・日付・領収書）"]
+      },
+      "mock": { "source": "expense-form の入力値をそのまま反映", "notes": "" },
+      "html": "<div class=\"s-ec\"><style>.s-ec{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--space);box-sizing:border-box}.s-ec .ok{width:64px;height:64px;border-radius:50%;background:var(--c-success);color:#fff;font-size:30px;display:flex;align-items:center;justify-content:center}.s-ec .ttl{font-size:var(--fs-xl);font-weight:700;margin-top:16px}.s-ec .sub{font-size:var(--fs-sm);color:var(--c-text-sub);margin-top:8px;max-width:420px}.s-ec .back{margin-top:24px;background:var(--c-primary);color:var(--c-primary-text);border:0;border-radius:var(--radius);padding:13px 32px;font-size:var(--fs-md);font-weight:700}</style><div class=\"ok\">✓</div><div class=\"ttl\">申請を送信しました</div><div class=\"sub\">タクシー代（顧客訪問） ¥3,200<br>承認者: 佐藤マネージャーに通知済み</div><button class=\"back\" data-goto=\"expense-list\">一覧に戻る</button></div>"
+    }
+  ],
+
+  "transitions": [
+    { "from": "expense-list", "to": "expense-form", "condition": "＋経費を申請する", "kind": "main", "flow": "申請フロー" },
+    { "from": "expense-form", "to": "expense-complete", "condition": "申請を送信する", "kind": "main", "flow": "申請フロー" },
+    { "from": "expense-complete", "to": "expense-list", "condition": "一覧に戻る", "kind": "main", "flow": "申請フロー" },
+    { "from": "expense-list", "to": "expense-detail", "condition": "明細をタップ", "kind": "sub", "flow": "確認フロー" },
+    { "from": "expense-detail", "to": "expense-list", "condition": "戻る / 取り下げ", "kind": "sub", "flow": "確認フロー" },
+    { "from": "expense-form", "to": "expense-list", "condition": "キャンセル", "kind": "sub", "flow": "申請フロー" }
+  ]
+}

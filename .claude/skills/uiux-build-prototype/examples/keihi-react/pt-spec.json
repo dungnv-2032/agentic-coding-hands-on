@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "product": "経費精算 Keihi",
+    "users": "外回りの多い営業担当者と、承認する営業マネージャー（社内Webアプリ）",
+    "primaryGoal": "立替経費を移動中の隙間時間に申請し、その日のうちに承認まで進める",
+    "device": "responsive",
+    "appType": "web-app",
+    "stage": "MVP",
+    "sources": [
+      { "id": "src-ia", "type": "ia-spec", "path": "../uiux-design-information-architecture/plans/sample/ia-spec.json", "note": "画面構成・遷移・機能要件（サンプルとして仮参照）" },
+      { "id": "src-um", "type": "um-spec", "path": "../uiux-model-users/examples/samples/freelance-invoicing.um-spec.json", "note": "ペルソナ語彙・情報順（サンプルとして仮参照）" },
+      { "id": "src-dir", "type": "instruction", "path": "(チャット指示)", "note": "デザイン方針「信頼感のあるミニマル」・Webアプリ（グローバルヘッダーあり）" }
+    ],
+    "assumptions": [
+      "一覧の並び順は申請日の新しい順と仮定（入力に指定なし）",
+      "領収書は写真1枚のみ添付と仮定（MVPスコープ判断）",
+      "社内ツールのためログイン済み前提・ユーザーは固定表示（田中）と仮定"
+    ]
+  },
+  "design": {
+    "direction": "信頼感のあるミニマル",
+    "source": "src-dir（direction・Webアプリ）／ 配色・タイポは方針語からの提案（仮定）＝テンプレート既定トークンをそのまま採用",
+    "notes": [
+      "全画面に共通グローバルヘッダー（Webアプリの定石）",
+      "ステータスは色＋文字ラベルの併記（色だけに頼らない）",
+      "768px以上はヘッダーにCTA・一覧2カラム、モバイルは下部固定CTA"
+    ],
+    "colors": {
+      "primary": "#0F6FDE", "primaryText": "#FFFFFF",
+      "bg": "#F6F8FA", "surface": "#FFFFFF",
+      "text": "#1A2233", "textSub": "#5A6478", "border": "#E3E8EF",
+      "success": "#1B9E63", "warning": "#B87514", "danger": "#D6455D",
+      "accent": "#E8F1FC"
+    },
+    "typography": { "family": "Noto Sans JP", "baseSize": "14px", "scale": { "xl": "22px", "lg": "17px", "md": "14px", "sm": "12px", "xs": "11px" } },
+    "shape": { "radius": "10px", "density": "comfortable", "shadow": "0 1px 3px rgba(16,24,40,.08)" }
+  },
+  "requirements": [
+    "経費の一覧・状態確認",
+    "経費の新規申請（金額・日付・領収書）",
+    "申請内容の詳細確認",
+    "申請の取り下げ"
+  ],
+  "screens": [
+    {
+      "id": "expense-list",
+      "name": "経費一覧",
+      "role": "manage",
+      "primaryAction": "経費を申請する",
+      "states": ["default", "empty", "loading", "error"],
+      "grounding": {
+        "iaScreen": "expense-list",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、立替の状態を一目で確認したい"],
+        "reqs": ["経費の一覧・状態確認"],
+        "assumptions": ["並び順は新しい順と仮定"]
+      },
+      "mock": { "source": "src-ia components.items（列: 用途/金額/日付/状態）＋src-um の営業文脈（タクシー・会食）", "notes": "金額は資料の平均立替額 3,000〜15,000 円のレンジ" }
+    },
+    {
+      "id": "expense-form",
+      "name": "経費申請",
+      "role": "input",
+      "primaryAction": "申請を送信する",
+      "states": ["default", "error"],
+      "grounding": {
+        "iaScreen": "expense-form",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、移動中に最小の入力で申請を出したい"],
+        "reqs": ["経費の新規申請（金額・日付・領収書）"]
+      },
+      "mock": { "source": "src-ia components.items（フィールド: 用途/金額/日付/領収書）", "notes": "入力例はペルソナの直近利用シーン（タクシー）" }
+    },
+    {
+      "id": "expense-detail",
+      "name": "申請詳細",
+      "role": "inform",
+      "primaryAction": "申請を取り下げる",
+      "states": ["default"],
+      "grounding": {
+        "iaScreen": "expense-detail",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、差し戻し前に内容を見直したい"],
+        "reqs": ["申請内容の詳細確認", "申請の取り下げ"]
+      },
+      "mock": { "source": "expense-list と同一エンティティ（タクシー代 ¥3,200）を参照し整合", "notes": "" }
+    },
+    {
+      "id": "expense-complete",
+      "name": "申請完了",
+      "role": "complete",
+      "primaryAction": "一覧に戻る",
+      "states": ["default"],
+      "grounding": {
+        "iaScreen": "expense-complete",
+        "personas": ["田中（営業・申請者）"],
+        "stories": ["申請者として、出したことを確信してすぐ次の行動に移りたい"],
+        "reqs": ["経費の新規申請（金額・日付・領収書）"]
+      },
+      "mock": { "source": "expense-form の入力値をそのまま反映", "notes": "" }
+    }
+  ],
+  "transitions": [
+    { "from": "expense-list", "to": "expense-form", "condition": "＋経費を申請する", "kind": "main", "flow": "申請フロー" },
+    { "from": "expense-form", "to": "expense-complete", "condition": "申請を送信する", "kind": "main", "flow": "申請フロー" },
+    { "from": "expense-complete", "to": "expense-list", "condition": "一覧に戻る", "kind": "main", "flow": "申請フロー" },
+    { "from": "expense-list", "to": "expense-detail", "condition": "明細をクリック", "kind": "sub", "flow": "確認フロー" },
+    { "from": "expense-detail", "to": "expense-list", "condition": "戻る / 取り下げ", "kind": "sub", "flow": "確認フロー" },
+    { "from": "expense-form", "to": "expense-list", "condition": "キャンセル", "kind": "sub", "flow": "申請フロー" }
+  ]
+}
