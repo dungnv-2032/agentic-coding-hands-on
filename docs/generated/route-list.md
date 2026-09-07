@@ -20,6 +20,15 @@ authored_by: rebuild-spec (Core pass, generated layer)
 > route mới, mỗi route một placeholder `ComingSoon` khai báo thay vì lỗi 404, sinh ra từ bốn CTA
 > trên màn hình: `/kudos/new`, `/kudos/secret-box`, `/kudos/[id]`. Route tổng 9 → **12**; placeholder
 > `ComingSoon` còn lại 4 → **6**; đây là route đầu tiên của repo có dynamic segment.
+>
+> **Cập nhật 2026-09-07 (F005 promote):** `/kudos/new` không còn là placeholder — nó render màn
+> hình Viết Kudo thật (`KudosComposePage`) và chuyển quyền sở hữu từ F004 sang F005. Đây cũng là
+> **route được gác đăng nhập đầu tiên kể từ F001**: `proxy.ts` thêm một nhánh `pathname ===
+> "/kudos/new" || pathname.startsWith("/kudos/new/")` (exact-path, không phải
+> `startsWith("/kudos")`) — phần còn lại của bề mặt Kudos (`/kudos`, `/kudos/[id]`,
+> `/kudos/secret-box`) vẫn công khai, không đổi. Hai Server Action mới (`createKudos`,
+> `uploadKudosImage`) được thêm vào bảng Server Actions bên dưới. Route tổng vẫn **12** (route đã
+> tồn tại, chỉ đổi từ placeholder sang thật); placeholder `ComingSoon` còn lại 6 → **5**.
 
 Mười hai route: 11 page + 1 route handler. **Một dynamic segment** — `app/kudos/[id]/page.tsx`, xem
 `ROUTE012` bên dưới (`app/kudos/[id]/page.tsx` — deliberately ignores `params`, xem `docs/features/F004_KudosLiveBoard/`).
@@ -35,24 +44,25 @@ Mười hai route: 11 page + 1 route handler. **Một dynamic segment** — `app
 | Path | Component | Code | Owner F### | Rendering | Auth Requirement |
 |------|-----------|------|------------|-----------|-------------------|
 | / | `HomePage` (`app/page.tsx`) | ROUTE002 | F002 | ƒ dynamic | Public |
-| /login | `LoginPage` (`app/login/page.tsx`) | ROUTE003 | F001 | ƒ dynamic | Public — but bounced to `/todo` when a session already exists (`proxy.ts:44-46`) |
-| /todo | `TodoPage` (`app/todo/page.tsx`) | ROUTE004 | F001 | ƒ dynamic | **Auth required** — bounced to `/login` when no session (`proxy.ts:41-43`) |
-| /awards-information | `AwardsInformationPage` (`app/awards-information/page.tsx:55`) | ROUTE005 | F003 | ƒ dynamic | Public — `proxy.ts` không chặn route này (`proxy.ts:41-46`); quyết định có chủ đích, xem `docs/features/F003_AwardSystem/functional-spec.md` § 3 D001 |
+| /login | `LoginPage` (`app/login/page.tsx`) | ROUTE003 | F001 | ƒ dynamic | Public — but bounced to `/todo` when a session already exists (`proxy.ts:52-53`) |
+| /todo | `TodoPage` (`app/todo/page.tsx`) | ROUTE004 | F001 | ƒ dynamic | **Auth required** — bounced to `/login` when no session (`proxy.ts:47-50`) |
+| /awards-information | `AwardsInformationPage` (`app/awards-information/page.tsx:55`) | ROUTE005 | F003 | ƒ dynamic | Public — `proxy.ts` không chặn route này (`proxy.ts:47-53`); quyết định có chủ đích, xem `docs/features/F003_AwardSystem/functional-spec.md` § 3 D001 |
 | /kudos | `KudosPage` (`app/kudos/page.tsx`) | ROUTE006 | F004 | ƒ dynamic | Public — anonymous reads everything, heart button disabled without a session (see `permissions-matrix.md` PERM006/PERM007) |
 | /standards | `Page` → `<ComingSoon />` (`app/standards/page.tsx`) | ROUTE007 | F002 | ƒ dynamic | Public |
-| /profile | `Page` → `<ComingSoon />` (`app/profile/page.tsx`) | ROUTE008 | F002 | ƒ dynamic | **Public — explicitly not guarded.** `app/profile/page.tsx:9-11` states outright: no protected content exists yet, and `proxy.ts` only guards `/todo` and `/login`. |
+| /profile | `Page` → `<ComingSoon />` (`app/profile/page.tsx`) | ROUTE008 | F002 | ƒ dynamic | **Public — explicitly not guarded.** `app/profile/page.tsx:9-11` states outright: no protected content exists yet, and `proxy.ts` only guards `/todo`, `/login`, and (since F005) `/kudos/new`. |
 | /admin | `Page` → `<ComingSoon />` (`app/admin/page.tsx`) | ROUTE009 | F002 | ƒ dynamic | **Public — no role check at the route.** `app/admin/page.tsx:8-12`: the role-gated Admin Dashboard *menu link* points here, but the route itself performs no admin check — it is a placeholder, not a stand-in that pretends to enforce the role. |
-| /kudos/new | `Page` → `<ComingSoon />` (`app/kudos/new/page.tsx`) | ROUTE010 | F004 | ƒ dynamic | Public — declared placeholder for the compose-bar CTA (`Viết Kudo`, its own commission) |
+| /kudos/new | `KudosComposePage` (`app/kudos/new/page.tsx`) | ROUTE010 | F005 | ƒ dynamic | **Auth required** — bounced to `/login` when no session (`proxy.ts:47-50`, exact-path guard on `/kudos/new`/`/kudos/new/*`, not a `/kudos` prefix — the rest of `/kudos/*` stays public per F004) |
 | /kudos/secret-box | `Page` → `<ComingSoon />` (`app/kudos/secret-box/page.tsx`) | ROUTE011 | F004 | ƒ dynamic | Public — declared placeholder for the sidebar's "Mở Secret Box" CTA |
 | /kudos/[id] | `Page` → `<ComingSoon />` (`app/kudos/[id]/page.tsx`) | ROUTE012 | F004 | ƒ dynamic | Public — declared placeholder for "Xem chi tiết"/card-body/Spotlight-node links; `params.id` is deliberately never read or echoed (no reflected-content surface) |
 
-**Why every route is ƒ dynamic**: the six remaining `ComingSoon` placeholders (`/standards`,
-`/profile`, `/admin`, `/kudos/new`, `/kudos/secret-box`, `/kudos/[id]`) call `getPageContext()`
+**Why every route is ƒ dynamic**: the five remaining `ComingSoon` placeholders (`/standards`,
+`/profile`, `/admin`, `/kudos/secret-box`, `/kudos/[id]`) call `getPageContext()`
 (`app/_components/coming-soon.tsx:18`), which calls `cookies()` (`app/_page-context.ts:28`) —
-`cookies()` opts a route out of static generation. `/`, `/awards-information`, and `/kudos` reach the
-same call directly (`app/page.tsx:24-25`, `app/awards-information/page.tsx:56`,
-`app/kudos/page.tsx:50` — `getKudosBoard()`/`getSpotlightTotal()` also each open their own Supabase
-server client per request, an independent reason this route can never be static).
+`cookies()` opts a route out of static generation. `/`, `/awards-information`, `/kudos`, and
+`/kudos/new` reach the same call directly (`app/page.tsx:24-25`,
+`app/awards-information/page.tsx:56`, `app/kudos/page.tsx:50`, `app/kudos/new/page.tsx:33` —
+`getKudosBoard()`/`getSpotlightTotal()`/`getComposeOptions()` also each open their own Supabase
+server client per request, an independent reason these routes can never be static).
 `/login` and `/todo` call `cookies()` directly (`app/login/page.tsx:32`, `app/todo/page.tsx:19`).
 So **no route in this app is statically prerendered**. This is inferred from `cookies()` usage,
 not read off a build manifest — `next build` was not run and no build output is committed
@@ -68,7 +78,12 @@ only other way the client reaches server code in this app:
 | `signInWithGoogle()` | `app/login/actions.ts:16` | `/login`'s `<form action={signInAction}>` |
 | `setLocale(locale)` | `app/_actions/locale.ts:13` | `LanguageSelector` (`language-selector.tsx:81-83`), inside `startTransition` |
 | `signOut()` | `app/_actions/auth.ts:17` | `/todo`'s sign-out form (`app/todo/page.tsx:31`); `AccountMenu`'s sign-out form (`account-menu.tsx:108`) |
-| `toggleKudosLike(kudosId)` | `app/kudos/_actions/toggle-kudos-like.ts:59` | Every card's heart button on `/kudos`, passed down as the `toggleLike` prop from `KudosPage` → `KudosBoard` (F004) — the only Server Action in the app that writes to Postgres rather than to auth/cookies |
+| `toggleKudosLike(kudosId)` | `app/kudos/_actions/toggle-kudos-like.ts:59` | Every card's heart button on `/kudos`, passed down as the `toggleLike` prop from `KudosPage` → `KudosBoard` (F004) |
+| `createKudos(prevState, payload)` | `app/kudos/new/_actions/create-kudos.ts:73` | `ComposeForm`'s submit (`useActionState`) on `/kudos/new` (F005) — passed down as a prop from `KudosComposePage`, never imported directly by a Track A component; validates server-side, then calls the `create_kudos` Postgres RPC (`security invoker`, no `sender_id` parameter — see `api-map.md`) and redirects to `/kudos` on success |
+| `uploadKudosImage(file)` | `app/kudos/new/_actions/upload-kudos-image.ts:47` | `ImagePicker` on `/kudos/new` (F005) — one call per selected file; writes to Supabase Storage (`kudos-attachments` bucket), not Postgres; signals failure by rejecting with a typed `UploadKudosImageError`, not a returned `{error}` field |
+
+`toggleKudosLike`, `createKudos`, and `uploadKudosImage` are now the three Server Actions in the app
+that write (Postgres or Storage) rather than to auth/cookies.
 
 ## Summary
 
@@ -76,5 +91,5 @@ only other way the client reaches server code in this app:
 |----------|-------|
 | Backend Routes (route handlers) | 1 |
 | Frontend Pages | 11 |
-| Server Actions (non-routable) | 4 |
+| Server Actions (non-routable) | 6 |
 | Total routes | 12 |

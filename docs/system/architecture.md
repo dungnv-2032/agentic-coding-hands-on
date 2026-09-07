@@ -1,13 +1,13 @@
 ---
 status: implemented
 authored_by: takumi
-created: 2026-09-06
+created: 2026-09-07
 lang: vi
 ---
 
 # Architecture
 
-**Project**: my-app (SAA 2025) — forward-draft cho Kudos Live Board, viết trước khi code (SDD).
+**Project**: my-app (SAA 2025) — forward-draft cho màn Viết Kudo, viết trước khi code (SDD).
 
 ## System Architecture
 
@@ -19,6 +19,21 @@ Board, Supabase chỉ được dùng cho `auth.*` — không schema, không migr
 này mang vào lớp Postgres đầu tiên: migration trong `supabase/migrations/`, seed
 `supabase/seed.sql`, và RLS policy đầu tiên của dự án. Từ đây, "không có database" không còn
 đúng, và mọi tính năng sau đều thừa hưởng tiền lệ RLS mà nó đặt ra.
+
+**Thay đổi của vòng này (Viết Kudo):** trước màn này, mọi thứ repo làm với database là **đọc**,
+cộng đúng một thao tác ghi nhỏ (thả tim). Viết Kudo là **form ghi đầu tiên của người dùng**, và nó
+mang vào ba thứ mới:
+- **Supabase Storage** — object storage đầu tiên. Ảnh đính kèm là file thật của người dùng, upload
+  lên bucket riêng, không phải ảnh mẫu committed trong repo. `next.config.ts` phải khai báo
+  `images.remotePatterns` trỏ vào host Storage (`${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/**`)
+  — thiếu dòng này thì `next/image` throw ngay khi gặp ảnh Storage đầu tiên và kéo sập cả `/kudos`.
+- **Một tài liệu rich-text** thay cho chuỗi phẳng: `kudos.message` giữ nguyên kiểu `text`, nhưng
+  cột mới `kudos.message_format` (`'plain' | 'doc'`) cho biết nội dung là chuỗi thường hay là một
+  document JSON. Nhờ discriminator này, 57 dòng seed của F004 vẫn là `'plain'` và thẻ Kudos đã
+  ship không phải đổi cách render chúng.
+- **Tự cấp `sunners` row khi ghi lần đầu.** Seed để `auth_user_id` NULL trên mọi dòng, nên một
+  người vừa đăng nhập Google chưa có danh tính người gửi. Action tự tạo dòng đó (upsert theo
+  `auth_user_id`, vốn đã `unique`) trước khi insert kudos.
 
 ```mermaid
 graph TB
@@ -77,22 +92,26 @@ duy nhất (thả tim) đi qua Server Action. Không có `/api/kudos`.
 | Ngôn ngữ | TypeScript (strict) | theo `tsconfig.json` | `tsconfig.json` |
 | Styling | Tailwind CSS v4 (`@tailwindcss/postcss`) | v4 | `postcss.config.mjs` |
 | Auth / session | `@supabase/ssr` + `@supabase/supabase-js` (GoTrue) | 0.12.5 | `package.json` |
+| Rich text | **Tự viết** — document JSON render ra React element, **không** `dangerouslySetInnerHTML`, không thư viện sanitize (repo không có `dompurify`/`sanitize-html`/`marked`) | — | `lib/kudos/` |
 | **Database** | **Postgres qua Supabase local stack** — migration + seed + RLS do repo quản | theo `supabase/config.toml` | `supabase/config.toml`, `supabase/migrations/` |
 | **DB types** | **Sinh bằng `supabase gen types typescript --local`**, commit vào repo | — | `lib/supabase/database.types.ts` |
+| **Object storage** | **Supabase Storage** — bucket `kudos-attachments` riêng cho ảnh đính kèm Kudos, có policy riêng | `[storage] enabled = true` (`config.toml`); bucket + policy tạo bằng SQL migration, **không** qua khối `[storage.buckets.*]` (khối đó vẫn đang comment trong `config.toml`) — SQL được `supabase db reset` tạo lại tự động, khối config.toml thì cần restart container | `supabase/config.toml` (`storage.enabled = true`), `supabase/migrations/20260907025909_viet_kudo_write_path.sql` |
 | i18n | Tự viết — cookie `NEXT_LOCALE` + dictionary tĩnh, **không dùng thư viện** | — | `lib/i18n/locales.ts` |
 | E2E test | Playwright | 1.62 | `package.json` |
 | Cache | **Không có** cache layer riêng — route động, đọc mỗi request | N/A | — |
 | Queue | **Không có** | N/A | — |
 | ORM / query builder | **Không có** — dùng trực tiếp `supabase-js` (PostgREST), không Prisma/Drizzle | N/A | `lib/kudos/` |
 | State/data-fetching lib | **Không có** (không Redux/Zustand, không SWR/TanStack Query) — state là `useState` cục bộ | N/A | — |
-| Validation lib | **Không có** (không Zod/Yup) — ràng buộc nằm ở schema + `maxLength` trên input | N/A | — |
+| Validation lib | **Không có** (không Zod/Yup) — predicate tự viết trong `lib/kudos/`, kiểm **cả ở server** trong Server Action, không tin client | N/A | `lib/kudos/` |
 | Unit test runner | **Không có** — Playwright E2E là harness kiểm thử duy nhất | N/A | `package.json` |
 
 ## Data Flow
 
-Luồng auth và route-guard **không đổi**: `proxy.ts` chạy trên mọi request trừ asset tĩnh, gọi
-`updateSession()`, guard đúng hai route `/todo` và `/login`. `/kudos` nằm ngoài guard — công khai
-có chủ đích.
+**Route-guard đổi ở vòng này.** `proxy.ts` vẫn chạy trên mọi request trừ asset tĩnh và vẫn gọi
+`updateSession()`, nhưng danh sách guard không còn là hai route: `/kudos/new` được thêm vào cùng
+`/todo`. Đây là guard đầu tiên kể từ F001. Lý do đơn giản — viết một lời cảm ơn cần có danh tính,
+nên ở đây thật sự có thứ cần bảo vệ, khác với bảng đọc công khai. Bề mặt đọc của Kudos (`/kudos`,
+`/kudos/[id]`, `/kudos/secret-box`) **không đổi**, vẫn công khai có chủ đích.
 
 Sơ đồ dưới là luồng riêng của Kudos Live Board: đọc khi render, và ghi khi thả tim.
 
@@ -128,6 +147,46 @@ sequenceDiagram
     end
 ```
 
+Sơ đồ dưới là luồng ghi của màn Viết Kudo — form ghi đầu tiên của người dùng trong repo.
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant PX as "proxy.ts (guard)"
+    participant PG as "app/kudos/new/page.tsx"
+    participant CF as "compose form (Client Component)"
+    participant SA1 as "Server Action uploadKudosImage()"
+    participant SA2 as "Server Action createKudos()"
+    participant RPC as "RPC create_kudos() — security invoker"
+    participant ST as "Supabase Storage"
+    participant DB as "Postgres + RLS"
+
+    B->>PX: GET /kudos/new
+    alt chưa đăng nhập
+        PX-->>B: 307 redirect /login
+    else đã đăng nhập
+        PX->>PG: cho request đi tiếp
+        PG-->>B: HTML (trang thường, không phải modal, ƒ dynamic)
+        B->>CF: nhập người nhận / danh hiệu / nội dung / hashtag
+        CF->>SA1: chọn ảnh -> uploadKudosImage(file) mỗi ảnh (không phải browser gọi thẳng Storage)
+        SA1->>SA1: kiểm MIME khai báo, rồi soi byte đầu file (magic-number sniff)
+        SA1->>ST: upload object vào kudos-attachments/{uid}/...
+        ST-->>SA1: object path
+        SA1-->>CF: { imageUrl } — hoặc throw UploadKudosImageError nếu sai định dạng
+        CF->>SA2: submit form (useActionState)
+        SA2->>SA2: validate lại TOÀN BỘ ở server — client không phải biên
+        alt thiếu field bắt buộc
+            SA2-->>CF: trả về lỗi theo từng field, không ghi gì
+        else hợp lệ
+            SA2->>RPC: rpc("create_kudos", {...}) — không có tham số sender_id
+            RPC->>DB: upsert sunners nếu cần, rồi insert kudos + kudos_hashtags + kudos_attachments, một transaction
+            DB-->>RPC: id mới, hoặc lỗi (23514/23503/28000)
+            RPC-->>SA2: id hoặc lỗi
+            SA2-->>B: redirect("/kudos") — không refresh(), route đích đã dynamic sẵn
+        end
+    end
+```
+
 **Ghi chú kiến trúc quan trọng**:
 - `_page-context.ts` vẫn là **điểm đọc duy nhất** cho locale + dictionary + hai cờ suy ra. Object
   `user` gốc của Supabase **không bao giờ** vượt biên sang Client Component. Kudos không phá lệ
@@ -145,6 +204,20 @@ sequenceDiagram
 - **`db reset` là bước trước khi chạy test, không bao giờ giữa phiên.** Nó truncate cả schema
   `auth`, nên gọi giữa lúc suite đang chạy sẽ làm `getUser()` trả null và đẩy browser đã đăng
   nhập về `/login`.
+- **Người gửi luôn suy từ session, không bao giờ nhận từ client.** `createKudos()` (Server Action)
+  không có tham số actor, giống `toggleKudosLike()`. Ghi thật đi qua RPC `create_kudos` — hàm này
+  cũng **không nhận tham số `sender_id`** (`v_uid := auth.uid()` bên trong hàm), nên mạo danh người
+  gửi không phải là điều *bị RLS từ chối*, mà là điều **không có chỗ nào để biểu diễn được** ngay
+  từ đầu. Hàm chạy `security invoker` (**không phải** `security definer` — xác nhận trực tiếp trên
+  DB: `pg_proc.prosecdef = f`), nên bốn policy `insert` bên dưới vẫn áp dụng đầy đủ dù đi qua hàm;
+  hàm chỉ gộp ba bảng ghi vào một transaction, không né RLS. RLS vẫn là lớp chốt cuối:
+  `sender_id` phải nằm trong `select id from sunners where auth_user_id = (select auth.uid())`.
+- **Validate hai lớp, nhưng chỉ một lớp là biên.** Client validate để hiện lỗi ngay và để disable
+  nút `Gửi`; server validate lại toàn bộ vì client không đáng tin. Kiểu file ảnh cũng vậy.
+- **Ẩn danh che người gửi, không che người nhận.** `is_anonymous` chỉ đổi cách thẻ Kudos hiển thị
+  phía người gửi; `sender_id` vẫn được lưu thật để còn truy được khi cần kiểm duyệt.
+- **Không có policy UPDATE/DELETE nào cho `kudos`.** Sửa và xoá bài là commission khác
+  (`Màn Sửa bài viết`, `Admin - Review content`). Không mở sẵn quyền chưa có màn nào dùng.
 
 ## Deployment View
 

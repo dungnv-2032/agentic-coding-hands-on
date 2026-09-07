@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T13:56:23Z",
+  "generated_at": "2026-09-07T02:56:20Z",
   "plan": "260906-0719-award-system-screen",
   "features": [
     {
@@ -90,6 +90,25 @@
         "user_stories": [],
         "routes": [
           "/kudos"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    },
+    {
+      "fcode": "F005",
+      "name": "Viet Kudo",
+      "slug": "F005_VietKudo",
+      "priority": "P1",
+      "type": "mixed",
+      "related": {
+        "screens": [
+          "SCR005_VietKudo"
+        ],
+        "user_stories": [],
+        "routes": [
+          "/kudos/new"
         ],
         "models": [],
         "bl": [],

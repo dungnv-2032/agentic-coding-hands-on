@@ -6,54 +6,71 @@ authored_by: rebuild-spec (Core pass, generated layer)
 
 **Project**: my-app (SAA 2025)
 **Generated**: 2026-09-05
-**Analysis Scope**: `proxy.ts`, `app/_page-context.ts`, `app/_components/account-menu.tsx`, `app/_components/home-header.tsx`, `supabase/migrations/20260906140914_kudos_live_board.sql` (F004, added below)
+**Analysis Scope**: `proxy.ts`, `app/_page-context.ts`, `app/_components/account-menu.tsx`, `app/_components/home-header.tsx`, `supabase/migrations/20260906140914_kudos_live_board.sql` (F004), `supabase/migrations/20260907025909_viet_kudo_write_path.sql` (F005, added below)
 
 > Raw PERM### inventory (code-derived). The curated plain-language view is the forward-draft
 > `docs/system/permissions.md` — that file predates this Core pass and should be reconciled
 > against this one, not restated here.
 
-**Authorization model**: `hybrid` as of F004 (was "effectively none"). App layer, unchanged: one
+**Authorization model**: `hybrid` as of F004/F005 (was "effectively none"). App layer, unchanged: one
 role signal (`user.app_metadata.role === "admin"`) gates one menu link; no route and no server
-action checks it, so anyone can navigate to `/admin` or `/profile` directly. Database layer, new:
+action checks it, so anyone can navigate to `/admin` or `/profile` directly. Database layer:
 Postgres RLS on every `public.*` table the Kudos Live Board owns — `select` open to
 `anon`+`authenticated` on all ten tables (PERM006), `insert`/`delete` on `kudos_likes` restricted
 to `authenticated` matching `(select auth.uid()) = user_id`, with `insert` additionally rejecting
-the kudos's own sender (PERM007). This is the project's first data-level authorization boundary —
-the first place a Postgres role, not just app code, refuses a request.
+the kudos's own sender (PERM007). **F005 adds:** the first route-level auth guard since F001
+(`/kudos/new`, PERM008); the project's first content-**write** authorization — `insert` policies on
+`kudos`, `kudos_hashtags`, `kudos_attachments` and `sunners`, all bridging
+`sender_id`/`kudos_id`/`auth_user_id` back to `sunners.auth_user_id = (select auth.uid())`, with
+deliberately no `update`/`delete` policy anywhere (PERM009); and the first Supabase Storage
+authorization boundary — authenticated-write/public-read on the `kudos-attachments` bucket
+(PERM010). The multi-table write itself runs through a `security invoker` Postgres function
+(`create_kudos`, confirmed live via `pg_proc.prosecdef = f`) that takes no `sender_id` parameter at
+all — the caller has no argument in which to put someone else's id, so forgery is unrepresentable,
+not merely rejected by a check.
 
 ## Permissions Index
 
 | Code | Name | Type | Enforced At |
 |------|------|------|--------------|
-| PERM001 | Todo route guard | route-guard | `proxy.ts:41-43` |
-| PERM002 | Login route bounce | route-guard | `proxy.ts:44-46` |
-| PERM003 | Auth callback deliberate no-guard exemption | route-guard | `proxy.ts:11-13` (reasoning), matcher config `:51-56` |
+| PERM001 | Todo + Viết-Kudo route guard | route-guard | `proxy.ts:47-50` |
+| PERM002 | Login route bounce | route-guard | `proxy.ts:52-53` |
+| PERM003 | Auth callback deliberate no-guard exemption | route-guard | `proxy.ts:11-13` (reasoning), matcher config `:59-65` |
 | PERM004 | Admin Dashboard menu-link visibility | screen-permission | `app/_page-context.ts:40` + `app/_components/account-menu.tsx:99-107` |
 | PERM005 | Authenticated-only header controls | screen-permission | `app/_components/home-header.tsx:66,75` |
 | PERM006 | Kudos public read (RLS) | data-permission | `supabase/migrations/20260906140914_kudos_live_board.sql:161-170,194` |
 | PERM007 | Kudos like write ownership + anti-self-like (RLS) | resource-ownership | `supabase/migrations/20260906140914_kudos_live_board.sql:174-184,195` |
+| PERM008 | Viết Kudo route guard (`/kudos/new`) | route-guard | `proxy.ts:47-50` |
+| PERM009 | Kudos content-write ownership, no update/delete (RLS + `create_kudos` RPC) | resource-ownership | `supabase/migrations/20260907025909_viet_kudo_write_path.sql:41-75,120-235` |
+| PERM010 | Kudos attachment Storage bucket (authenticated write / public read) | data-permission | `supabase/migrations/20260907025909_viet_kudo_write_path.sql:89-101` |
 
 ---
 
-## PERM001: Todo route guard
+## PERM001: Todo + Viết-Kudo route guard
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:41-43`
+**Enforced At**: `proxy.ts:47-50`
 
 ### Description
 
-`!user && pathname.startsWith("/todo")` → redirect to `/login`, carrying forward any rotated
-session cookies from `updateSession()` (BL003 in `behavior-logic.md` — a bare
-`NextResponse.redirect()` here would drop single-use refresh tokens and silently log the user
-out on the next request).
+`!user && isGuarded` → redirect to `/login`, carrying forward any rotated session cookies from
+`updateSession()` (BL003 in `behavior-logic.md` — a bare `NextResponse.redirect()` here would drop
+single-use refresh tokens and silently log the user out on the next request). `isGuarded` is one
+shared boolean (`proxy.ts:47-48`) covering **two** independent route conditions:
+`pathname.startsWith("/todo")` and `pathname === "/kudos/new" || pathname.startsWith("/kudos/new/")`
+— the latter added by F005 (see PERM008 below for the route-specific detail). The two conditions
+are OR-combined in one `if`, not two separate guard rules, which is why this entry and PERM008
+cite the same line range.
 
 ### Related Routes
 
 - (GET/any) `/todo`
+- (GET/any) `/kudos/new` — see PERM008
 
 ### Related Screens
 
 - SCR001_Login — the bounce target
+- SCR005_VietKudo — the bounce target (F005)
 
 ### Permission Rules
 
@@ -68,7 +85,7 @@ out on the next request).
 ## PERM002: Login route bounce
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:44-46`
+**Enforced At**: `proxy.ts:52-53`
 
 ### Description
 
@@ -96,11 +113,11 @@ as PERM001. Prevents an already-authenticated session from re-seeing the login f
 ## PERM003: Auth callback deliberate no-guard exemption
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:11-13` (reasoning comment), matcher config `:51-56`
+**Enforced At**: `proxy.ts:11-13` (reasoning comment), matcher config `:59-65`
 
 ### Description
 
-`/auth/callback` is deliberately **not** matched by either guard rule in `proxy.ts:41-46`.
+`/auth/callback` is deliberately **not** matched by either guard rule in `proxy.ts:47-53`.
 This is a documented decision, not an oversight: guarding the OAuth callback would make the
 Google → app round-trip structurally impossible, since the request arrives with no session yet.
 Origin-pinning and open-redirect defence are handled inside the handler itself
@@ -263,17 +280,151 @@ all — an unauthenticated direct call is rejected by Postgres regardless of wha
 
 ---
 
+## PERM008: Viết Kudo route guard (`/kudos/new`)
+
+**Type**: route-guard
+**Enforced At**: `proxy.ts:47-50`
+
+### Description
+
+`!user && pathname === "/kudos/new" || pathname.startsWith("/kudos/new/")` (OR-combined into the
+same `isGuarded` check as PERM001) → redirect to `/login`. This is the first route guard added
+since F001 — writing a Kudos needs a resolvable identity, unlike the public read surface. The
+match is **exact-path-or-subpath on `/kudos/new`**, never a bare `pathname.startsWith("/kudos")`:
+the rest of the Kudos surface (`/kudos`, `/kudos/[id]`, `/kudos/secret-box`) is a ratified F004
+public-read path and must stay reachable without a session.
+
+### Related Routes
+
+- (GET/any) `/kudos/new` — ROUTE010
+
+### Related Screens
+
+- SCR005_VietKudo — the bounce target
+
+### Permission Rules
+
+| Role | Allow | Conditions |
+|------|-------|------------|
+| Anonymous | ✗ | Redirected to `/login` |
+| Authenticated | ✓ | — |
+| Admin | ✓ | Same as authenticated — no extra check |
+
+---
+
+## PERM009: Kudos content-write ownership, no update/delete (RLS + `create_kudos` RPC)
+
+**Type**: resource-ownership
+**Enforced At**: `supabase/migrations/20260907025909_viet_kudo_write_path.sql:41-75` (policies
+`kudos_insert_own`, `kudos_hashtags_insert_own`, `kudos_attachments_insert_own`,
+`sunners_insert_own` + their `grant insert`) + `:120-235` (`create_kudos` function + `grant execute`)
+
+### Description
+
+The project's **first content-write authorization boundary** — previously only `kudos_likes`
+(PERM007) had an `insert`/`delete` policy; every other Kudos table was `select`-only. Four new
+`insert` policies, all `to authenticated`, all bridging back to the caller through
+`sunners.auth_user_id = (select auth.uid())`:
+
+- `kudos_insert_own` — `sender_id` must resolve to a `sunners` row owned by the caller.
+- `kudos_hashtags_insert_own` / `kudos_attachments_insert_own` — bridge through the **parent**
+  `kudos` row's `sender_id`, same ownership chain.
+- `sunners_insert_own` — a caller may only insert a `sunners` row with their own `auth_user_id`
+  (backs the auto-provisioning described in `behavior-logic.md`).
+
+The actual write path (`createKudos` → `supabase.rpc("create_kudos", ...)`) does not call these
+tables directly — it calls the `create_kudos` Postgres function, confirmed live as
+**`security invoker`** (`pg_proc.prosecdef = f`), which runs as the caller so all four policies
+above still apply; the function exists to make the `kudos` + `kudos_hashtags` +
+`kudos_attachments` insert transactional, not to bypass RLS. **The function takes no `sender_id`
+argument at all** — it resolves the actor from `auth.uid()` internally and auto-provisions a
+`sunners` row on first write (`on conflict (auth_user_id) do nothing`, then re-select — a
+double-submit cannot create two rows). A forged sender is therefore **unrepresentable**, not
+merely a value that gets rejected by a check.
+
+**Deliberately no `update` or `delete` policy anywhere in this migration** — editing
+(`Màn Sửa bài viết`) and moderating/deleting (`Admin - Review content`) a Kudos are separate,
+not-yet-built commissions. Silence stays the deny for both verbs, same as every other table
+this app owns.
+
+### Related Routes
+
+- (server action, no route) `createKudos` — writes reached only through `/kudos/new`
+
+### Related Screens
+
+- SCR005_VietKudo
+
+### Permission Rules
+
+| Role | Allow | Conditions |
+|------|-------|------------|
+| Anonymous | ✗ | No `insert` grant on any of the four tables for `anon`; `create_kudos` also raises `28000` when `auth.uid()` is null |
+| Authenticated | ✓ (insert only) | Ownership resolved server-side from the session — no client-supplied `sender_id`/`auth_user_id` is ever trusted |
+| Authenticated | ✗ (update/delete) | No policy exists for either verb on any of the four tables |
+| Admin | ✓ / ✗ | Same rule as authenticated — the admin role is not read by any Kudos RLS policy or by `create_kudos` |
+
+### Related Modules
+
+- `app/kudos/new/_actions/create-kudos.ts`
+- `lib/kudos/validate-compose.ts`
+
+---
+
+## PERM010: Kudos attachment Storage bucket (authenticated write / public read)
+
+**Type**: data-permission
+**Enforced At**: `supabase/migrations/20260907025909_viet_kudo_write_path.sql:89-101`
+(bucket insert + policies `kudos_attachments_object_insert`, `kudos_attachments_object_read`)
+
+### Description
+
+The app's **first Supabase Storage integration**. Bucket `kudos-attachments` is created
+`public: true` — reads are open to `anon`+`authenticated` because the Kudos board is public and
+attachment URLs render permanently server-side (a signed URL would expire mid-render). Writes
+(`storage.objects` `insert`) are restricted to `authenticated`, and further scoped by path: `with
+check ((storage.foldername(name))[1] = (select auth.uid())::text)` — a caller can only write
+under a first path segment equal to their own uid, so one user cannot write into another's folder.
+No `update`/`delete` policy exists on `storage.objects` for this bucket — an uploaded object is
+permanent from the app's perspective (F005 clarifications: removing a thumbnail in the compose UI
+only clears client state, it does not delete the Storage object).
+
+### Related Routes
+
+- (server action, no route) `uploadKudosImage` — writes reached only through `/kudos/new`
+
+### Related Screens
+
+- SCR005_VietKudo (upload); SCR004_KudosLiveBoard (read, once a Kudos with an attachment is on the board)
+
+### Permission Rules
+
+| Role | Allow | Conditions |
+|------|-------|------------|
+| Anonymous | ✓ (read only) | Public bucket — object URLs resolve for anyone |
+| Anonymous | ✗ (write) | No `insert` grant for `anon` |
+| Authenticated | ✓ (write, own folder only) | Path's first segment must equal `(select auth.uid())::text` |
+| Authenticated | ✗ (another user's folder) | Path check fails |
+| Admin | ✓ / ✗ | Same rule as authenticated — the admin role is not read by this policy |
+
+### Related Modules
+
+- `app/kudos/new/_actions/upload-kudos-image.ts`
+- `lib/kudos/validate-compose.ts` (MIME allow-list + magic-byte signature check, defense-in-depth beneath this policy)
+
+---
+
 ## Principal × Resource Matrix
 
 | Route | Anonymous | Authenticated | Admin | Enforced by |
 |-------|-----------|----------------|-------|--------------|
-| `/` | Allow | Allow | Allow | None — no gate exists; `proxy.ts` only matches `/todo` and `/login` prefixes |
+| `/` | Allow | Allow | Allow | None — no gate exists; `proxy.ts` only matches `/todo`, `/login` and `/kudos/new` |
 | `/login` | Allow | Redirect → `/todo` | Redirect → `/todo` | PERM002 |
 | `/todo` | Redirect → `/login` | Allow | Allow | PERM001 |
 | `/auth/callback` | Allow (required) | Allow | Allow | PERM003 (deliberate exemption) |
 | `/awards-information` | Allow | Allow | Allow | None — public, no gate |
 | `/kudos` | Allow (read only) | Allow (read + heart write) | Allow (read + heart write) | Route: none — public, no gate. Data: PERM006 (read, all roles) + PERM007 (heart write, `authenticated` only, not on own kudos) |
-| `/kudos/new` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder) |
+| `/kudos/new` | Redirect → `/login` | Allow (compose + submit) | Allow (compose + submit) | Route: PERM001/PERM008 (session required). Data: PERM009 (content write, `authenticated` only, no update/delete) + PERM010 (Storage attachment write, own-folder only) |
 | `/kudos/secret-box` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder) |
 | `/kudos/[id]` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder; `params.id` never read) |
 | `/standards` | Allow | Allow | Allow | None — public, no gate |
@@ -282,12 +433,12 @@ all — an unauthenticated direct call is rejected by Postgres regardless of wha
 
 ## Summary
 
-- **Total Permission Items**: 7
-- **By Type**: route-guard: 3, screen-permission: 2, action-permission: 0, data-permission: 1, role-based: 0, resource-ownership: 1, field-permission: 0, api-scope: 0, feature-flag: 0, experiment: 0, env-gate: 0, locale-gate: 0
+- **Total Permission Items**: 10
+- **By Type**: route-guard: 4, screen-permission: 2, action-permission: 0, data-permission: 2, role-based: 0, resource-ownership: 2, field-permission: 0, api-scope: 0, feature-flag: 0, experiment: 0, env-gate: 0, locale-gate: 0
 
 ## Cross-Reference Validation
 
 - [x] All PERM### codes are unique
 - [x] All related route references are valid (ROUTE### in `route-list.md`)
-- [x] All related screen references are valid (SCR001_Login, SCR002_Homepage, SCR004_KudosLiveBoard per `docs/generated/screen-list.md`)
+- [x] All related screen references are valid (SCR001_Login, SCR002_Homepage, SCR004_KudosLiveBoard, SCR005_VietKudo per `docs/generated/screen-list.md`)
 - [x] No orphaned permission references

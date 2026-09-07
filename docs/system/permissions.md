@@ -1,7 +1,7 @@
 ---
 status: implemented
 authored_by: takumi
-created: 2026-09-06
+created: 2026-09-07
 lang: vi
 ---
 
@@ -14,7 +14,9 @@ trong `supabase/migrations/`.
 > **Curated, plain-language view.** Mã `PERM###` chính thức nằm ở
 > [`docs/generated/permissions-matrix.md`](../generated/permissions-matrix.md); trang này dùng lại
 > mã đã có. Hai policy RLS của Kudos Live Board đã được gán mã thật: `PERM006` (đọc công khai) và
-> `PERM007` (ghi like, có chủ sở hữu).
+> `PERM007` (ghi like, có chủ sở hữu). Viết Kudo (F005) thêm ba mã: `PERM008` (route guard
+> `/kudos/new`), `PERM009` (insert `kudos`/`kudos_hashtags`/`kudos_attachments`/`sunners`, không có
+> update/delete), `PERM010` (bucket Storage `kudos-attachments`).
 
 ## Reconciliation Note
 
@@ -25,6 +27,13 @@ session hay không" — do `proxy.ts` thực thi trên đúng hai route. Mọi t
 Kudos Live Board thêm một tầng thật: RLS trên `public.*`. Từ nay có những row mà người xem ẩn
 danh đọc được nhưng không ghi được, và việc chặn đó **không** phụ thuộc vào UI — Postgres từ chối
 ở tầng dưới. Đây là tiền lệ mọi bảng sau sẽ đi theo.
+
+**Vòng này (Viết Kudo) đổi hai thứ nữa:**
+1. **Danh sách route được guard không còn là hai.** `/kudos/new` được thêm vào cùng `/todo` — guard
+   đầu tiên kể từ F001. Viết một lời cảm ơn cần danh tính, nên ở đây có thứ thật cần bảo vệ.
+2. **Có policy `insert` đầu tiên cho dữ liệu nội dung**, không chỉ cho lượt tim. Người dùng đã đăng
+   nhập tự tạo được `kudos` (kèm hashtag và ảnh), và RLS chốt rằng họ chỉ tạo được **với tư cách
+   chính mình**. Vẫn **không** có `update`/`delete` — sửa và xoá bài là commission khác.
 
 ## Authorization System Type
 
@@ -70,11 +79,16 @@ policy so `(select auth.uid())` với `user_id` của row, không so vai trò.
 
 Giờ có hai loại ranh giới, và cần phân biệt rõ:
 
-**Ranh giới ở tầng route (`proxy.ts`)** — không đổi. Chỉ xét có session hay không, trên đúng hai
-route: `/todo` cần session (`PERM001`), `/login` bounce khi đã có session (`PERM002`),
-`/auth/callback` loại trừ có chủ đích (`PERM003`). `/kudos` và mọi route Kudos con **không** được
-thêm guard — công khai có chủ đích, vì lối vào duy nhất tới nó (nav trang chủ, CTA `KudosPromo`)
-đều công khai; gác một đích đến mà cửa vào để mở là vô nghĩa.
+**Ranh giới ở tầng route (`proxy.ts`)** — **đổi ở vòng này**. Vẫn chỉ xét có session hay không,
+nhưng trên ba route: `/todo` cần session (`PERM001`), `/login` bounce khi đã có session
+(`PERM002`), `/auth/callback` loại trừ có chủ đích (`PERM003`), và **`/kudos/new` cần session**
+(`PERM001`/`PERM008` — cùng một điều kiện `isGuarded` trong `proxy.ts`, xét hai route) — khách
+vãng lai bị đẩy về `/login`.
+
+Phân biệt cho rõ, vì hai vế nghe giống nhau mà khác hẳn: **bề mặt đọc** của Kudos (`/kudos`,
+`/kudos/[id]`, `/kudos/secret-box`) vẫn công khai có chủ đích — lối vào tới nó (nav trang chủ, CTA
+`KudosPromo`) đều công khai, gác một đích đến mà cửa vào để mở là vô nghĩa. **Bề mặt ghi**
+(`/kudos/new`) thì không: nó cần biết ai đang gửi, nên nó được gác.
 
 **Ranh giới ở tầng database (RLS — mới)**:
 - `select` trên toàn bộ bảng Kudos mở cho `anon` và `authenticated` (`PERM006`). Dữ liệu trên màn
@@ -84,6 +98,28 @@ thêm guard — công khai có chủ đích, vì lối vào duy nhất tới nó
   chính là người gửi kudos đó (`PERM007`, BR-003). Người dùng không tạo hay xoá được like của
   người khác — Postgres từ chối, không phải UI từ chối.
 - **Không có** policy `update` nào trên `kudos_likes`: bỏ tim là `delete`, không phải cập nhật cờ.
+- **`insert` trên `kudos`, `kudos_hashtags`, `kudos_attachments`, `sunners` — mới, `PERM009`.**
+  Chỉ mở cho `authenticated`. Điểm cốt lõi: `kudos.sender_id` trỏ tới `sunners`, **không** trỏ tới
+  `auth.users`, nên predicate phải bắc cầu qua bảng `sunners`:
+  `sender_id in (select id from sunners where auth_user_id = (select auth.uid()))`.
+  `kudos_hashtags` / `kudos_attachments` kiểm quyền sở hữu dòng `kudos` cha. `sunners` mở `insert`
+  để một người vừa đăng nhập tự tạo được danh tính của chính mình (`with check` khớp `auth_user_id`
+  = `auth.uid()`), không tạo hộ ai khác.
+  **Đường ghi thật đi qua một hàm, không gọi thẳng bốn policy trên.** `createKudos` gọi
+  `supabase.rpc("create_kudos", ...)` — hàm này xác nhận là `security invoker` (**không phải**
+  `security definer`, kiểm tra trực tiếp trên DB: `pg_proc.prosecdef = f`), nên chạy dưới quyền
+  người gọi và mọi policy trên vẫn áp dụng đầy đủ; hàm tồn tại để gộp ba bảng ghi vào một
+  transaction, không phải để né RLS. Quan trọng hơn: **hàm không nhận tham số `sender_id` nào cả**
+  — người gửi luôn suy từ `auth.uid()` bên trong hàm. Vì vậy mạo danh người gửi không phải là điều
+  *bị từ chối*, mà là điều **không thể biểu diễn được** — client không có chỗ nào để nhét
+  `sender_id` của người khác vào request.
+- **Không có policy `update` và `delete` nào cho `kudos`.** Đã gửi là không sửa, không xoá — ở
+  phạm vi commission này. Không mở sẵn quyền mà chưa màn nào dùng.
+- **Bucket Storage cho ảnh đính kèm (`kudos-attachments`, `PERM010`)** có policy riêng:
+  `authenticated` ghi được — và chỉ ghi được vào thư mục của chính mình (path bắt đầu bằng
+  `auth.uid()` của người gọi) — đọc công khai (ảnh hiện trên bảng công khai). Kiểu file được kiểm
+  **cả ở server**, vì client không phải biên: kiểm MIME khai báo trước, rồi soi tiếp byte đầu file
+  so với chữ ký nhị phân thật của định dạng đó trước khi ghi.
 - Mọi bảng bật RLS. Một bảng `public` không bật RLS sẽ đọc được không giới hạn qua PostgREST —
   đó là lỗi cấu hình, không phải mặc định chấp nhận được.
 
@@ -92,6 +128,12 @@ cho người dùng. Ranh giới thật là policy RLS. Hai lớp này phải cù
 đúng thì lớp phải đúng là RLS.
 
 ## Special Conditions
+
+- **Ẩn danh che người gửi ở tầng hiển thị, không xoá người gửi ở tầng dữ liệu.** `is_anonymous`
+  đổi cách thẻ Kudos render phía người gửi; `sender_id` vẫn lưu thật. Nói thẳng vì đây là điều dễ
+  bị hiểu sai: đó **không** phải ẩn danh trước hệ thống, chỉ là ẩn danh trước người đọc. Bất kỳ ai
+  đọc được database vẫn biết ai gửi. Nếu sau này cần ẩn danh thật (không truy được), đó là thiết kế
+  khác và phải nói rõ với người dùng.
 
 - **`/admin` vẫn không có authorization boundary — chỉ có menu-link gating.** Không đổi, và Kudos
   không sửa. Nếu một tính năng admin thật được xây ở `/admin`, nó **phải tự kiểm tra vai trò phía

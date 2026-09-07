@@ -232,10 +232,12 @@ Three distinct decisions, all at `app/auth/callback/route.ts:31-107`:
 
 ## Client-Side Logic
 
-Five genuine decision-logic items exist that have no clean home in the canonical-10 BL taxonomy
+Nine genuine decision-logic items exist that have no clean home in the canonical-10 BL taxonomy
 (they are not background jobs, not middleware chains, not third-party integrations) and do not
 match the template's five named client patterns (debounce, optimistic-UI, polling, upload
-progress, realtime) either. Documented here in full rather than mistyped or dropped.
+progress, realtime) either. Documented here in full rather than mistyped or dropped. (Four more
+F005 items that are request-scoped rather than purely client-side follow in their own section,
+`## Request-Scoped Decision Logic — No Canonical-10 Match (F005)`, below.)
 
 ### Countdown computation
 
@@ -379,8 +381,107 @@ byte-identical output on the server's first render and the browser's first clien
 hydration never mismatches (`FR-205`). `SpotlightWordCloud` itself takes pre-computed positions as
 a prop and holds no hooks of its own.
 
+### Diacritic-insensitive recipient/mention matching (F005)
+
+**Source**: `app/kudos/new/_components/use-body-editor-controller.ts:29-40` (`foldVietnameseText`),
+reused by `app/kudos/new/_components/recipient-picker.tsx`
+**Trigger**: Every keystroke in the recipient search input or after `@` in the body editor
+
+`ALG-001` in `docs/features/F005_VietKudo/technical-spec.md § 4.5`. `value.normalize("NFD")`
+decomposes most precomposed Vietnamese letters into base + combining mark, which a regex range
+check (`U+0300`–`U+036F`) then strips — but `đ`/`Đ` is a distinct Vietnamese base letter, not a
+base letter plus a combining mark, so NFD alone does not fold it; handled with an explicit
+`replace(/đ/g, "d").replace(/Đ/g, "D")` before the final `toLowerCase()`. Both the recipient
+autocomplete and the `@mention` menu filter an already-fetched `sunners` list client-side
+(`ComposeOptionsView`, fetched once at page render — see `compose-options.ts`) with this same fold
+applied to both the query and each candidate's `fullName`, never a per-keystroke server round trip.
+One exported function, reused by both call sites rather than risking a second, divergent
+implementation.
+
 ### Debounce / Throttle, Optimistic UI, Polling, Upload Progress, Realtime
 
 N/A — no debounce/throttle, optimistic UI, polling, upload-progress, or realtime (WebSocket/SSE)
 patterns detected anywhere in `app/` or `lib/`. (F004's heart toggle updates via a Server Action +
 `refresh()`, not client-side optimistic state — see `api-map.md`'s `toggleKudosLike` entry.)
+
+---
+
+## Request-Scoped Decision Logic — No Canonical-10 Match (F005)
+
+Four more genuine decision-logic items exist for Viết Kudo, and none of them is purely
+client-side (they run server-side, inside a Server Action or a Postgres function), so they don't
+belong under `## Client-Side Logic` above — but they also don't fit any of the canonical 10 BL
+types (not middleware, not an outbound integration, not a background job). Documented in full
+here rather than mistyped into a mismatched section.
+
+### Rich-text document model and its safe renderer
+
+**Source**: `lib/kudos/rich-text.ts` (`parseKudosDoc`, `serializeToDoc`), rendered by
+`app/kudos/_components/kudos-message-body.tsx` (`renderBlocks`)
+**Trigger**: Every board-card render where `kudos.message_format === "doc"` (server-rendered —
+`kudos-card.tsx`/`kudos-message-body.tsx` carry no `"use client"` directive)
+
+`kudos.message` holds either a plain string (`message_format = "plain"`, F004's 57 seeded rows and
+every legacy row) or a minimal JSON document (`message_format = "doc"`, only rows written through
+`/kudos/new`) — a list of blocks (`paragraph`/`ordered-list-item`/`quote`), each holding inline
+runs with `bold`/`italic`/`strike`/`link href`/`mention sunnerId+label` flags, no deeper nesting.
+`parseKudosDoc` is the untrusted-input boundary: `JSON.parse` failure, a non-object, a missing
+`blocks` array, or any structurally-invalid block/run returns `null`, which `KudosMessageBody`
+degrades to plain-text rendering rather than throwing. The renderer (`renderBlocks`/`renderRun`)
+walks the parsed doc into React elements **only** — never `dangerouslySetInnerHTML`, never an HTML
+string — because this content displays to every anonymous visitor on a public board and the repo
+has no sanitizer dependency (no `dompurify`/`sanitize-html`/`marked`), so the XSS surface has to be
+zero by construction. A `link` run's `href` is re-checked against `ACCEPTED_LINK_SCHEMES` at
+**render** time too (`isAllowedLinkHref` in `kudos-message-body.tsx`) — a second, independent check
+on top of `parseKudosDoc`'s own allow-list, so a hand-built doc object bypassing the parser still
+cannot emit an unsafe `href`. A `mention` run prints its stored `label` verbatim — the sunner name
+is never re-resolved at read time, so a later rename does not retroactively change past kudos.
+
+### Server-side compose validation (defense-in-depth, all-errors-at-once)
+
+**Source**: `lib/kudos/validate-compose.ts` (`validateCompose`), called from
+`app/kudos/new/_actions/create-kudos.ts` before the `create_kudos` RPC
+**Trigger**: Every `createKudos` invocation, regardless of what the client already checked
+
+Never early-returns — collects every failing required field (recipient, title, body, hashtag
+count) into one `ComposeFieldErrors` object so all required-field errors can render
+simultaneously, matching the UI's "show every empty-field error at once" rule. Re-checked here
+because Server Functions are POST-reachable directly, so the client's own validation (and its
+never-actually-disabled `Gửi` button — see `docs/features/F005_VietKudo/technical-spec.md § 3.1`)
+is a convenience, not the boundary. `create_kudos` itself re-validates the same rules a second time
+inside its own transaction (blank campaign/message, hashtag count outside 1–5, more than 5 images)
+— two independent layers, same discipline `permissions-matrix.md` PERM009 states for the RLS side.
+
+### Sender auto-provisioning on first write
+
+**Source**: `supabase/migrations/20260907025909_viet_kudo_write_path.sql:148-176` (inside
+`create_kudos`)
+**Trigger**: The first time an authenticated Sunner successfully calls `create_kudos` — `sunners`
+is seeded with every `auth_user_id` NULL, so a freshly signed-in Google user has no sender identity
+yet
+
+Resolves `sunners.id` by `auth_user_id = auth.uid()`; when no row exists, provisions one before
+proceeding: `full_name` from `user_metadata.full_name`/`name`, falling back to the email
+local-part; `avatar_url` from `user_metadata.avatar_url`/`picture`, falling back to the committed
+`/images/kudos/sample-avatar.png`; `department_id` always the seeded `Unassigned` department
+(`filter_position NULL`, so it never enters F004's Phòng ban filter dropdown). The insert is an
+`upsert` on the already-`unique` `auth_user_id` (`on conflict (auth_user_id) do nothing`), followed
+by a re-select — so two concurrent first-time submits from the same Sunner cannot create two
+`sunners` rows. This all runs inside `create_kudos`'s single transaction, before the `kudos` insert,
+so the resolved `sender_id` is guaranteed to exist when the `kudos_insert_own` RLS policy checks it.
+
+### Image magic-byte signature sniff
+
+**Source**: `lib/kudos/validate-compose.ts` (`matchesImageSignature`, `IMAGE_SIGNATURES`), called
+from `app/kudos/new/_actions/upload-kudos-image.ts` before the Storage `upload` call
+**Trigger**: Every `uploadKudosImage` invocation, after the declared-MIME check passes
+
+`file.type` is caller-declared and an attacker can label arbitrary bytes `image/jpeg`, so this is
+a second, independent gate: the first `IMAGE_SIGNATURE_SNIFF_LENGTH` (12) bytes of the file are
+read and compared against a magic-number allow-list — JPEG (`FF D8 FF`), PNG (8-byte PNG
+signature), GIF (`GIF8`, covering both GIF87a/GIF89a), and WebP (`RIFF` at offset 0 **and**
+`WEBP` at offset 8 — the only non-contiguous signature, because a 4-byte RIFF size field sits
+between them that this check deliberately does not constrain). An unrecognized declared MIME
+matches nothing — a whitelist, never a "no signature means trust it" fallback. Only after both the
+declared-type check and this byte-sniff pass does the object get written to the public
+`kudos-attachments` bucket.

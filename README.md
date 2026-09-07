@@ -60,10 +60,28 @@ screen in this repo backed by a real Postgres schema — a migration, RLS polici
 live under `supabase/`; run `npx supabase db reset` after pulling this feature so your local
 database has the `kudos`/`sunners`/`kudos_likes`/... tables before you load the page (see
 `docs/setup/local-development.md` § 1.1). Anyone can read the whole screen; only a signed-in
-Sunner can toggle the heart on a kudos, and never on one they sent themselves. Four CTAs on this
-screen (compose bar, "Mở Secret Box", "Xem chi tiết", Sunner search) resolve to real routes that
-still render `ComingSoon` — their surfaces are separate commissions. Feature behavior is specified
-in `docs/features/F004_KudosLiveBoard/`; screen detail in `docs/screens/SCR004_KudosLiveBoard/spec.md`.
+Sunner can toggle the heart on a kudos, and never on one they sent themselves. The compose-bar CTA
+now opens the real Viết Kudo screen (see below); the other three CTAs on this screen ("Mở Secret
+Box", "Xem chi tiết", Sunner search) still resolve to `ComingSoon` — separate commissions. Feature
+behavior is specified in `docs/features/F004_KudosLiveBoard/`; screen detail in
+`docs/screens/SCR004_KudosLiveBoard/spec.md`.
+
+## Viết Kudo (`/kudos/new`)
+
+`/kudos/new` is the compose screen for sending a Kudos — pick a recipient via autocomplete, set a
+title, write a formatted message (bold/italic/strikethrough/ordered list/link/quote plus
+`@mention` of a colleague), attach 1–5 hashtags, upload up to 5 real images to Supabase Storage,
+and optionally send anonymously with a display name. It is the **first auth-guarded route since
+F001** — `proxy.ts` bounces an anonymous visitor to `/login` — and the app's first multi-table
+write: a Postgres RPC (`create_kudos`, `security invoker`, no `sender_id` parameter — the actor is
+always resolved from the session) inserts into `kudos`, `kudos_hashtags`, and `kudos_attachments`
+in one transaction, auto-provisioning a `sunners` row for a Sunner writing their first Kudos.
+Formatted content is stored as a small JSON document (`kudos.message_format = 'doc'`) and rendered
+back to React elements — never `dangerouslySetInnerHTML` — so the public board stays safe from a
+malicious message. Run `npx supabase db reset` after pulling this feature to pick up the new
+migration, the `kudos-attachments` Storage bucket, and the seeded `Unassigned` department (see
+`docs/setup/local-development.md` § 1.1). Feature behavior is specified in
+`docs/features/F005_VietKudo/`; screen detail in `docs/screens/SCR005_VietKudo/spec.md`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

@@ -27,3 +27,10 @@
 **Route:** /kudos
 **Description:** Live board Sun* Kudos công khai: highlight, bộ lọc, spotlight, feed và sidebar.
 **States:** loading, empty, error, success
+
+## SCR005_VietKudo
+
+**Feature:** F005 — Viet Kudo
+**Route:** /kudos/new
+**Description:** Trang soạn Kudos, chỉ vào được khi đã đăng nhập — chọn người nhận qua autocomplete, đặt danh hiệu, viết nội dung rich-text (đậm/nghiêng/gạch/danh sách/liên kết/trích dẫn, @mention), gắn 1-5 hashtag, đính kèm tối đa 5 ảnh, tuỳ chọn gửi ẩn danh.
+**States:** loading, empty, error, saving, success

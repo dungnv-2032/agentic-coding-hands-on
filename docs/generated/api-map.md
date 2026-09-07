@@ -21,6 +21,13 @@ layer via the `supabase-js` client library (`.from(table).select(...)`), and the
 (regeneration advised — flagged stale below) for the schema and `permissions-matrix.md`
 PERM006/PERM007 for the RLS boundary that now gates it.
 
+**Update (F005, Viết Kudo):** the write surface grows to two more Server Actions
+(`createKudos`, `uploadKudosImage`) and the app's **first Postgres RPC** — `create_kudos(...)`,
+called via `supabase.rpc("create_kudos", {...})` because PostgREST cannot transact an insert
+across `kudos` + `kudos_hashtags` + `kudos_attachments` in one call. It also brings in the app's
+**first Supabase Storage integration** — a real object-storage bucket (`kudos-attachments`),
+not the four SELECT-only PostgREST tables F004 added. Still no `/api/*` route.
+
 ## Endpoints by Domain
 
 ### Auth (Route Handler)
@@ -37,11 +44,19 @@ PERM006/PERM007 for the RLS boundary that now gates it.
 | `setLocale(locale)` | `app/_actions/locale.ts:13` | Resolves the candidate locale (BL001), writes the `NEXT_LOCALE` cookie, then `revalidatePath("/", "layout")` (`:26`) so the whole layout subtree re-renders in the new locale. |
 | `signOut()` | `app/_actions/auth.ts:17` | `supabase.auth.signOut()` then `redirect("/login")`. The `signOut()` error is deliberately discarded (`:17-21`) so an already-invalid session still lands on `/login`. |
 
-### Kudos (Server Actions — F004, the app's only write path into Postgres)
+### Kudos (Server Actions — F004/F005, the app's write paths into Postgres + Storage)
 
 | Action | File:line | Description |
 |--------|-----------|--------------|
-| `toggleKudosLike(kudosId)` | `app/kudos/_actions/toggle-kudos-like.ts:59` | The only writer on `/kudos`. Resolves the acting user from the session (never from an argument), returns the unchanged `{liked, hearts}` read for an anonymous caller or a self-like attempt (BR-003, re-enforced by RLS `with check`), else inserts/deletes the one `kudos_likes` row matching `(kudos_id, user_id)` (toggle), swallows a `23505` unique-violation race, and always returns the database's real post-write `{liked, hearts}` — `hearts = kudos.heart_baseline + count(kudos_likes)` (BR-001). Calls `refresh()` (`next/cache`) rather than `revalidatePath`. |
+| `toggleKudosLike(kudosId)` | `app/kudos/_actions/toggle-kudos-like.ts:59` | The only writer on `/kudos` (F004). Resolves the acting user from the session (never from an argument), returns the unchanged `{liked, hearts}` read for an anonymous caller or a self-like attempt (BR-003, re-enforced by RLS `with check`), else inserts/deletes the one `kudos_likes` row matching `(kudos_id, user_id)` (toggle), swallows a `23505` unique-violation race, and always returns the database's real post-write `{liked, hearts}` — `hearts = kudos.heart_baseline + count(kudos_likes)` (BR-001). Calls `refresh()` (`next/cache`) rather than `revalidatePath`. |
+| `createKudos(prevState, payload)` | `app/kudos/new/_actions/create-kudos.ts:73` | The only writer on `/kudos/new` (F005). Resolves the acting user from the session; `ComposePayload` carries no sender field at all, so a forged sender is unrepresentable, not merely rejected. Re-validates every rule server-side (`validateCompose`), re-checks each image URL resolves to this project's own `kudos-attachments` Storage path (`isOwnStorageUrl`), then calls the `create_kudos` Postgres RPC. Maps the RPC's SQLSTATE back to a field error (`28000` → no session, `23514` on a hashtag-count violation → too-many/required) and logs anything else without reflecting the raw DB message to the client. On success, `redirect("/kudos")` — no `refresh()`, since the destination route is already dynamic. |
+| `uploadKudosImage(file)` | `app/kudos/new/_actions/upload-kudos-image.ts:47` | Writes to Supabase **Storage**, not Postgres — one call per selected file from `/kudos/new`'s image picker (F005). Re-checks the MIME type server-side, then sniffs the file's actual leading bytes against a magic-number allow-list (`matchesImageSignature`) before ever writing to the public `kudos-attachments` bucket — `file.type` alone is caller-declared and not trusted. Object path is `${user.id}/${timestamp}-${uuid}.${ext}`, matching the bucket's owner-scoped `storage.objects` INSERT policy. Signals failure by **rejecting** with a typed `UploadKudosImageError` (not a returned `{error}` field), because the frozen `UploadKudosImage` contract type has no error slot. |
+
+### Kudos (Postgres RPC — F005, the app's first stored-procedure call)
+
+| Function | Called via | Description |
+|----------|------------|--------------|
+| `create_kudos(p_receiver_id, p_campaign, p_message, p_message_format, p_is_anonymous, p_anonymous_name, p_hashtag_ids, p_image_urls)` | `supabase.rpc("create_kudos", {...})` from `createKudos` | `supabase/migrations/20260907025909_viet_kudo_write_path.sql`. `security invoker` (**not** `security definer`, confirmed live: `pg_proc.prosecdef = f`) — runs as the calling role, so every RLS policy on `kudos`/`kudos_hashtags`/`kudos_attachments`/`sunners` still applies; it exists only to make the three-table insert transactional, not to bypass RLS. Takes **no `sender_id` parameter** — resolves the actor from `auth.uid()` internally and auto-provisions a `sunners` row on first write (upsert on the unique `auth_user_id`, so a double-submit cannot create two rows). Raises `28000` when unauthenticated, `23514` on any business-rule violation (blank campaign/message, hashtag count outside 1–5, more than 5 images), `23503` when the receiver doesn't exist. |
 
 ## Background Jobs
 
@@ -54,6 +69,8 @@ absence of any `scheduled-job`/`queue-worker` pattern in `app/` or `lib/` (scout
 |-----------|------------------|-------------------|--------------|
 | outgoing | Supabase Auth (GoTrue) | `signInWithOAuth`, `exchangeCodeForSession`, `getUser`, `signOut` | Every Supabase call outside `lib/kudos/` is `auth.*`. |
 | outgoing | Supabase Postgres (PostgREST, F004) | `.from(table).select/insert/delete` on 10 `public.*` tables via `supabase-js` | Added by the Kudos Live Board — `lib/kudos/queries.ts` (reads), `toggle-kudos-like.ts` (the one write). Bound by RLS, never `service_role`; see `permissions-matrix.md` PERM006/PERM007. |
+| outgoing | Supabase Postgres RPC (F005) | `supabase.rpc("create_kudos", {...})` | `createKudos`'s multi-table write — see the Postgres RPC table above. Bound by RLS same as any other role-scoped call (`security invoker`); see `permissions-matrix.md` PERM009. |
+| outgoing | Supabase Storage (F005, first object-storage integration) | `.storage.from("kudos-attachments").upload(...)` / `.getPublicUrl(...)` | `uploadKudosImage` writes objects under `{user.id}/...`; the bucket is public-read so board cards can render permanent image URLs. `next.config.ts`'s `images.remotePatterns` was extended to allow `next/image` to serve from this host. See `permissions-matrix.md` PERM010. |
 | outgoing (transitive) | Google OAuth | consent screen + token exchange | Reached **only through** Supabase — no Google SDK, no direct Google API call anywhere in the codebase (`config.toml:336-338`). |
 | incoming | none | — | No incoming webhook exists — `/auth/callback` is a browser redirect target (302 round-trip via the user's browser), not a server-to-server webhook receiver. |
 
@@ -62,7 +79,8 @@ absence of any `scheduled-job`/`queue-worker` pattern in `app/` or `lib/` (scout
 | Category | Count |
 |----------|-------|
 | Route handlers (app's own API surface) | 1 |
-| Server actions | 4 |
+| Server actions | 6 |
+| Postgres RPCs | 1 (`create_kudos`) |
 | Background jobs | 0 |
-| Outgoing integrations | 3 (Supabase Auth direct, Supabase Postgres/PostgREST direct, Google OAuth transitive) |
+| Outgoing integrations | 5 (Supabase Auth direct, Supabase Postgres/PostgREST direct, Supabase Postgres RPC, Supabase Storage direct, Google OAuth transitive) |
 | Incoming webhooks | 0 |

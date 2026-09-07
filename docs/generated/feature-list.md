@@ -8,6 +8,7 @@
 | 2 | F002 — Homepage SAA | P1 | ui | implemented |
 | 3 | F003 — Award System | P1 | ui | implemented |
 | 4 | F004 — Kudos Live Board | P1 | mixed | implemented |
+| 5 | F005 — Viet Kudo | P1 | mixed | implemented |
 
 ## Feature Details
 
@@ -42,3 +43,11 @@ Màn hình công khai "Hệ thống giải" tại `/awards-information`, thay h�
 Màn hình công khai Sun* Kudos - Live board tại `/kudos`: highlight carousel top-5 theo số tim, bộ lọc Hashtag + Phòng ban AND-combine trên cả hai mục, Spotlight word-cloud kèm ticker, feed ALL KUDOS infinite scroll, sidebar thống kê cá nhân và bảng 10 Sunner nhận quà. Lớp Postgres đầu tiên của repo: migration, RLS, seed lấy nguyên từ frame Figma.
 
 **Related:** screens: SCR004 | routes: /kudos | models: kudos, kudos_likes, sunners, hashtags, departments, gift_awards, spotlight_events
+
+### F005 — Viet Kudo
+
+**Priority:** P1 | **Type:** mixed | **Status:** implemented | **Slug:** F005_VietKudo
+
+Màn soạn Kudo tại `/kudos/new`, thay shell `ComingSoon`: chọn người nhận bằng autocomplete, đặt danh hiệu, viết nội dung trong editor rich-text (đậm/nghiêng/gạch/danh sách/liên kết/trích dẫn và @mention), gắn 1-5 hashtag, đính kèm tối đa 5 ảnh upload thật lên Supabase Storage, và tuỳ chọn gửi ẩn danh. Route được gác đăng nhập đầu tiên kể từ F001, và là đường ghi nhiều bảng đầu tiên của repo.
+
+**Related:** screens: SCR005 | routes: /kudos/new | models: kudos, kudos_hashtags, kudos_attachments, sunners, departments
