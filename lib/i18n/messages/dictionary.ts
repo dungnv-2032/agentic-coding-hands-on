@@ -189,6 +189,33 @@ export interface Dictionary {
     toast: { copySuccess: string; copyFailure: string };
   };
   /**
+   * Profile bản thân screen copy (F006, screen `3FoIx6ALVb`). Badge tier
+   * names/tooltips are NOT here — they flow via the frozen
+   * `lib/kudos/view-model.ts` + `derive.ts`, same as `kudos` above.
+   *
+   * `badges.headingSelf`/`headingOther` and `feed.emptyReceived`/`emptySent`
+   * are deliberately two keys each — the copy differs by viewer face
+   * (clarifications.md § "Badge collection and hero tier", § "KUDOS
+   * section") — never collapsed into one key with a runtime branch.
+   */
+  profile: {
+    badges: { headingSelf: string; headingOther: string };
+    /** Five rows; wording matches `kudos.sidebar.stats` verbatim (same board). */
+    stats: {
+      kudosReceived: string;
+      kudosSent: string;
+      heartsReceived: string;
+      secretBoxOpened: string;
+      secretBoxUnopened: string;
+      secretBoxButton: string;
+    };
+    /** Carries "{name}" — the write-Kudo bar shown on another Sunner's profile. */
+    writeBar: { label: string };
+    /** Each carries "{count}" — the direction dropdown's two options. */
+    direction: { receivedLabel: string; sentLabel: string };
+    feed: { emptyReceived: string; emptySent: string; endOfFeed: string };
+  };
+  /**
    * Viết Kudo compose screen copy (F005, screen `ihQ26W78P2`, `/kudos/new`).
    * Hashtag names, recipient names and any other DB-sourced values are data
    * (from the `hashtags`/`sunners` tables), never copy — this namespace
