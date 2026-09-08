@@ -1,0 +1,14 @@
+{
+  "countsOccurrences": [
+    "\"$c8\\\",1],[\\\"$\\\",\\\"$Le1\\\",null,{\\\"targetSunnerId\\\":2,\\\"isSelf\\\":false,\\\"counts\\\":{\\\"received\\\":75,\\\"sent\\\":null},\\\"initialPage\\\":{\\\"cards\\\":"
+  ],
+  "sentNullOccurrences": [
+    "ll,{\\\"targetSunnerId\\\":2,\\\"isSelf\\\":false,\\\"counts\\\":{\\\"received\\\":75,\\\"sent\\\":null},\\\"initialPage\\\":{\\\"cards\\\":[{\\\"id\\\":1,\\\"sender\\\":{\\\"id\\"
+  ],
+  "sentTwelveOccurrences": [],
+  "isSelfOccurrences": [
+    "\"$c9\\\"},\\\"$22\\\",\\\"$c8\\\",1],[\\\"$\\\",\\\"$Le1\\\",null,{\\\"targetSunnerId\\\":2,\\\"isSelf\\\":false,\\\"counts\\\":{\\\"received\\\":75,\\\"sent\\\":null},\\\"initialP"
+  ],
+  "writeBarPresent": 1,
+  "statsCardPresent": 0
+}

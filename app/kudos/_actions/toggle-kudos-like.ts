@@ -23,7 +23,7 @@ async function readHeartState(
   userId: string | null,
 ): Promise<KudosLikeResult> {
   const { data: kudosRow, error: kudosError } = await supabase
-    .from("kudos")
+    .from("kudos_readable")
     .select("heart_baseline, likes:kudos_likes(count)")
     .eq("id", kudosId)
     .maybeSingle()
@@ -70,7 +70,7 @@ export async function toggleKudosLike(kudosId: number): Promise<KudosLikeResult>
   }
 
   const { data: kudosRow, error: kudosError } = await supabase
-    .from("kudos")
+    .from("kudos_readable")
     .select("sender_id")
     .eq("id", kudosId)
     .maybeSingle();

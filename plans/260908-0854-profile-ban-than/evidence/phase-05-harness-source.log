@@ -1,0 +1,498 @@
+=== Phase 05 — the measurement harness, source in full ===
+
+Kept as a .log, not as .js files in the repo: eslint's no-require-imports reaches into
+plans/ (measured in phase 04 — it turned `npm run lint` red). Everything below lived in
+the session scratchpad. Reproduce by pasting these three files plus the tsconfig into a
+scratch directory and running build.sh.
+
+--------------------------------------------------------------------------------
+--- tsconfig.harness.json
+--------------------------------------------------------------------------------
+{
+  "compilerOptions": {
+    "outDir": "/tmp/claude-1000/-mnt-c-Users-nguyen-van-dungc-Desktop-project-my-app/2460e1ac-abf3-462a-88ec-e9b8f760a1d2/scratchpad/h/out",
+    "rootDir": "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app",
+    "module": "commonjs",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "baseUrl": "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "types": [],
+    "typeRoots": [
+      "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/node_modules/@types"
+    ]
+  },
+  "files": [
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/lib/profile/profile-queries.ts",
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/lib/profile/profile-data.ts",
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/lib/kudos/queries.ts",
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/lib/kudos/map-kudos-card.ts",
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/lib/kudos/derive.ts",
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/lib/kudos/viewer.ts",
+    "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/app/profile/_actions/fetch-profile-kudos-page.ts"
+  ]
+}
+--------------------------------------------------------------------------------
+--- build.sh
+--------------------------------------------------------------------------------
+#!/bin/bash
+set -e
+OUT=/tmp/claude-1000/-mnt-c-Users-nguyen-van-dungc-Desktop-project-my-app/2460e1ac-abf3-462a-88ec-e9b8f760a1d2/scratchpad/h/out
+rm -rf "$OUT"
+cd /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app
+npx tsc -p /tmp/claude-1000/-mnt-c-Users-nguyen-van-dungc-Desktop-project-my-app/2460e1ac-abf3-462a-88ec-e9b8f760a1d2/scratchpad/h/tsconfig.harness.json
+find "$OUT" -name '*.js' -exec sed -i "s|require(\"@/|require(\"$OUT/|g" {} +
+sed -i "s|require(\"$OUT/lib/supabase/server\")|require(\"/tmp/claude-1000/-mnt-c-Users-nguyen-van-dungc-Desktop-project-my-app/2460e1ac-abf3-462a-88ec-e9b8f760a1d2/scratchpad/h/server-stub\")|g" "$OUT"/app/profile/_actions/*.js
+echo "built -> $OUT"
+
+--------------------------------------------------------------------------------
+--- server-stub.js
+--------------------------------------------------------------------------------
+/* Stands in for `@/lib/supabase/server`, whose `cookies()` needs a Next request
+   scope. Only the client FACTORY is substituted; the action module itself is
+   the real compiled file. */
+module.exports = { createClient: async () => global.__HARNESS_CLIENT__ };
+
+--------------------------------------------------------------------------------
+--- lib.js
+--------------------------------------------------------------------------------
+/* Shared harness helpers: a real supabase-js client, real sessions, ground truth via psql. */
+const { execFileSync } = require("child_process");
+const { createClient } = require("/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/node_modules/@supabase/supabase-js");
+
+const URL = "http://127.0.0.1:54321";
+const ANON =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
+
+function anonClient() {
+  return createClient(URL, ANON, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+
+async function signedUpClient(email, password) {
+  const c = createClient(URL, ANON, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { data, error } = await c.auth.signUp({ email, password });
+  if (error) throw new Error(`signUp failed: ${error.message}`);
+  return { client: c, user: data.user };
+}
+
+function psql(sql) {
+  return execFileSync(
+    "docker",
+    ["exec", "supabase_db_my-app", "psql", "-U", "postgres", "-X", "-q", "-A", "-t", "-c", sql],
+    { encoding: "utf8" },
+  ).trim();
+}
+
+let pass = 0;
+let fail = 0;
+function check(name, ok, detail) {
+  if (ok) {
+    pass++;
+    console.log(`PASS  ${name}${detail ? `  — ${detail}` : ""}`);
+  } else {
+    fail++;
+    console.log(`FAIL  ${name}${detail ? `  — ${detail}` : ""}`);
+  }
+}
+function summary() {
+  console.log(`\n${pass} passed, ${fail} failed`);
+  process.exitCode = fail === 0 ? 0 : 1;
+}
+
+module.exports = { anonClient, signedUpClient, psql, check, summary };
+
+--------------------------------------------------------------------------------
+--- check-read.js
+--------------------------------------------------------------------------------
+/* Phase 05 — measurements that need NO mutation. Seed state only. */
+const O = __dirname + "/out";
+const { fetchKudosPage, fetchProfileSunner, fetchReceivedAggregate, fetchSentCount,
+        fetchReceivedCounts, isValidFeedCursor } = require(`${O}/lib/profile/profile-queries`);
+const { getProfileData, buildFeedPage, emptyFeedPage } = require(`${O}/lib/profile/profile-data`);
+const { fetchProfileKudosPage } = require(`${O}/app/profile/_actions/fetch-profile-kudos-page`);
+const { anonClient, signedUpClient, psql, check, summary } = require("./lib");
+
+const ANON_VIEWER = { isAuthenticated: false, sunnerId: null, userId: null };
+
+async function pageAll(client, column, sunnerId, viewer, opts) {
+  const pages = [];
+  let cursor = null;
+  for (let i = 0; i < 20; i++) {
+    const rows = await fetchKudosPage(client, { column, sunnerId, cursor });
+    const page = await buildFeedPage(client, rows, viewer, opts);
+    pages.push(page);
+    if (!page.hasMore) break;
+    cursor = page.nextCursor;
+  }
+  return pages;
+}
+
+(async () => {
+  const anon = anonClient();
+
+  // ---- ground truth from the base table, as superuser -------------------
+  const truthIds = psql(
+    "select string_agg(id::text, ',' order by sent_at desc, id desc) from public.kudos where receiver_id = 1;",
+  ).split(",");
+  const truthCount = Number(psql("select count(*) from public.kudos where receiver_id = 1;"));
+  const truthHearts = Number(
+    psql(`select sum(k.heart_baseline + (select count(*) from public.kudos_likes l where l.kudos_id = k.id))
+          from public.kudos k where k.receiver_id = 1;`),
+  );
+  console.log(`ground truth: receiver 1 has ${truthCount} rows, hearts ${truthHearts}`);
+  console.log(`ground truth id order: ${truthIds.join(",")}`);
+
+  // ---- K1 keyset paging --------------------------------------------------
+  const pages = await pageAll(anon, "receiver_id", 1, ANON_VIEWER, {});
+  const ids = pages.flatMap((p) => p.cards.map((c) => c.id));
+  pages.forEach((p, i) =>
+    console.log(`  page ${i + 1}: ${p.cards.length} cards, hasMore=${p.hasMore}, nextCursor=${JSON.stringify(p.nextCursor)}`),
+  );
+  console.log(`  page ids: ${pages.map((p) => p.cards.map((c) => c.id).join("|")).join("  ||  ")}`);
+  check("K1a page sizes are 10/10/6", JSON.stringify(pages.map((p) => p.cards.length)) === "[10,10,6]",
+    JSON.stringify(pages.map((p) => p.cards.length)));
+  check("K1b union has no duplicate", new Set(ids).size === ids.length, `${ids.length} rows, ${new Set(ids).size} distinct`);
+  check("K1c union skips nothing", ids.length === truthCount, `${ids.length} vs ${truthCount}`);
+  check("K1d order identical to SQL row-comparison ground truth", ids.join(",") === truthIds.join(","));
+  check("K1e last page hasMore=false and nextCursor=null",
+    pages[pages.length - 1].hasMore === false && pages[pages.length - 1].nextCursor === null);
+  check("K1f boundary: last id of page 1 != first id of page 2",
+    pages[0].cards[9].id !== pages[1].cards[0].id,
+    `${pages[0].cards[9].id} then ${pages[1].cards[0].id}`);
+
+  // ---- K2 the extra row never reaches the client -------------------------
+  const raw = await fetchKudosPage(anon, { column: "receiver_id", sunnerId: 1, cursor: null });
+  check("K2 reads FEED_PAGE_SIZE+1 rows, returns 10", raw.length === 11 && pages[0].cards.length === 10,
+    `raw ${raw.length} → cards ${pages[0].cards.length}`);
+
+  // ---- K3 anonymity through THIS read path ------------------------------
+  // The real sender of kudos 58 is sunner 2, "Huỳnh Dương Xuân" — a strict
+  // PREFIX of the receiver's own name, "Huỳnh Dương Xuân Nhật", which is on
+  // all 26 cards. So a substring scan of the payload cannot decide this; the
+  // sender's DISTINCTIVE facts are checked field by field on the card itself.
+  const [senderId, senderName, senderBaseline, senderDept] = psql(
+    `select s.id, s.full_name, s.kudos_received_baseline,
+            (select d.name from public.departments d where d.id = s.department_id)
+     from public.sunners s where s.id = (select sender_id from public.kudos where id = 58);`,
+  ).split("|");
+  const allCards = pages.flatMap((p) => p.cards);
+  const anonCard = allCards.find((c) => c.id === 58);
+  check("K3a the seeded anonymous kudo IS in the received feed", anonCard !== undefined);
+  check("K3b its sender is the redacted stub", anonCard.sender.id === 0 && anonCard.anonymousSenderLabel === "Ẩn danh",
+    JSON.stringify(anonCard.sender));
+  check("K3c the real sender's id/department/tier are absent from that card",
+    anonCard.sender.id !== Number(senderId) &&
+    anonCard.sender.department === "" && anonCard.sender.department !== senderDept &&
+    anonCard.sender.badge !== "Legend Hero" && anonCard.sender.badgeTooltip === null,
+    `real sender = ${senderId}|${senderName}|baseline ${senderBaseline} (Legend Hero)|${senderDept}`);
+  // Sunner 2 is also the OPEN sender of four of these 26 rows, so they must
+  // still appear by name there — the guarantee is per-row, not per-person.
+  const openFromSender = allCards.filter((c) => !c.sentAnonymously && c.sender.id === Number(senderId));
+  check("K3d no ANONYMOUS card names the real sender, while their open sends still do",
+    allCards.every((c) => !c.sentAnonymously || (c.sender.id !== Number(senderId) && c.sender.fullName !== senderName)) &&
+    openFromSender.length > 0,
+    `${allCards.length} cards, ${openFromSender.length} open sends by sunner ${senderId} shown by name, 1 anonymous one masked`);
+  check("K3e exactly one masked card across all three pages",
+    allCards.filter((c) => c.anonymousSenderLabel !== null).length === 1);
+  check("K3f sentAnonymously true on exactly that one card",
+    allCards.filter((c) => c.sentAnonymously).length === 1 && anonCard.sentAnonymously === true);
+
+  // ---- K4 aggregates / sunner read --------------------------------------
+  const sunner = await fetchProfileSunner(anon, 1);
+  check("K4a fetchProfileSunner selects only allowed columns",
+    JSON.stringify(Object.keys(sunner).sort()) ===
+      JSON.stringify(["avatar_url", "department", "full_name", "id", "kudos_received_baseline",
+        "secret_box_opened_count", "secret_box_unopened_count"]),
+    JSON.stringify(Object.keys(sunner).sort()));
+  check("K4b unknown sunner returns null, not a throw", (await fetchProfileSunner(anon, 999999)) === null);
+  const agg = await fetchReceivedAggregate(anon, 1);
+  check("K4c received aggregate matches SQL", agg.count === truthCount && agg.hearts === truthHearts,
+    JSON.stringify(agg));
+  // Read as an ANONYMOUS caller on purpose: the view masks sunner 2's own
+  // anonymous send, so the count comes back one short of the truth. That is
+  // SEC_001/SEC_002 working — somebody else's anonymous sends cannot even be
+  // COUNTED through the view. `getProfileData` only ever calls this for the
+  // caller's own id, where the view reveals them; the complete-count case is
+  // check M4 in the mutating run.
+  const trueSent = Number(psql("select count(*) from public.kudos where sender_id = 2;"));
+  const anonSeesSent = await fetchSentCount(anon, 2);
+  check("K4d another Sunner's anonymous send is not even countable through the view",
+    trueSent === 12 && anonSeesSent === 11, `truth ${trueSent}, anon sees ${anonSeesSent}`);
+  const counts = await fetchReceivedCounts(anon, [1, 2, 3]);
+  check("K4e received-count map matches SQL for the page's sunners",
+    counts.get(1) === 26 && counts.get(2) === 25, JSON.stringify([...counts]));
+  check("K4f empty id list issues no query and returns an empty map",
+    (await fetchReceivedCounts(anon, [])).size === 0);
+
+  // ---- K5 badge tier parity with the board ------------------------------
+  const card26 = pages[0].cards[0];
+  check("K5 sender badge tier uses the full received count, not the page's",
+    card26.receiver.badge === "Super Hero", `receiver badge ${card26.receiver.badge} (26 received)`);
+
+  // ---- K6 getProfileData, other Sunner's face ---------------------------
+  const other = await getProfileData(anon, 1, ANON_VIEWER);
+  check("K6a found sentinel", other.kind === "found");
+  const m = other.model;
+  console.log(`  model: ${JSON.stringify({ ...m, initialPage: { n: m.initialPage.cards.length, hasMore: m.initialPage.hasMore, nextCursor: m.initialPage.nextCursor } })}`);
+  check("K6b isSelf false, stats null, counts.sent null, writeKudoTargetId 1",
+    m.isSelf === false && m.stats === null && m.counts.sent === null && m.writeKudoTargetId === 1);
+  check("K6c counts.received = baseline + rows", m.counts.received === 26, String(m.counts.received));
+  check("K6d hero badge from badgeTierFor(26)", m.hero.badge === "Super Hero" && m.hero.badgeTooltip !== null);
+  check("K6e hero carries department and avatar", m.hero.department !== null && m.hero.avatarUrl.length > 0,
+    `${m.hero.fullName} / ${m.hero.department}`);
+  check("K6f initialPage is page 1 of RECEIVED", m.initialPage.cards.length === 10 && m.initialPage.hasMore === true);
+  check("K6g unknown target → not-found sentinel", (await getProfileData(anon, 999999, ANON_VIEWER)).kind === "not-found");
+  // Every one of the nine seeded sunners has at least one received Kudo
+  // (measured), so the `badge === null` branch has no seed subject at all —
+  // it is check M5 in the mutating run, on the auto-provisioned sunner.
+  const low = await getProfileData(anon, 3, ANON_VIEWER);
+  check("K6h lowest seeded received count still gets the lowest tier, not null",
+    low.model.counts.received === 1 && low.model.hero.badge === "New Hero",
+    `sunner 3 received = ${low.model.counts.received}, badge ${low.model.hero.badge}`);
+
+  // ---- K7 sparse self view (real signed-up user, no sunners row) --------
+  const email = `phase05-${Date.now()}@example.com`;
+  const { client: authed, user } = await signedUpClient(email, "phase05-password");
+  const viewer = { isAuthenticated: true, sunnerId: null, userId: user.id };
+  const sparse = await getProfileData(authed, null, viewer);
+  check("K7a sparse self is 'found'", sparse.kind === "found");
+  const s = sparse.model;
+  console.log(`  sparse model: ${JSON.stringify(s)}`);
+  check("K7b name is the email LOCAL-PART, never the address",
+    s.hero.fullName === email.split("@")[0] && !JSON.stringify(s).includes("@"),
+    s.hero.fullName);
+  check("K7c avatar is the sample fallback", s.hero.avatarUrl === "/images/kudos/sample-avatar.png");
+  check("K7d department null, badge null, sunnerId null",
+    s.hero.department === null && s.hero.badge === null && s.hero.badgeTooltip === null && s.hero.sunnerId === null);
+  check("K7e isSelf true, writeKudoTargetId null, stats all zero, counts 0/0",
+    s.isSelf === true && s.writeKudoTargetId === null && s.stats !== null &&
+    Object.values(s.stats).every((v) => v === 0) && s.counts.received === 0 && s.counts.sent === 0);
+  check("K7f initialPage empty", s.initialPage.cards.length === 0 && s.initialPage.hasMore === false && s.initialPage.nextCursor === null);
+  check("K7g NO sunners row was provisioned by the read",
+    psql(`select count(*) from public.sunners where auth_user_id = '${user.id}';`) === "0");
+  check("K7h no auth uuid in the model", !JSON.stringify(s).includes(user.id));
+
+  // ---- K8 the server action -------------------------------------------
+  global.__HARNESS_CLIENT__ = authed;
+  const p1 = await fetchProfileKudosPage({ targetSunnerId: 1, direction: "received", cursor: null });
+  check("K8a action, received, page 1", p1.cards.length === 10 && p1.hasMore === true);
+  const p2 = await fetchProfileKudosPage({ targetSunnerId: 1, direction: "received", cursor: p1.nextCursor });
+  check("K8b action page 2 does not repeat page 1",
+    p2.cards.every((c) => !p1.cards.some((x) => x.id === c.id)),
+    `${p1.cards.map((c) => c.id).join(",")} then ${p2.cards.map((c) => c.id).join(",")}`);
+  const sentA = await fetchProfileKudosPage({ targetSunnerId: 1, direction: "sent", cursor: null });
+  const sentB = await fetchProfileKudosPage({ targetSunnerId: 2, direction: "sent", cursor: null });
+  check("K8c SC-003 — two different targetSunnerId, identical 'sent' payload",
+    JSON.stringify(sentA) === JSON.stringify(sentB), JSON.stringify(sentA));
+  check("K8d sent + callerSunnerId null → empty page, no error",
+    sentA.cards.length === 0 && sentA.hasMore === false && sentA.nextCursor === null);
+  for (const bad of [
+    { targetSunnerId: 1, direction: "SENT", cursor: null },
+    { targetSunnerId: 1, direction: "received", cursor: { sentAt: "2025-10-23T15:00:00+00:00,id.gt.0)", id: 26 } },
+    { targetSunnerId: 1, direction: "received", cursor: { sentAt: "banana", id: 26 } },
+    { targetSunnerId: 1, direction: "received", cursor: { sentAt: "2025-10-23T15:00:00+00:00", id: 1.5 } },
+    { targetSunnerId: 1.5, direction: "received", cursor: null },
+    { targetSunnerId: null, direction: "received", cursor: null },
+  ]) {
+    const r = await fetchProfileKudosPage(bad);
+    check(`K8e malformed input → empty page: ${JSON.stringify(bad)}`,
+      r.cards.length === 0 && r.hasMore === false && r.nextCursor === null);
+  }
+  check("K8f isValidFeedCursor rejects a filter-injection payload",
+    isValidFeedCursor({ sentAt: "2025-10-23T15:00:00+00:00", id: 26 }) === true &&
+    isValidFeedCursor({ sentAt: "2025-10-23T15:00:00+00:00,x)", id: 26 }) === false &&
+    isValidFeedCursor({ sentAt: '2025-10-23T15:00:00+00:00"', id: 26 }) === false &&
+    isValidFeedCursor(null) === false && isValidFeedCursor({ id: 1 }) === false);
+  check("K8g emptyFeedPage is a fresh object each call", emptyFeedPage() !== emptyFeedPage());
+
+  summary();
+})().catch((e) => {
+  console.error("HARNESS CRASHED:", e);
+  process.exitCode = 1;
+});
+
+--------------------------------------------------------------------------------
+--- check-mutate.js
+--------------------------------------------------------------------------------
+/* Phase 05 — measurements that REQUIRE mutation. `npx supabase db reset`
+   restores the seed afterwards; the run prints the before/after row counts. */
+const O = __dirname + "/out";
+const { fetchKudosPage, fetchSentCount } = require(`${O}/lib/profile/profile-queries`);
+const { getProfileData, buildFeedPage } = require(`${O}/lib/profile/profile-data`);
+const { fetchProfileKudosPage } = require(`${O}/app/profile/_actions/fetch-profile-kudos-page`);
+const { resolveViewer } = require(`${O}/lib/kudos/viewer`);
+const { anonClient, signedUpClient, psql, check, summary } = require("./lib");
+
+const ANON_VIEWER = { isAuthenticated: false, sunnerId: null, userId: null };
+const TIE_AT = "2025-11-01 12:00:00+00";
+
+async function pageAll(client, column, sunnerId, viewer, opts) {
+  const pages = [];
+  let cursor = null;
+  for (let i = 0; i < 20; i++) {
+    const rows = await fetchKudosPage(client, { column, sunnerId, cursor });
+    const page = await buildFeedPage(client, rows, viewer, opts);
+    pages.push(page);
+    if (!page.hasMore) break;
+    cursor = page.nextCursor;
+  }
+  return pages;
+}
+
+(async () => {
+  const anon = anonClient();
+  console.log(`before: ${psql("select count(*) from public.kudos;")} kudos rows, ${psql("select count(*) from auth.users;")} auth users`);
+
+  // ======================================================================
+  // M1 — the keyset TIE case. The seed has NO duplicate sent_at anywhere
+  // (measured), so the degraded `sent_at.lt`-only predicate would pass
+  // every seed-based assertion. 12 rows sharing one timestamp are inserted
+  // deliberately, straddling the page-1 boundary.
+  // ======================================================================
+  psql(`insert into public.kudos (sender_id, receiver_id, campaign, message, sent_at, heart_baseline)
+        select 1, 3, 'TIE', 'tie row ' || g, '${TIE_AT}'::timestamptz, 0 from generate_series(1, 12) g;`);
+  console.log(`  inserted 12 rows at a single sent_at for receiver 3; receiver 3 now has ${psql("select count(*) from public.kudos where receiver_id = 3;")} rows`);
+  console.log(`  ties: ${psql(`select count(*) from public.kudos where sent_at = '${TIE_AT}'::timestamptz;`)} rows share ${TIE_AT}`);
+
+  const truth = psql("select string_agg(id::text, ',' order by sent_at desc, id desc) from public.kudos where receiver_id = 3;").split(",");
+  const tiePages = await pageAll(anon, "receiver_id", 3, ANON_VIEWER, {});
+  const tieIds = tiePages.flatMap((p) => p.cards.map((c) => c.id));
+  tiePages.forEach((p, i) => console.log(`  page ${i + 1}: ${p.cards.map((c) => c.id).join(",")}  hasMore=${p.hasMore} nextCursor=${JSON.stringify(p.nextCursor)}`));
+  check("M1a all 13 rows come back across the pages", tieIds.length === truth.length, `${tieIds.length} vs ${truth.length}`);
+  check("M1b no duplicate across the tie boundary", new Set(tieIds).size === tieIds.length);
+  check("M1c order identical to the SQL row-comparison ground truth", tieIds.join(",") === truth.join(","),
+    `got ${tieIds.join(",")}`);
+  check("M1d page 1's last row and page 2's first row SHARE a sent_at (the boundary is really a tie)",
+    psql(`select (select sent_at from public.kudos where id = ${tiePages[0].cards[9].id}) = (select sent_at from public.kudos where id = ${tiePages[1].cards[0].id});`) === "t",
+    `${tiePages[0].cards[9].id} | ${tiePages[1].cards[0].id}`);
+
+  // The degraded form the phase file warns about, run on the same data.
+  const c = tiePages[0].nextCursor;
+  const { data: degraded } = await anon
+    .from("kudos_readable").select("id, sent_at").eq("receiver_id", 3)
+    .lt("sent_at", c.sentAt)
+    .order("sent_at", { ascending: false }).order("id", { ascending: false }).limit(11);
+  check("M1e the degraded `sent_at.lt`-only predicate DOES drop the tied rows",
+    degraded.length < tiePages[1].cards.length,
+    `sent_at.lt alone returns ${degraded.length} rows where the correct predicate returns ${tiePages[1].cards.length}: ids ${degraded.map((r) => r.id).join(",") || "(none)"}`);
+
+  psql(`delete from public.kudos where campaign = 'TIE';`);
+  console.log(`  tie rows removed; kudos count back to ${psql("select count(*) from public.kudos;")}`);
+
+  // ======================================================================
+  // M2 — the SELF face with real numbers: link a real session to sunner 1.
+  // ======================================================================
+  const { client: self1, user: u1 } = await signedUpClient(`phase05-self-${Date.now()}@example.com`, "phase05-password");
+  psql(`update public.sunners set auth_user_id = '${u1.id}' where id = 1;`);
+  const viewer1 = await resolveViewer(self1);
+  check("M2a resolveViewer sees the linked sunners row", viewer1.sunnerId === 1 && viewer1.isAuthenticated === true,
+    JSON.stringify({ sunnerId: viewer1.sunnerId }));
+  const mine = await getProfileData(self1, 1, viewer1);
+  const m = mine.model;
+  console.log(`  self model: isSelf=${m.isSelf} stats=${JSON.stringify(m.stats)} counts=${JSON.stringify(m.counts)} writeKudoTargetId=${m.writeKudoTargetId}`);
+  const truthSelf = psql(`select s.kudos_received_baseline + (select count(*) from public.kudos where receiver_id = 1),
+                                 (select count(*) from public.kudos where sender_id = 1),
+                                 (select sum(k.heart_baseline + (select count(*) from public.kudos_likes l where l.kudos_id = k.id)) from public.kudos k where k.receiver_id = 1),
+                                 s.secret_box_opened_count, s.secret_box_unopened_count
+                          from public.sunners s where s.id = 1;`).split("|").map(Number);
+  check("M2b stats non-null iff isSelf, and every number matches SQL",
+    m.isSelf === true && m.stats !== null &&
+    m.stats.kudosReceived === truthSelf[0] && m.stats.kudosSent === truthSelf[1] &&
+    m.stats.heartsReceived === truthSelf[2] && m.stats.secretBoxOpened === truthSelf[3] &&
+    m.stats.secretBoxUnopened === truthSelf[4],
+    `SQL truth ${truthSelf.join("/")}`);
+  check("M2c counts.sent non-null on the self face, writeKudoTargetId null",
+    m.counts.sent === truthSelf[1] && m.writeKudoTargetId === null);
+  check("M2d Secret Box reads the real columns (25/25 for the frame viewer, not a literal)",
+    m.stats.secretBoxOpened === 25 && m.stats.secretBoxUnopened === 25);
+  check("M2e no auth uuid or email anywhere in the self model",
+    !JSON.stringify(m).includes(u1.id) && !JSON.stringify(m).includes("@"));
+
+  // ======================================================================
+  // M3/M4/M5 — SEC_002: a real session composes a real anonymous Kudo
+  // through F005's write path, then reads its own Sent list.
+  // ======================================================================
+  const email = `phase05-sec002-${Date.now()}@example.com`;
+  const { client: author, user: ua } = await signedUpClient(email, "phase05-password");
+  const hashtagId = Number(psql("select id from public.hashtags order by position limit 1;"));
+  const { data: newKudosId, error: rpcError } = await author.rpc("create_kudos", {
+    p_receiver_id: 1, p_campaign: "IDOL GIỚI TRẺ", p_message: "phase 05 SEC_002 probe",
+    p_message_format: "plain", p_is_anonymous: true, p_anonymous_name: null,
+    p_hashtag_ids: [hashtagId], p_image_urls: [],
+  });
+  if (rpcError) throw new Error(`create_kudos failed: ${rpcError.message}`);
+  const authorViewer = await resolveViewer(author);
+  console.log(`  composed kudos ${newKudosId} anonymously; author provisioned as sunner ${authorViewer.sunnerId}`);
+  check("M3a create_kudos provisioned a sunners row for the author (write path, not this layer)",
+    authorViewer.sunnerId !== null);
+
+  global.__HARNESS_CLIENT__ = author;
+  const sentPage = await fetchProfileKudosPage({ targetSunnerId: null, direction: "sent", cursor: null });
+  const ownCard = sentPage.cards.find((x) => x.id === newKudosId);
+  console.log(`  own Sent list: ${sentPage.cards.length} card(s) — ${JSON.stringify(ownCard && { id: ownCard.id, sender: ownCard.sender, anonymousSenderLabel: ownCard.anonymousSenderLabel, sentAnonymously: ownCard.sentAnonymously, canLike: ownCard.canLike, isOwnedByViewer: ownCard.isOwnedByViewer })}`);
+  check("M3b SEC_002 — the viewer's OWN anonymous Kudo IS in their own Sent list", ownCard !== undefined);
+  check("M3c it names the viewer as the author, not the masked alias",
+    ownCard.sender.id === authorViewer.sunnerId && ownCard.anonymousSenderLabel === null &&
+    ownCard.sender.fullName === email.split("@")[0],
+    `sender ${JSON.stringify(ownCard.sender.fullName)} / label ${JSON.stringify(ownCard.anonymousSenderLabel)}`);
+  check("M3d and is still marked as sent anonymously (FR-602, rendered by nothing)",
+    ownCard.sentAnonymously === true);
+  check("M3e the author still cannot heart their own Kudo (BR-003 survives the reveal)",
+    ownCard.canLike === false && ownCard.isOwnedByViewer === true);
+
+  // The same row, same read path, seen by everybody else.
+  const rec = await pageAll(anon, "receiver_id", 1, ANON_VIEWER, {});
+  const masked = rec.flatMap((p) => p.cards).find((x) => x.id === newKudosId);
+  console.log(`  same kudos in receiver 1's feed as an anonymous visitor: ${JSON.stringify(masked && { id: masked.id, sender: masked.sender, anonymousSenderLabel: masked.anonymousSenderLabel })}`);
+  check("M3f the SAME row is masked for everybody else, through the same code",
+    masked !== undefined && masked.sender.id === 0 && masked.anonymousSenderLabel === "Ẩn danh" &&
+    !JSON.stringify(masked).includes(email.split("@")[0]),
+    `author local-part "${email.split("@")[0]}" absent from the masked card`);
+  check("M3g revealOwnAnonymous off (the Received face) keeps the mask even for the author",
+    (await (async () => {
+      const rows = await fetchKudosPage(author, { column: "receiver_id", sunnerId: 1, cursor: null });
+      const p = await buildFeedPage(author, rows, authorViewer);
+      const own = p.cards.concat((await buildFeedPage(author, await fetchKudosPage(author, { column: "receiver_id", sunnerId: 1, cursor: p.nextCursor }), authorViewer)).cards).find((x) => x.id === newKudosId);
+      return own !== undefined && own.anonymousSenderLabel === "Ẩn danh" && own.sender.id === 0;
+    })()),
+    "board/Received parity — only the Sent list reveals");
+
+  // M4 — the caller's own sent count INCLUDES the anonymous one.
+  const ownSent = await fetchSentCount(author, authorViewer.sunnerId);
+  const ownSentTruth = Number(psql(`select count(*) from public.kudos where sender_id = ${authorViewer.sunnerId};`));
+  check("M4 the caller's own sent count includes their anonymous send (counter/list parity)",
+    ownSent === ownSentTruth && ownSent === sentPage.cards.length,
+    `count ${ownSent}, SQL ${ownSentTruth}, cards ${sentPage.cards.length}`);
+
+  // M5 — badge null at zero received, on the auto-provisioned sunner.
+  const fresh = await getProfileData(author, authorViewer.sunnerId, authorViewer);
+  console.log(`  auto-provisioned sunner profile: ${JSON.stringify({ hero: fresh.model.hero, counts: fresh.model.counts })}`);
+  check("M5 badge is NULL at 0 received (not the 'New Hero' badgeTierFor(0) returns)",
+    fresh.model.counts.received === 0 && fresh.model.hero.badge === null && fresh.model.hero.badgeTooltip === null);
+  check("M5b the auto-provisioned department is carried through, not nulled",
+    fresh.model.hero.department === "Unassigned", String(fresh.model.hero.department));
+
+  // M6 — SC-003 again, now with a caller who HAS sent Kudos: two different
+  // targetSunnerId values must still return the caller's own list.
+  const a = await fetchProfileKudosPage({ targetSunnerId: 1, direction: "sent", cursor: null });
+  const b = await fetchProfileKudosPage({ targetSunnerId: 2, direction: "sent", cursor: null });
+  const d = await fetchProfileKudosPage({ targetSunnerId: 999999, direction: "sent", cursor: null });
+  check("M6 SC-003 with a non-empty Sent list — targetSunnerId changes nothing",
+    JSON.stringify(a) === JSON.stringify(b) && JSON.stringify(b) === JSON.stringify(d) &&
+    a.cards.length === 1 && a.cards[0].id === newKudosId,
+    `all three return the caller's own ${a.cards.length} card(s): id ${a.cards[0].id}`);
+
+  console.log(`after: ${psql("select count(*) from public.kudos;")} kudos rows, ${psql("select count(*) from auth.users;")} auth users — restored by the db reset that follows`);
+  summary();
+})().catch((e) => {
+  console.error("HARNESS CRASHED:", e);
+  process.exitCode = 1;
+});
+

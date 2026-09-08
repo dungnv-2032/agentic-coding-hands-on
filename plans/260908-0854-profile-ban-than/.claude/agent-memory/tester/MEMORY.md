@@ -1,0 +1,1 @@
+- [Authenticated visual capture](authenticated-visual-capture.md) — throwaway config + an existing `e2e/.auth` session; the shipped `visual-capture` project is homepage-only

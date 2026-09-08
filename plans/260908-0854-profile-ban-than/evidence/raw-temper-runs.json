@@ -1,0 +1,12 @@
+[
+  {
+    "command": "npx playwright test --project=profile-auth-setup --project=profile-authed --project=anon",
+    "exitCode": 1,
+    "summary": "Profile E2E suite: 24 failed (profile assertions), 84 passed (1 setup + 81 existing + 2 anon). Defects fixed: 404 assertions now check response.status() + hero absence; SEC_004 uuid pattern only. All 25 profile tests audited for reachability — all can pass against correct implementation."
+  },
+  {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "summary": "TypeScript compilation clean — 0 errors in all test files."
+  }
+]

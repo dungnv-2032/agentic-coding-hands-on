@@ -1,0 +1,222 @@
+# Phase 09 — throwaway probe source (deleted from the repo after the run)
+
+Run as: npx playwright test --config=.probe-tmp/probe.config.ts --project=<probe-anon|probe-profile>
+The whole .probe-tmp/ directory was removed afterwards; nothing of it is committed.
+
+## .probe-tmp/probe.config.ts
+```ts
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { defineConfig, devices } from "@playwright/test";
+
+const ROOT = "/mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app";
+const vendoredLibs = path.join(ROOT, ".playwright-libs/usr/lib/x86_64-linux-gnu");
+if (existsSync(vendoredLibs)) {
+  process.env.LD_LIBRARY_PATH = [vendoredLibs, process.env.LD_LIBRARY_PATH]
+    .filter(Boolean)
+    .join(":");
+}
+
+export default defineConfig({
+  testDir: path.join(__dirname, "probe"),
+  reporter: "list",
+  testMatch: /\.probe\.ts$/,
+  fullyParallel: false,
+  use: { baseURL: "http://127.0.0.1:3000", trace: "off" },
+  projects: [
+    {
+      name: "probe-anon",
+      testMatch: /hashtag-deeplink\.probe\.ts$/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "probe-profile",
+      testMatch: /profile-link\.probe\.ts/,
+      expect: { timeout: 15_000 },
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: path.join(ROOT, "e2e/.auth/profile-user.json"),
+      },
+    },
+  ],
+  webServer: {
+    command: "npm run dev -- --hostname 127.0.0.1 --port 3000",
+    cwd: ROOT,
+    url: "http://127.0.0.1:3000",
+    reuseExistingServer: false,
+    timeout: 120_000,
+  },
+});
+```
+
+## .probe-tmp/probe/hashtag-deeplink.probe.ts
+```ts
+import { expect, test } from "@playwright/test";
+
+const cards = (page: import("@playwright/test").Page) =>
+  page.getByTestId("all-kudos-section").getByTestId("kudos-card");
+
+test("board reads ?hashtag= and actually filters on it", async ({ page }) => {
+  // Baseline: unfiltered board.
+  await page.goto("/kudos");
+  await expect(cards(page).first()).toBeVisible();
+  const unfilteredCount = await cards(page).count();
+  // The row renders `#{name}`; the FILTER OPTION and the value
+  // `onHashtagClick` hands to `router.push` are the bare `hashtags.name`.
+  const rendered = (await page.getByTestId("kudos-hashtag").first().textContent())!.trim();
+  const tag = rendered.replace(/^#/, "");
+  expect(tag.length).toBeGreaterThan(0);
+  console.log(`baseline: ${unfilteredCount} cards on page 1, first tag = ${tag}`);
+
+  // Deep link.
+  await page.goto(`/kudos?hashtag=${encodeURIComponent(tag)}`);
+  const filtered = cards(page);
+  const filteredCount = await filtered.count();
+  console.log(`?hashtag=${tag}: ${filteredCount} cards`);
+
+  // 1. Every visible card actually carries the tag.
+  for (let i = 0; i < filteredCount; i += 1) {
+    const tags = await filtered.nth(i).locator('[data-testid="kudos-hashtag"]').allTextContents();
+    expect(tags.map((t) => t.trim().replace(/^#/, ""))).toContain(tag);
+  }
+  // 2. The FILTER STATE says so, not just the URL.
+  await page.getByTestId("filter-hashtag").click();
+  const selected = page.getByTestId("filter-menu-hashtag").locator('[aria-selected="true"]');
+  await expect(selected).toHaveCount(1);
+  await expect(selected).toHaveText(tag);
+  // 3. It is a real narrowing.
+  expect(filteredCount).toBeLessThan(unfilteredCount);
+});
+
+test("unknown / absent ?hashtag= leaves the board in its shipped default state", async ({ page }) => {
+  for (const url of ["/kudos", "/kudos?hashtag=", "/kudos?hashtag=#not-a-real-tag"]) {
+    await page.goto(url);
+    await page.getByTestId("filter-hashtag").click();
+    await expect(
+      page.getByTestId("filter-menu-hashtag").locator('[aria-selected="true"]'),
+    ).toHaveCount(0);
+    await page.keyboard.press("Escape");
+  }
+});
+```
+
+## .probe-tmp/probe/profile-link.probe.ts
+```ts
+import { expect, test, type Page } from "@playwright/test";
+
+const cards = (page: Page) => page.getByTestId("profile-feed").getByTestId("kudos-card");
+
+test("profile hashtag click reaches /kudos?hashtag= AND the board filters on it", async ({ page }) => {
+  await page.goto("/profile?id=1");
+  const tagButton = cards(page).first().getByTestId("kudos-hashtag").first();
+  const tag = (await tagButton.textContent())!.trim().replace(/^#/, "");
+  await tagButton.click();
+  await page.waitForURL(/\/kudos\?hashtag=/);
+  console.log(`landed on ${page.url()} for tag ${tag}`);
+
+  // FILTER STATE, not the URL.
+  await page.getByTestId("filter-hashtag").click();
+  const selected = page.getByTestId("filter-menu-hashtag").locator('[aria-selected="true"]');
+  await expect(selected).toHaveCount(1);
+  await expect(selected).toHaveText(tag);
+  await page.keyboard.press("Escape");
+
+  const boardCards = page.getByTestId("all-kudos-section").getByTestId("kudos-card");
+  const n = await boardCards.count();
+  expect(n).toBeGreaterThan(0);
+  for (let i = 0; i < n; i += 1) {
+    const tags = await boardCards.nth(i).locator('[data-testid="kudos-hashtag"]').allTextContents();
+    expect(tags.map((t) => t.trim().replace(/^#/, ""))).toContain(tag);
+  }
+  console.log(`board filtered to ${n} cards, every one carries ${tag}`);
+});
+
+test("gift-leaderboard emits a working ?id=", async ({ page }) => {
+  await page.goto("/kudos");
+  const link = page.getByTestId("gift-leaderboard").getByTestId("gift-row").first().getByRole("link");
+  const href = await link.getAttribute("href");
+  const name = (await link.textContent())!.trim();
+  console.log(`gift row 1: ${name} -> ${href}`);
+  expect(href).toMatch(/^\/profile\?id=\d+$/);
+  await link.click();
+  await expect(page.getByTestId("profile-hero")).toContainText(name);
+  console.log(`clicked through to ${page.url()}, hero names ${name}`);
+});
+
+test("sunner-chip ?id= resolves to that Sunner's profile", async ({ page }) => {
+  await page.goto("/kudos");
+  const chip = page.getByTestId("all-kudos-section").getByTestId("kudos-card").first().getByTestId("kudos-receiver");
+  const href = await chip.getAttribute("href");
+  const name = (await chip.textContent())!.trim();
+  expect(href).toMatch(/^\/profile\?id=\d+$/);
+  await chip.click();
+  await expect(page.getByTestId("profile-hero")).toContainText(name);
+  console.log(`${name} ${href} -> hero renders ${name}`);
+});
+
+test("an anonymous Kudo in a Received feed never carries its real sender", async ({ page }) => {
+  const payloads: string[] = [];
+  page.on("response", async (res) => {
+    if (res.request().method() !== "POST") return;
+    try {
+      payloads.push(await res.text());
+    } catch {
+      /* body already consumed / redirect — nothing to inspect */
+    }
+  });
+
+  await page.goto("/profile?id=1");
+  const ssr = await page.content();
+
+  // Scroll the keyset feed to the end so the seeded anonymous row (kudos 58,
+  // page 3 of receiver 1's 26) actually crosses the wire.
+  for (let i = 0; i < 8; i += 1) {
+    await page.mouse.wheel(0, 20_000);
+    await page.waitForTimeout(700);
+    if (await page.getByTestId("profile-feed-end").isVisible().catch(() => false)) break;
+  }
+  const total = await cards(page).count();
+  console.log(`feed loaded ${total} cards; ${payloads.length} action payloads captured`);
+  expect(total).toBe(26);
+
+  const masked = cards(page).filter({ hasText: "Ẩn danh" });
+  await expect(masked).toHaveCount(1);
+  const card = masked.first();
+
+  // The masked card carries no sender LINK at all (`id: 0` routes it to
+  // AnonymousSenderChip), so no `?id=` can leak the real sender.
+  await expect(card.getByTestId("kudos-sender")).toHaveCount(0);
+  const hrefs = await card.locator("a").evaluateAll((els) =>
+    els.map((e) => e.getAttribute("href")),
+  );
+  console.log(`masked card links: ${JSON.stringify(hrefs)}`);
+  expect(hrefs.some((h) => h?.includes("id=2"))).toBe(false);
+
+  // `response.text()` hands back latin1-decoded bytes here, so re-encode
+  // before matching any Vietnamese string.
+  const corpus = Buffer.from(ssr + payloads.join("\n"), "latin1").toString("utf8");
+  const at = corpus.indexOf('{"id":58,');
+  expect(at).toBeGreaterThan(-1);
+  const row = corpus.slice(at, at + 700);
+  console.log(`--- kudos 58, as the wired page serialised it ---\n${row.slice(0, 260)}\n---`);
+
+  // PER-ROW, field by field. A whole-payload scan for the sender's NAME is
+  // invalid twice over: "Huỳnh Dương Xuân" is a strict PREFIX of receiver 1's
+  // own name, and sunner 2's four NON-anonymous sends legitimately name them
+  // on this very page. The guarantee is per row, not per person.
+  expect(row).toContain('"sender":{"id":0');
+  expect(row).toContain('"fullName":"Ẩn danh"');
+  expect(row).toContain('"department":""');
+  const senderObject = row.slice(row.indexOf('"sender":{'), row.indexOf('"receiver":{'));
+  console.log(`sender object: ${senderObject}`);
+  for (const leak of ['"id":2', "CEVC10", "Legend Hero", "Huỳnh"]) {
+    expect(senderObject).not.toContain(leak);
+  }
+  expect(senderObject).toContain('"badgeTooltip":null');
+
+  // And the mask is not a page-wide blanket: the same feed still names sunner
+  // 2 on the Kudos they sent openly.
+  expect(corpus).toContain('"sender":{"id":2');
+  console.log("masked row redacted; the same sender's open sends still named");
+});
+```

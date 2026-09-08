@@ -62,11 +62,20 @@ export function SunnerChip({ sunner, role }: { sunner: SunnerView; role: ChipRol
       />
       {/* mm:256:4737 (Frame 477) */}
       <div className="flex w-full min-w-0 flex-col items-start gap-0.5">
-        {/* mm:256:4735 — accessible name = the person's name (K-9); href is
-            the fixed literal, never built from a field. */}
+        {/* mm:256:4735 — accessible name = the person's name (K-9). The href
+            WAS the fixed literal "/profile"; F006 (FR-003, phase 09) makes it
+            carry the viewed Sunner's id, because a profile route nothing links
+            to is dead surface. That reversal is recorded in
+            `plans/260908-0854-profile-ban-than/clarifications.md` premise 3
+            and narrows K-9's ratified assertion to `/profile?id=\d+$`.
+            The `id > 0` guard is the anonymity backstop: `map-kudos-card.ts`
+            redacts a masked sender to the `id: 0` stub, and `kudos-card.tsx`
+            already routes those rows to `AnonymousSenderChip` (no link at
+            all) — so the guard is unreachable today and exists so a future
+            caller cannot leak `?id=0` into a URL. */}
         <Link
           data-testid={NAME_TESTID[role]}
-          href="/profile"
+          href={sunner.id > 0 ? `/profile?id=${sunner.id}` : "/profile"}
           className="w-full truncate text-center text-base leading-6 font-bold tracking-[0.15px] text-[#00101A] hover:underline"
         >
           {sunner.fullName}

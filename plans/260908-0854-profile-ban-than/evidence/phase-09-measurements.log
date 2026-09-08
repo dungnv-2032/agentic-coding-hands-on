@@ -1,0 +1,66 @@
+# Phase 09 — integration measurements (2026-09-08)
+
+## 1. Static gates
+$ npm run typecheck  -> EXIT 0
+$ npm run lint       -> EXIT 0 (30 warnings, all pre-existing in e2e/*.spec.ts)
+$ npm run build      -> EXIT 0; every route dynamic (f), so useSearchParams in kudos-board raises no prerender/Suspense issue
+
+## 2. RED first — K-9's narrowed href assertion, BEFORE sunner-chip changed
+$ npx playwright test e2e/kudos-live-board.spec.ts --project=anon -g "K-9"
+  Error: expect(locator).toHaveAttribute(expected) failed
+  Expected pattern: /^\/profile\?id=\d+$/
+  Received string:  "/profile"
+  1 failed, 1 passed (1.5m)   EXIT=1
+
+## 3. RED first — the ?hashtag= deep link, BEFORE kudos-board read it
+  baseline: 10 cards on page 1, first tag = Toàn diện
+  ?hashtag=Toàn diện: 10 cards           <- board ignored the param
+  Error: expect(received).toContain(expected)
+    Expected value: "Toàn diện"
+    Received array: ["Giỏi chuyên môn", "Hiệu suất cao", "Truyền cảm hứng"]
+  1 failed, 1 passed   EXIT=1
+
+## 4. GREEN — the same probes after the change
+  baseline: 10 cards on page 1, first tag = Toàn diện
+  ?hashtag=Toàn diện: 9 cards
+  ✓ board reads ?hashtag= and actually filters on it
+  ✓ unknown / absent ?hashtag= leaves the board in its shipped default state
+  2 passed   EXIT=0
+
+  landed on /kudos?hashtag=Qu%E1%BA%A3n%20l%C3%BD%20xu%E1%BA%A5t%20s%E1%BA%AFc for tag Quản lý xuất sắc
+  board filtered to 8 cards, every one carries Quản lý xuất sắc
+  ✓ profile hashtag click reaches /kudos?hashtag= AND the board filters on it
+  gift row 1: Huỳnh Dương Xuân -> /profile?id=2
+  clicked through to /profile?id=2, hero names Huỳnh Dương Xuân
+  ✓ gift-leaderboard emits a working ?id=
+  Huỳnh Dương Xuân /profile?id=2 -> hero renders Huỳnh Dương Xuân
+  ✓ sunner-chip ?id= resolves to that Sunner's profile
+  4 passed (incl. the anonymity probe below)   EXIT=0
+
+## 5. Anonymity through the WIRED page, per row, at payload level
+  feed loaded 26 cards; 2 action payloads captured   (keyset paging through the real A2 action)
+  masked card links: ["/profile?id=1"]               (receiver only — the masked sender is not a link)
+  --- kudos 58, as the wired page serialised it ---
+  {"id":58,"sender":{"id":0,"fullName":"Ẩn danh","department":"","avatarUrl":"/images/kudos/sample-avatar.png","badge":"New Hero","badgeTooltip":null},"receiver":{"id":1,"fullName":"Huỳnh Dương Xuân Nhật","department":"CEVC10",...
+  sender object: "sender":{"id":0,"fullName":"Ẩn danh","department":"","avatarUrl":"/images/kudos/sample-avatar.png","badge":"New Hero","badgeTooltip":null},
+    - contains none of: "id":2 / CEVC10 / Legend Hero / Huỳnh
+    - badgeTooltip null
+  masked row redacted; the same sender's open sends still named ("sender":{"id":2 IS present elsewhere)
+
+## 6. Security invariant re-read live
+$ select grantee, privilege_type from information_schema.role_table_grants
+    where table_schema='public' and table_name='kudos' and privilege_type='SELECT';
+  postgres     | SELECT
+  service_role | SELECT
+  -> anon / authenticated still have NO select on public.kudos. Nothing restored.
+$ grep -rn '.from("kudos")' lib app   -> nothing
+
+## 7. Suite runs
+$ npx playwright test --project=anon           -> 81 passed (2.1m)   EXIT=0
+$ npx playwright test --project=kudos-authed   -> 62 passed (1.5m)   EXIT=0
+$ npx playwright test --project=profile-authed -> 22 passed, 5 failed (2.0m)   EXIT=1
+    (identical five on two runs, the second after `npx supabase db reset`)
+
+## 8. Database
+$ npx supabase db reset  -> EXIT 0, x3
+final state: kudos=58 anon=1 auth_users=0 linked=0

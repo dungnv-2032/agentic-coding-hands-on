@@ -1,0 +1,23 @@
+=== GREEN: npx playwright test e2e/kudos-live-board.spec.ts --project=anon ===
+  ✓  25 [anon] › e2e/kudos-live-board.spec.ts:604:7 › Kudos Live Board screen — /kudos (anon) › K-23 — Sunner search maxlength is 100 (543ms)
+
+  25 passed (1.8m)
+EXIT=0
+
+=== GREEN: npx playwright test --project=kudos-authed ===
+  ✓   2 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:58:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 (4.1s)
+  ✓   7 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:100:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload (5.8s)
+
+  62 passed (1.5m)
+EXIT=0
+
+=== GREEN: npx playwright test --project=anon (full project, phase step 8) ===
+
+  81 passed (1.6m)
+EXIT=0
+
+=== RED (before this phase, same command as the first block) ===
+  23 failed
+  2 passed (5.4m)
+EXIT=1
+    cause: fetchKudos failed: permission denied for table kudos (lib/kudos/queries.ts:65)

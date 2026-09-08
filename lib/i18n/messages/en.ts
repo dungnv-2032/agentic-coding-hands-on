@@ -3,6 +3,7 @@ import { enAwardSystem } from "./en-award-system";
 import { enHome } from "./en-home";
 import { enKudos } from "./en-kudos";
 import { enKudosCompose } from "./en-kudos-compose";
+import { enProfile } from "./en-profile";
 
 /**
  * English copy, typed against the shared `Dictionary` shape so a missing or
@@ -52,5 +53,6 @@ export const en: Dictionary = {
     body: "This content is being updated. Please check back soon.",
   },
   kudos: enKudos,
+  profile: enProfile,
   kudosCompose: enKudosCompose,
 };

@@ -1,7 +1,7 @@
 {
   "primary_lang": "vi",
   "last_rebuild_sha": "bcb31cb24ad6499e659c751197dedc6a23eb515c",
-  "last_feature_spec_run_sha": "f77aa12e1f45ccc56241623f864bd6a183fa2359",
+  "last_feature_spec_run_sha": "851c4660bcf2716f5d4757094e8afeae1c46ae15",
   "fcode_index_sha": "f4226ac898c3c628abe539b107fde52ec02fbeb15cbfe63c50947ac730cf58e5",
   "doc_shas": {
     "docs/generated/api-map.md": "84c0c4301460ab3dc1c0756ba7d583c5e8df0c485f32ef6a9d298cee52a006f5",
@@ -27,6 +27,7 @@
     "SCR002": "66772d735c7e5e613203b57da5b0851473ab129ce1e5607a062ad00ff18e3817",
     "SCR003": "31144283b1b09345a2da3a1569434133115bace1a21e96533f8e2011c38422f8",
     "SCR004": "5eeea4a1efe43d8694efa32f14732801568d3b8b15bccb9757b5e0a7d92cd74a",
-    "SCR005": "1117a9c219044c1079a4f5b1f794b30a9592de832c9ab913e0ed9f7aba3884bb"
+    "SCR005": "1117a9c219044c1079a4f5b1f794b30a9592de832c9ab913e0ed9f7aba3884bb",
+    "SCR006": "f3f381003de4a93b152ac595a7a7a172839df631daea3fe223d3f4716645c077"
   }
 }

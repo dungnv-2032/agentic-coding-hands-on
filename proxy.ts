@@ -17,6 +17,10 @@ import { updateSession } from "@/lib/supabase/update-session";
  * `startsWith("/kudos")`: the rest of the Kudos surface (`/kudos`,
  * `/kudos/[id]`, `/kudos/secret-box`) is a ratified F004 public read path and
  * must stay reachable without a session (test-contract.md § Route and access).
+ *
+ * `/profile` (F006) is guarded the same way — it is a signed-in identity
+ * surface — and the match is exact-path-or-subpath, never a bare
+ * `startsWith("/profile")` alone: same reasoning as `/kudos/new` above.
  */
 export async function proxy(request: NextRequest) {
   const { response, user } = await updateSession(request);
@@ -45,7 +49,11 @@ export async function proxy(request: NextRequest) {
   };
 
   const isGuarded =
-    pathname.startsWith("/todo") || pathname === "/kudos/new" || pathname.startsWith("/kudos/new/");
+    pathname.startsWith("/todo") ||
+    pathname === "/kudos/new" ||
+    pathname.startsWith("/kudos/new/") ||
+    pathname === "/profile" ||
+    pathname.startsWith("/profile/");
   if (!user && isGuarded) {
     return redirectWithSessionCookies("/login");
   }

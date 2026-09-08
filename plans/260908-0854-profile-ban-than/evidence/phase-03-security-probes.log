@@ -1,0 +1,118 @@
+### environment: supabase=http://127.0.0.1:54321  seeded anonymous kudos id=58  named kudos id=1
+
+### PROBE 1 — kudos_readable exists in pg_views
+ count 
+-------
+     1
+(1 row)
+
+
+### PROBE 2 — anon GET /rest/v1/kudos?select=id,sender_id must ERROR (not 200)
+HTTP 401
+{"code":"42501","details":null,"hint":"Grant the required privileges to the current role with: GRANT SELECT ON public.kudos TO anon;","message":"permission denied for table kudos"}
+
+### PROBE 3 — anon reads the SEEDED ANONYMOUS row through the view: five sender_* columns null
+[{"id":58,"is_anonymous":true,"receiver_id":1,"sender_id":null,"sender_full_name":null,"sender_avatar_url":null,"sender_department_name":null,"sender_kudos_received_baseline":null}]
+
+### PROBE 4 — anon reads a NON-ANONYMOUS row: sender named, and different from the receiver
+[{"id":1,"is_anonymous":false,"sender_full_name":"Huỳnh Dương Xuân Nhật","receiver_id":2}]
+ id |      sender_name      |  receiver_name   | sender_differs_from_receiver 
+----+-----------------------+------------------+------------------------------
+  1 | Huỳnh Dương Xuân Nhật | Huỳnh Dương Xuân | t
+(1 row)
+
+
+### PROBE 5 — as the SENDER's own session, the same anonymous row discloses the real sender
+BEGIN
+                set_config                
+------------------------------------------
+ {"sub" : null, "role" : "authenticated"}
+(1 row)
+
+               note                
+-----------------------------------
+ sender auth_user_id present: NULL
+(1 row)
+
+ROLLBACK
+BEGIN
+INSERT 0 1
+UPDATE 1
+SET
+                              set_config                               
+-----------------------------------------------------------------------
+ {"sub":"11111111-1111-4111-8111-111111111111","role":"authenticated"}
+(1 row)
+
+ id | is_anonymous | sender_id | sender_full_name 
+----+--------------+-----------+------------------
+ 58 | t            |         2 | Huỳnh Dương Xuân
+(1 row)
+
+ROLLBACK
+
+### PROBE 6 — filter on sender_id as anon must be DENIED (no filter oracle)
+BEGIN
+SET
+ERROR:  permission denied for table kudos
+HINT:  Grant the required privileges to the current role with: GRANT SELECT ON public.kudos TO anon;
+   set_config    
+-----------------
+
+### PROBE 7 — kudos_likes INSERT as authenticated still succeeds (heart toggle alive)
+BEGIN
+INSERT 0 1
+SET
+                              set_config                               
+-----------------------------------------------------------------------
+ {"sub":"22222222-2222-4222-8222-222222222222","role":"authenticated"}
+(1 row)
+
+ kudos_id |               user_id                
+----------+--------------------------------------
+        1 | 22222222-2222-4222-8222-222222222222
+(1 row)
+
+INSERT 0 1
+ROLLBACK
+
+### PROBE 8 — create_kudos() as authenticated still returns an id (F005 write path alive)
+BEGIN
+INSERT 0 1
+SET
+                                                set_config                                                
+----------------------------------------------------------------------------------------------------------
+ {"sub":"33333333-3333-4333-8333-333333333333","role":"authenticated","email":"probe-writer@example.com"}
+(1 row)
+
+ new_kudos_id 
+--------------
+           59
+(1 row)
+
+ROLLBACK
+
+### PROBE 9 — seed carries an anonymous row
+grep -c is_anonymous supabase/seed.sql = 2
+ anonymous_rows 
+----------------
+              1
+(1 row)
+
+
+### grant re-read: select on public.kudos
+    grantee    | privilege_type |   table_name   
+---------------+----------------+----------------
+ postgres      | SELECT         | kudos
+ service_role  | SELECT         | kudos
+ anon          | SELECT         | kudos_readable
+ authenticated | SELECT         | kudos_readable
+ postgres      | SELECT         | kudos_readable
+ service_role  | SELECT         | kudos_readable
+(6 rows)
+
+    grantee    | privilege_type | column_name 
+---------------+----------------+-------------
+ authenticated | SELECT         | id
+(1 row)
+

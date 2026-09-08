@@ -212,6 +212,50 @@ from (values
 ) as recipients(name, rank);
 
 -- ---------------------------------------------------------------------------
+-- kudos — Group D: ONE anonymous row, so the masking the reader view
+-- (20260908100000_profile_reader_view.sql) enforces is observable at all.
+-- Measured before adding it: `select count(*) filter (where is_anonymous)
+-- from public.kudos` returned 0, which made GUI_006's masking and SEC_001's
+-- premise untestable — the mask had no row to mask.
+--
+-- Sender `Huỳnh Dương Xuân` is an existing corpus person (the frame's own
+-- receiver, already reused as Group C's sender), not an invented one.
+-- Receiver `Huỳnh Dương Xuân Nhật` is the frame viewer, so the row is
+-- reachable at `/profile?id=1` — a masked row on an empty profile would prove
+-- nothing.
+--
+-- `anonymous_name` stays NULL ON PURPOSE. The design CSV publishes no
+-- anonymous display name, so inventing one would be inventing design data;
+-- leaving it NULL exercises the shipped fallback
+-- ANONYMOUS_FALLBACK_LABEL = 'Ẩn danh' (`lib/kudos/board-data.ts`).
+--
+-- heart_baseline 1 matches Group B, keeping this row far below Group A's
+-- floor of 52 — it can never enter the top-5 highlight carousel and so cannot
+-- move F004's `.first()`-based K-9. campaign and message are the same frame
+-- literals every other group reuses.
+--
+-- sent_at continues Group C's `- (n) * interval '6 hours'` walk (Group C used
+-- 60..66) at 67, so total ordering stays deterministic and this row sorts
+-- oldest.
+--
+-- Verified safe against F004's suite: no e2e assertion fixes an absolute
+-- `kudos-card` count, and SIDEBAR_STATS asserts labels only, not the verbatim
+-- `25`s.
+-- ---------------------------------------------------------------------------
+insert into public.kudos
+  (sender_id, receiver_id, campaign, message, sent_at, heart_baseline, is_anonymous, anonymous_name)
+values (
+  (select id from public.sunners where full_name = 'Huỳnh Dương Xuân'),
+  (select id from public.sunners where full_name = 'Huỳnh Dương Xuân Nhật'),
+  'IDOL GIỚI TRẺ',
+  'Cảm ơn người em bình thường nhưng phi thường :D Cảm ơn sự chăm chỉ, cần mẫn của em đã tạo động lực rất nhiều cho team, để luôn nhắc mình luôn phải nỗ lực hơn nữa trong công việc. <3 và cuộc sống...',
+  timestamptz '2025-10-30 10:00:00+07' - 67 * interval '6 hours',
+  1,
+  true,
+  null
+);
+
+-- ---------------------------------------------------------------------------
 -- kudos_hashtags — generated, not 150 hand-written literal rows (phase-03
 -- plan § Risk Assessment: keeps the file readable and the pattern DRY).
 -- Each kudos gets 1-3 tags; tag_position cycles by kudos.id so every one of

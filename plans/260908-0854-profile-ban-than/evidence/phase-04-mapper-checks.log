@@ -1,0 +1,89 @@
+=== phase 04 mapper behavioural checks ===
+Ran as: npx tsc lib/kudos/{map-kudos-card,derive,view-model,compose-contract,queries}.ts --outDir <tmp>
+         --module commonjs --target es2020 --moduleResolution node --skipLibCheck --esModuleInterop
+         (the emitted require("@/lib/kudos/derive") rewritten to "./derive"), then: node check.js
+Kept as a transcript, not as a .js file in the repo: the repo has no unit-test runner, and a
+CJS script under plans/ trips eslint's no-require-imports (measured: it turned npm run lint red).
+
+--- check.js ---
+const { toKudosCardView, ANONYMOUS_FALLBACK_LABEL } = require("./map-kudos-card");
+
+const base = {
+  id: 58, campaign: "IDOL GIỚI TRẺ", message: "m", sent_at: "2025-10-13T09:00:00+00:00",
+  heart_baseline: 1, message_format: "plain",
+  receiver: { id: 1, full_name: "Nhật", avatar_url: "/a.png", kudos_received_baseline: 20, department: { name: "CEVC10" } },
+  hashtags: [], attachments: [], likes: [{ count: 0 }],
+};
+// exactly what kudos_readable returns for an anonymous row it MASKED
+const masked = { ...base, is_anonymous: true, anonymous_name: null,
+  sender_id: null, sender_full_name: null, sender_avatar_url: null,
+  sender_kudos_received_baseline: null, sender_department_name: null };
+// ... and for the same row read by its own sender (the CASE reveals it)
+const revealed = { ...base, is_anonymous: true, anonymous_name: null,
+  sender_id: 2, sender_full_name: "Huỳnh Dương Xuân", sender_avatar_url: "/b.png",
+  sender_kudos_received_baseline: 7, sender_department_name: "CEVC10" };
+const plain = { ...base, id: 1, is_anonymous: false, anonymous_name: null,
+  sender_id: 2, sender_full_name: "Huỳnh Dương Xuân", sender_avatar_url: "/b.png",
+  sender_kudos_received_baseline: 7, sender_department_name: "CEVC10" };
+
+const ctx = (sunnerId, authed) => ({
+  viewerSunnerId: sunnerId, viewerIsAuthenticated: authed,
+  likedKudosIds: new Set(), receivedCountBySunnerId: new Map([[1, 5], [2, 3]]),
+});
+
+let failed = 0;
+function check(name, actual, expected) {
+  const ok = JSON.stringify(actual) === JSON.stringify(expected);
+  if (!ok) failed++;
+  console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok ? "" : `\n      expected ${JSON.stringify(expected)}\n      actual   ${JSON.stringify(actual)}`}`);
+}
+const shape = (c) => ({ senderId: c.sender.id, senderName: c.sender.fullName, senderDept: c.sender.department,
+  label: c.anonymousSenderLabel, sentAnonymously: c.sentAnonymously, canLike: c.canLike, owned: c.isOwnedByViewer });
+
+check("A non-anonymous row, other viewer: real sender, no chip, badge from baseline+received",
+  { ...shape(toKudosCardView(plain, ctx(1, true))), badge: toKudosCardView(plain, ctx(1, true)).sender.badge },
+  { senderId: 2, senderName: "Huỳnh Dương Xuân", senderDept: "CEVC10", label: null, sentAnonymously: false, canLike: true, owned: false, badge: "Rising Hero" });
+
+check("B masked row, authed viewer with NO sunners row: chip, heart still ENABLED (F004 parity)",
+  shape(toKudosCardView(masked, ctx(null, true))),
+  { senderId: 0, senderName: ANONYMOUS_FALLBACK_LABEL, senderDept: "", label: ANONYMOUS_FALLBACK_LABEL, sentAnonymously: true, canLike: true, owned: false });
+
+check("C masked row, anonymous visitor: chip, heart disabled",
+  shape(toKudosCardView(masked, ctx(null, false))),
+  { senderId: 0, senderName: ANONYMOUS_FALLBACK_LABEL, senderDept: "", label: ANONYMOUS_FALLBACK_LABEL, sentAnonymously: true, canLike: false, owned: false });
+
+check("D revealed row on the BOARD (revealOwnAnonymous off): author still sees the chip, cannot heart it",
+  shape(toKudosCardView(revealed, ctx(2, true))),
+  { senderId: 0, senderName: ANONYMOUS_FALLBACK_LABEL, senderDept: "", label: ANONYMOUS_FALLBACK_LABEL, sentAnonymously: true, canLike: false, owned: true });
+
+check("E revealed row on the profile SENT list (revealOwnAnonymous on): author shown, still marked anonymous",
+  shape(toKudosCardView(revealed, ctx(2, true), { revealOwnAnonymous: true })),
+  { senderId: 2, senderName: "Huỳnh Dương Xuân", senderDept: "CEVC10", label: null, sentAnonymously: true, canLike: false, owned: true });
+
+check("F revealOwnAnonymous cannot unmask SOMEONE ELSE's anonymous Kudo",
+  shape(toKudosCardView(masked, ctx(9, true), { revealOwnAnonymous: true })),
+  { senderId: 0, senderName: ANONYMOUS_FALLBACK_LABEL, senderDept: "", label: ANONYMOUS_FALLBACK_LABEL, sentAnonymously: true, canLike: true, owned: false });
+
+check("G a published anonymous_name is used; whitespace-only falls back",
+  [toKudosCardView({ ...masked, anonymous_name: "Người giấu tên" }, ctx(null, false)).anonymousSenderLabel,
+   toKudosCardView({ ...masked, anonymous_name: "   " }, ctx(null, false)).anonymousSenderLabel],
+  ["Người giấu tên", ANONYMOUS_FALLBACK_LABEL]);
+
+check("H a non-anonymous row whose sender columns arrive null degrades to the chip, never to a fake identity",
+  shape(toKudosCardView({ ...plain, sender_id: null, sender_full_name: null, sender_avatar_url: null, sender_kudos_received_baseline: null, sender_department_name: null }, ctx(1, true))),
+  { senderId: 0, senderName: ANONYMOUS_FALLBACK_LABEL, senderDept: "", label: ANONYMOUS_FALLBACK_LABEL, sentAnonymously: false, canLike: true, owned: false });
+
+console.log(failed === 0 ? "\nALL 8 MAPPER CHECKS PASS" : `\n${failed} MAPPER CHECK(S) FAILED`);
+process.exit(failed === 0 ? 0 : 1);
+--- output ---
+PASS  A non-anonymous row, other viewer: real sender, no chip, badge from baseline+received
+PASS  B masked row, authed viewer with NO sunners row: chip, heart still ENABLED (F004 parity)
+PASS  C masked row, anonymous visitor: chip, heart disabled
+PASS  D revealed row on the BOARD (revealOwnAnonymous off): author still sees the chip, cannot heart it
+PASS  E revealed row on the profile SENT list (revealOwnAnonymous on): author shown, still marked anonymous
+PASS  F revealOwnAnonymous cannot unmask SOMEONE ELSE's anonymous Kudo
+PASS  G a published anonymous_name is used; whitespace-only falls back
+PASS  H a non-anonymous row whose sender columns arrive null degrades to the chip, never to a fake identity
+
+ALL 8 MAPPER CHECKS PASS
+MAPPER_CHECK_EXIT=0

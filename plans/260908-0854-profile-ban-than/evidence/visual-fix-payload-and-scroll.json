@@ -1,0 +1,70 @@
+{
+  "self": {
+    "sentLabelHitCountInHtml": 1,
+    "receivedHitsInHtml": 2,
+    "emptySentLabelInPayload": false,
+    "renderedOptions": [
+      "Đã nhận (0)",
+      "Đã gửi (0)"
+    ],
+    "optionCount": 2,
+    "triggerLabel": "Đã nhận (0)",
+    "bodyHasSentText": true
+  },
+  "id2-other": {
+    "sentLabelHitCountInHtml": 1,
+    "receivedHitsInHtml": 3,
+    "emptySentLabelInPayload": true,
+    "renderedOptions": [
+      "Đã nhận (75)"
+    ],
+    "optionCount": 1,
+    "triggerLabel": "Đã nhận (75)",
+    "bodyHasSentText": false
+  },
+  "id1-populated": {
+    "sentLabelHitCountInHtml": 1,
+    "receivedHitsInHtml": 3,
+    "emptySentLabelInPayload": true,
+    "renderedOptions": [
+      "Đã nhận (26)"
+    ],
+    "optionCount": 1,
+    "triggerLabel": "Đã nhận (26)",
+    "bodyHasSentText": false
+  },
+  "headerOnScroll": {
+    "w1440": {
+      "viewportTop": 0,
+      "height": 76,
+      "width": 1440,
+      "scrollY": 1500,
+      "elementAtCenter": "P",
+      "elementUnderHeader": "HEADER"
+    },
+    "w1024": {
+      "viewportTop": 0,
+      "height": 124,
+      "width": 1024,
+      "scrollY": 1500,
+      "elementAtCenter": "DIV",
+      "elementUnderHeader": "HEADER"
+    },
+    "w768": {
+      "viewportTop": 0,
+      "height": 124,
+      "width": 768,
+      "scrollY": 1500,
+      "elementAtCenter": "SECTION",
+      "elementUnderHeader": "HEADER"
+    },
+    "w375": {
+      "viewportTop": 0,
+      "height": 244,
+      "width": 375,
+      "scrollY": 1500,
+      "elementAtCenter": null,
+      "elementUnderHeader": null
+    }
+  }
+}

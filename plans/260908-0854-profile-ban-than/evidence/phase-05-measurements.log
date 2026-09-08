@@ -1,0 +1,223 @@
+=== Phase 05 — profile data layer: measurement transcript ===
+
+The repo has no unit-test runner (`package.json` scripts: dev/build/start/lint/typecheck/
+test:e2e/db:types), and adding one is a package.json change outside this phase's ownership.
+So the REAL modules were compiled to CJS and exercised against the REAL local Supabase over
+HTTP — stronger than phase 04's pure-function transcript, because every number below came
+back through PostgREST and `public.kudos_readable`, not from a fabricated row object.
+
+How it was built and run (scratchpad only; nothing under plans/ is a .js file, which is what
+turned `npm run lint` red in phase 04):
+
+  npx tsc -p <scratchpad>/tsconfig.harness.json      # rootDir = repo root, paths { "@/*": ["./*"] }
+    files: lib/profile/{profile-queries,profile-data}.ts
+           lib/kudos/{queries,map-kudos-card,derive,viewer}.ts
+           app/profile/_actions/fetch-profile-kudos-page.ts
+  find <out> -name '*.js' -exec sed -i 's|require("@/|require("<out>/|g' {} +
+  # ONE substitution, and only one: `@/lib/supabase/server`'s createClient, whose `cookies()`
+  # needs a Next request scope. The action module itself is the real compiled file, so its
+  # validation branches, its `resolveViewer()` call and its column choice are all real.
+  sed -i 's|require("<out>/lib/supabase/server")|require("<scratchpad>/server-stub")|g' <out>/app/profile/_actions/*.js
+
+Sessions are real: `POST /auth/v1/signup` through supabase-js, and the SEC_002 author composes
+through F005's real `create_kudos()` RPC. Ground truth is read as superuser via
+`docker exec supabase_db_my-app psql` (psql is not on PATH in this WSL environment).
+
+DATABASE STATE: `npx supabase db reset` was run BEFORE any measurement (exit 0, all three
+migrations applied, seed loaded), verified at
+`kudos=58 anon=1 auth_users=0 linked=0`. Obligation D from phase 04's handover: F005's compose
+e2e had left `sunners.id = 10` linked to a real auth user, so the database was NOT in seed
+state; it is now, and every number below is reproducible from a reset.
+
+==============================================================================
+== PART 0 — RED, captured before any phase-05 file existed
+==============================================================================
+=== RED — 2026-09-08T05:39:19Z — before any phase-05 file exists ===
+error TS6053: File 'app/profile/_actions/fetch-profile-kudos-page.ts' not found.
+error TS6053: File 'lib/profile/profile-data.ts' not found.
+error TS6053: File 'lib/profile/profile-queries.ts' not found.
+--- node check-read.js ---
+node:internal/modules/cjs/loader:1568
+  throw err;
+  ^
+
+Error: Cannot find module '/tmp/claude-1000/-mnt-c-Users-nguyen-van-dungc-Desktop-project-my-app/2460e1ac-abf3-462a-88ec-e9b8f760a1d2/scratchpad/h/out/lib/profile/profile-queries'
+Require stack:
+
+48 read-only checks + 21 mutating checks were written first; all 69 were unrunnable
+because the three modules did not exist. That is the RED.
+
+==============================================================================
+== PART 1 — seed-state measurements (no mutation)   node check-read.js
+==============================================================================
+ground truth: receiver 1 has 26 rows, hearts 26
+ground truth id order: 26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,58
+  page 1: 10 cards, hasMore=true, nextCursor={"sentAt":"2025-10-21T09:00:00+00:00","id":35}
+  page 2: 10 cards, hasMore=true, nextCursor={"sentAt":"2025-10-18T21:00:00+00:00","id":45}
+  page 3: 6 cards, hasMore=false, nextCursor=null
+  page ids: 26|27|28|29|30|31|32|33|34|35  ||  36|37|38|39|40|41|42|43|44|45  ||  46|47|48|49|50|58
+PASS  K1a page sizes are 10/10/6  — [10,10,6]
+PASS  K1b union has no duplicate  — 26 rows, 26 distinct
+PASS  K1c union skips nothing  — 26 vs 26
+PASS  K1d order identical to SQL row-comparison ground truth
+PASS  K1e last page hasMore=false and nextCursor=null
+PASS  K1f boundary: last id of page 1 != first id of page 2  — 35 then 36
+PASS  K2 reads FEED_PAGE_SIZE+1 rows, returns 10  — raw 11 → cards 10
+PASS  K3a the seeded anonymous kudo IS in the received feed
+PASS  K3b its sender is the redacted stub  — {"id":0,"fullName":"Ẩn danh","department":"","avatarUrl":"/images/kudos/sample-avatar.png","badge":"New Hero","badgeTooltip":null}
+PASS  K3c the real sender's id/department/tier are absent from that card  — real sender = 2|Huỳnh Dương Xuân|baseline 50 (Legend Hero)|CEVC10
+PASS  K3d no ANONYMOUS card names the real sender, while their open sends still do  — 26 cards, 4 open sends by sunner 2 shown by name, 1 anonymous one masked
+PASS  K3e exactly one masked card across all three pages
+PASS  K3f sentAnonymously true on exactly that one card
+PASS  K4a fetchProfileSunner selects only allowed columns  — ["avatar_url","department","full_name","id","kudos_received_baseline","secret_box_opened_count","secret_box_unopened_count"]
+PASS  K4b unknown sunner returns null, not a throw
+PASS  K4c received aggregate matches SQL  — {"count":26,"hearts":26}
+PASS  K4d another Sunner's anonymous send is not even countable through the view  — truth 12, anon sees 11
+PASS  K4e received-count map matches SQL for the page's sunners  — [[2,25],[1,26],[3,1]]
+PASS  K4f empty id list issues no query and returns an empty map
+PASS  K5 sender badge tier uses the full received count, not the page's  — receiver badge Super Hero (26 received)
+PASS  K6a found sentinel
+  model: {"isSelf":false,"hero":{"sunnerId":1,"fullName":"Huỳnh Dương Xuân Nhật","avatarUrl":"/images/kudos/sample-avatar.png","department":"CEVC10","badge":"Super Hero","badgeTooltip":"Sunner đã nhận được 20 Kudos và chứng minh sức ảnh hưởng của mình qua những hành động lan tỏa tích cực mỗi ngày."},"stats":null,"writeKudoTargetId":1,"counts":{"received":26,"sent":null},"initialPage":{"n":10,"hasMore":true,"nextCursor":{"sentAt":"2025-10-21T09:00:00+00:00","id":35}},"unlockedBadgeSlots":[]}
+PASS  K6b isSelf false, stats null, counts.sent null, writeKudoTargetId 1
+PASS  K6c counts.received = baseline + rows  — 26
+PASS  K6d hero badge from badgeTierFor(26)
+PASS  K6e hero carries department and avatar  — Huỳnh Dương Xuân Nhật / CEVC10
+PASS  K6f initialPage is page 1 of RECEIVED
+PASS  K6g unknown target → not-found sentinel
+PASS  K6h lowest seeded received count still gets the lowest tier, not null  — sunner 3 received = 1, badge New Hero
+PASS  K7a sparse self is 'found'
+  sparse model: {"isSelf":true,"hero":{"sunnerId":null,"fullName":"phase05-1788847795166","department":null,"avatarUrl":"/images/kudos/sample-avatar.png","badge":null,"badgeTooltip":null},"stats":{"kudosReceived":0,"kudosSent":0,"heartsReceived":0,"secretBoxOpened":0,"secretBoxUnopened":0},"writeKudoTargetId":null,"counts":{"received":0,"sent":0},"initialPage":{"cards":[],"nextCursor":null,"hasMore":false},"unlockedBadgeSlots":[]}
+PASS  K7b name is the email LOCAL-PART, never the address  — phase05-1788847795166
+PASS  K7c avatar is the sample fallback
+PASS  K7d department null, badge null, sunnerId null
+PASS  K7e isSelf true, writeKudoTargetId null, stats all zero, counts 0/0
+PASS  K7f initialPage empty
+PASS  K7g NO sunners row was provisioned by the read
+PASS  K7h no auth uuid in the model
+PASS  K8a action, received, page 1
+PASS  K8b action page 2 does not repeat page 1  — 26,27,28,29,30,31,32,33,34,35 then 36,37,38,39,40,41,42,43,44,45
+PASS  K8c SC-003 — two different targetSunnerId, identical 'sent' payload  — {"cards":[],"nextCursor":null,"hasMore":false}
+PASS  K8d sent + callerSunnerId null → empty page, no error
+PASS  K8e malformed input → empty page: {"targetSunnerId":1,"direction":"SENT","cursor":null}
+PASS  K8e malformed input → empty page: {"targetSunnerId":1,"direction":"received","cursor":{"sentAt":"2025-10-23T15:00:00+00:00,id.gt.0)","id":26}}
+PASS  K8e malformed input → empty page: {"targetSunnerId":1,"direction":"received","cursor":{"sentAt":"banana","id":26}}
+PASS  K8e malformed input → empty page: {"targetSunnerId":1,"direction":"received","cursor":{"sentAt":"2025-10-23T15:00:00+00:00","id":1.5}}
+PASS  K8e malformed input → empty page: {"targetSunnerId":1.5,"direction":"received","cursor":null}
+PASS  K8e malformed input → empty page: {"targetSunnerId":null,"direction":"received","cursor":null}
+PASS  K8f isValidFeedCursor rejects a filter-injection payload
+PASS  K8g emptyFeedPage is a fresh object each call
+
+48 passed, 0 failed
+
+==============================================================================
+== PART 2 — measurements that require mutation      node check-mutate.js
+==============================================================================
+Each mutation is undone in-run (tie rows deleted) and the whole database is restored
+by a final `npx supabase db reset` afterwards — verified kudos=58 anon=1 auth_users=0
+linked=0.
+
+before: 58 kudos rows, 1 auth users
+  inserted 12 rows at a single sent_at for receiver 3; receiver 3 now has 13 rows
+  ties: 12 rows share 2025-11-01 12:00:00+00
+  page 1: 70,69,68,67,66,65,64,63,62,61  hasMore=true nextCursor={"sentAt":"2025-11-01T12:00:00+00:00","id":61}
+  page 2: 60,59,51  hasMore=false nextCursor=null
+PASS  M1a all 13 rows come back across the pages  — 13 vs 13
+PASS  M1b no duplicate across the tie boundary
+PASS  M1c order identical to the SQL row-comparison ground truth  — got 70,69,68,67,66,65,64,63,62,61,60,59,51
+PASS  M1d page 1's last row and page 2's first row SHARE a sent_at (the boundary is really a tie)  — 61 | 60
+PASS  M1e the degraded `sent_at.lt`-only predicate DOES drop the tied rows  — sent_at.lt alone returns 1 rows where the correct predicate returns 3: ids 51
+  tie rows removed; kudos count back to 58
+PASS  M2a resolveViewer sees the linked sunners row  — {"sunnerId":1}
+  self model: isSelf=true stats={"kudosReceived":26,"kudosSent":25,"heartsReceived":26,"secretBoxOpened":25,"secretBoxUnopened":25} counts={"received":26,"sent":25} writeKudoTargetId=null
+PASS  M2b stats non-null iff isSelf, and every number matches SQL  — SQL truth 26/25/26/25/25
+PASS  M2c counts.sent non-null on the self face, writeKudoTargetId null
+PASS  M2d Secret Box reads the real columns (25/25 for the frame viewer, not a literal)
+PASS  M2e no auth uuid or email anywhere in the self model
+  composed kudos 71 anonymously; author provisioned as sunner 10
+PASS  M3a create_kudos provisioned a sunners row for the author (write path, not this layer)
+  own Sent list: 1 card(s) — {"id":71,"sender":{"id":10,"fullName":"phase05-sec002-1788847800176","department":"Unassigned","avatarUrl":"/images/kudos/sample-avatar.png","badge":"New Hero","badgeTooltip":null},"anonymousSenderLabel":null,"sentAnonymously":true,"canLike":false,"isOwnedByViewer":true}
+PASS  M3b SEC_002 — the viewer's OWN anonymous Kudo IS in their own Sent list
+PASS  M3c it names the viewer as the author, not the masked alias  — sender "phase05-sec002-1788847800176" / label null
+PASS  M3d and is still marked as sent anonymously (FR-602, rendered by nothing)
+PASS  M3e the author still cannot heart their own Kudo (BR-003 survives the reveal)
+  same kudos in receiver 1's feed as an anonymous visitor: {"id":71,"sender":{"id":0,"fullName":"Ẩn danh","department":"","avatarUrl":"/images/kudos/sample-avatar.png","badge":"New Hero","badgeTooltip":null},"anonymousSenderLabel":"Ẩn danh"}
+PASS  M3f the SAME row is masked for everybody else, through the same code  — author local-part "phase05-sec002-1788847800176" absent from the masked card
+PASS  M3g revealOwnAnonymous off (the Received face) keeps the mask even for the author  — board/Received parity — only the Sent list reveals
+PASS  M4 the caller's own sent count includes their anonymous send (counter/list parity)  — count 1, SQL 1, cards 1
+  auto-provisioned sunner profile: {"hero":{"sunnerId":10,"fullName":"phase05-sec002-1788847800176","avatarUrl":"/images/kudos/sample-avatar.png","department":"Unassigned","badge":null,"badgeTooltip":null},"counts":{"received":0,"sent":1}}
+PASS  M5 badge is NULL at 0 received (not the 'New Hero' badgeTierFor(0) returns)
+PASS  M5b the auto-provisioned department is carried through, not nulled  — Unassigned
+PASS  M6 SC-003 with a non-empty Sent list — targetSunnerId changes nothing  — all three return the caller's own 1 card(s): id 71
+after: 59 kudos rows, 3 auth users — restored by the db reset that follows
+
+21 passed, 0 failed
+
+==============================================================================
+== PART 3 — the seed has NO duplicate sent_at at all
+==============================================================================
+This is why PART 2's tie rows had to be constructed. Measured on the reset database:
+
+  select sent_at, count(*) from public.kudos group by 1 having count(*) > 1;
+ sent_at | count 
+---------+-------
+(0 rows)
+
+The phase file's Key Insight 1 says 'the seed generates many' equal sent_at values.
+It does not generate any. So a keyset proof over seed data alone CANNOT distinguish the
+correct predicate from the degraded `sent_at.lt`-only form — hence M1a-M1e above.
+
+==============================================================================
+== PART 4 — static success criteria
+==============================================================================
+$ grep -rnE "auth_user_id|\.email" lib/profile app/profile/_actions
+lib/profile/profile-data.ts:104:  const localPart = typeof user.email === "string" ? user.email.split("@")[0] : "";
+lib/profile/profile-queries.ts:12: * `sunners` read selects only the columns FR-603 allows — no `auth_user_id`,
+  → the email is touched in exactly ONE place, the local-part fallback.
+    The only other hit is the word inside a comment. No auth uuid is read at all.
+
+$ grep -rn ".from(\"kudos\")" lib/profile app/profile
+(nothing — the base table is never read)
+
+$ grep -rn ".from(\"kudos_readable\")" lib/profile app/profile/_actions
+lib/profile/profile-queries.ts:82:    .from("kudos_readable")
+lib/profile/profile-queries.ts:97:    .from("kudos_readable")
+lib/profile/profile-queries.ts:121:    .from("kudos_readable")
+lib/profile/profile-queries.ts:184:    .from("kudos_readable")
+
+$ grep -rn "TODO|FIXME" lib/profile app/profile/_actions
+(none)
+
+$ grep -nE ":\s*any|as any" (the three owned files)
+lib/profile/profile-data.ts:97:  // Supabase types `user_metadata` as `{[key: string]: any}`; narrowing it to
+
+$ wc -l (the three owned files)
+  199 lib/profile/profile-queries.ts
+  199 lib/profile/profile-data.ts
+   84 app/profile/_actions/fetch-profile-kudos-page.ts
+  482 total
+
+==============================================================================
+== PART 5 — checks and F004 regression, on the FINAL code
+==============================================================================
+npm run typecheck                        EXIT=0
+npm run lint                             EXIT=0  (30 warnings, all pre-existing in e2e/*.spec.ts)
+npx supabase db reset                    EXIT=0
+npx playwright test --project=anon        -> 81 passed (2.3m)   EXIT=0
+npx playwright test --project=kudos-authed -> 62 passed (1.8m)  EXIT=0
+
+Same totals phase 04 reported (81 / 62), so nothing regressed. Note: on the FIRST full
+--project=anon run, e2e/callback-security.spec.ts:91 ('next as protocol-relative
+//evil.com is rejected') failed once with 80 passed / 1 failed. It passed 8/8 when that
+spec was re-run alone, and passed in both subsequent full runs. It is a flake in a spec
+this phase does not touch (no phase-05 module is imported by anything yet — the three
+files are dead code until phase 09 wires them), recorded rather than quietly dropped.
+
+=============================================================================
+== PART 6 — database handed back in seed state
+=============================================================================
+`--project=kudos-authed` runs F005's compose suite, which writes. So a final
+`npx supabase db reset` (EXIT=0) was run after the suites, and the state read back:
+
+  kudos=58 anon=1 auth_users=0 linked=0
+
+Nothing is linked to `sunners.id = 10` any more. Phase 09 inherits a clean seed.
