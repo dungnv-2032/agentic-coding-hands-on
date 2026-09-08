@@ -1,0 +1,103 @@
+
+Running 81 tests using 6 workers
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788857769246-515545-kxutsk@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (3.9s)
+  ✓   4 [anon] › e2e/callback-security.spec.ts:21:7 › Callback Security (anon project) › Host: evil.com on error branch is rejected (unauthenticated exploit) (727ms)
+  ✓   8 [anon] › e2e/callback-security.spec.ts:41:7 › Callback Security (anon project) › Host: evil.com with neither code nor error is rejected (1.1s)
+  ✓   9 [anon] › e2e/callback-security.spec.ts:60:7 › Callback Security (anon project) › x-forwarded-host: evil.com is rejected (455ms)
+  ✓  10 [anon] › e2e/callback-security.spec.ts:76:7 › Callback Security (anon project) › next as absolute URL to evil.com is rejected (179ms)
+  ✓  11 [anon] › e2e/callback-security.spec.ts:91:7 › Callback Security (anon project) › next as protocol-relative //evil.com is rejected (199ms)
+  ✓  12 [anon] › e2e/callback-security.spec.ts:108:7 › Callback Security (anon project) › next with backslash variant /\evil.com is rejected (204ms)
+  ✓  13 [anon] › e2e/callback-security.spec.ts:126:7 › Callback Security (anon project) › next as a valid same-origin path is accepted in redirect (220ms)
+  ✓   5 [anon] › e2e/login-screen.spec.ts:5:7 › Login Screen (anon project) › C1 [FR-201, US003] — renders header, hero, ROOT FURTHER wordmark, tagline, login button, locale selector, and footer (3.4s)
+  ✓   6 [anon] › e2e/homepage.spec.ts:5:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-0 [FR-100] — homepage loads publicly without authentication (3.6s)
+  ✓   7 [anon] › e2e/profile-anon.spec.ts:16:7 › Profile screen — access control (anon) › ACC_001 — /profile redirects unauthenticated visitor to /login (3.4s)
+  ✓   3 [anon] › e2e/kudos-live-board.spec.ts:181:7 › Kudos Live Board screen — /kudos (anon) › K-0 — route loads publicly without redirect and renders h1 (3.7s)
+  ✓  15 [anon] › e2e/login-screen.spec.ts:41:7 › Login Screen (anon project) › C2 [FR-402, DEC-001] — displays error message when redirected with error=oauth_failed (2.2s)
+  ✓  14 [anon] › e2e/route-guard.spec.ts:6:7 › Route Guards (anon project) › C6 [FR-101, FR-602, SC-001] — unauthenticated access to /todo redirects to /login (2.4s)
+  ✓   2 [anon] › e2e/award-system.spec.ts:138:7 › Award System screen — /awards-information (anon) › ID-0/2 — route loads without redirect and the header nav item reaches it and is aria-current=page (5.8s)
+  ✓  17 [anon] › e2e/profile-anon.spec.ts:28:7 › Profile screen — access control (anon) › ACC_002 — /profile?id=1 redirects unauthenticated visitor to /login (2.2s)
+  ✓  18 [anon] › e2e/kudos-live-board.spec.ts:192:7 › Kudos Live Board screen — /kudos (anon) › K-1 — hero renders compose bar and Sunner search with correct placeholders (2.2s)
+  ✓  16 [anon] › e2e/homepage.spec.ts:16:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-7 [FR-101] — page structure includes header, hero, countdown, awards grid, Kudos section, and footer (2.3s)
+  ✓  22 [anon] › e2e/smoke.spec.ts:7:5 › dev server responds and renders a non-empty page (2.0s)
+  ✓  20 [anon] › e2e/route-guard.spec.ts:21:7 › Route Guards (anon project) › ID-1 [Viết Kudo] — unauthenticated access to /kudos/new redirects to /login (2.2s)
+  ✓  24 [anon] › e2e/homepage.spec.ts:50:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-9 [FR-102] — About SAA 2025 nav item is marked as selected on homepage (2.1s)
+  ✓  23 [anon] › e2e/kudos-live-board.spec.ts:209:7 › Kudos Live Board screen — /kudos (anon) › K-2 — HIGHLIGHT KUDOS section renders heading, eyebrow, and filters (2.1s)
+  ✓  21 [anon] › e2e/award-system.spec.ts:163:7 › Award System screen — /awards-information (anon) › ID-3 — page structure renders banner, h1, award-nav, six award sections, Kudos block and footer in document order (2.3s)
+  ✓  19 [anon] › e2e/login-screen.spec.ts:52:7 › Login Screen (anon project) › C3 [FR-203, US003] — switching locale to EN updates page content and sets NEXT_LOCALE cookie (3.0s)
+  ✓  25 [anon] › e2e/homepage.spec.ts:70:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-12 [FR-103] — countdown displays three 2-digit units labeled DAYS, HOURS, MINUTES (1.5s)
+  ✓  28 [anon] › e2e/login-screen.spec.ts:87:7 › Login Screen (anon project) › C3b [FR-203] — open dropdown shows a flag beside every locale option (1.2s)
+  ✓  27 [anon] › e2e/award-system.spec.ts:197:7 › Award System screen — /awards-information (anon) › W-3 — one h1, h1 → six h2 → Kudos h2, each award section accessibly named, category nav labelled (1.7s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  26 [anon] › e2e/kudos-live-board.spec.ts:229:7 › Kudos Live Board screen — /kudos (anon) › K-3 — filter menus: hashtag has 13 options, department has 50 (1.9s)
+  ✓  29 [anon] › e2e/homepage.spec.ts:97:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-13 [FR-104] — Coming soon label visible when event is in the future (1.5s)
+  ✓  31 [anon] › e2e/award-system.spec.ts:241:7 › Award System screen — /awards-information (anon) › ID-4 — hero title block shows the eyebrow and the exact page heading (1.3s)
+  ✓  32 [anon] › e2e/kudos-live-board.spec.ts:252:7 › Kudos Live Board screen — /kudos (anon) › K-4 — carousel renders at most 5 slides with centre slide aria-current (1.2s)
+  ✓  30 [anon] › e2e/login-screen.spec.ts:116:7 › Login Screen (anon project) › C3c [FR-203] — open panel visual contract (background, border, radius, padding, option size) (1.4s)
+  ✓  33 [anon] › e2e/homepage.spec.ts:109:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-14 [FR-105] — event information block displays correct date, venue, and livestream note (1.5s)
+  ✓  35 [anon] › e2e/kudos-live-board.spec.ts:276:7 › Kudos Live Board screen — /kudos (anon) › K-5 — carousel pagination text matches expected format (1.4s)
+  ✓  34 [anon] › e2e/award-system.spec.ts:254:7 › Award System screen — /awards-information (anon) › ID-5 — left category menu lists exactly 6 items in design order (1.5s)
+  ✓  36 [anon] › e2e/login-screen.spec.ts:139:7 › Login Screen (anon project) › C3d [FR-203.b] — selected and unselected option backgrounds, hover state (1.7s)
+  ✓  37 [anon] › e2e/homepage.spec.ts:128:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-15 [FR-106] — awards grid displays all 6 award category cards (1.4s)
+  ✓  38 [anon] › e2e/kudos-live-board.spec.ts:289:7 › Kudos Live Board screen — /kudos (anon) › K-6 — carousel arrows: prev disabled at slide 1, next disabled at last (1.5s)
+  ✓  39 [anon] › e2e/award-system.spec.ts:272:7 › Award System screen — /awards-information (anon) › ID-6 — all six awards render title, quantity, unit, prize amounts and notes (1.7s)
+  ✓  40 [anon] › e2e/login-screen.spec.ts:170:7 › Login Screen (anon project) › C3e [FR-203.c] — keyboard navigation (Arrow keys, Home, End, Escape, Enter) (2.4s)
+  ✓  43 [anon] › e2e/award-system.spec.ts:320:7 › Award System screen — /awards-information (anon) › ID-7 — every award card renders its image with the award title as alt text, undistorted at 336x336 (1.7s)
+  ✓  44 [anon] › e2e/login-screen.spec.ts:232:7 › Login Screen (anon project) › C4 [BR-003] — invalid NEXT_LOCALE value falls back to VN without blank page (890ms)
+  ✓  42 [anon] › e2e/kudos-live-board.spec.ts:309:7 › Kudos Live Board screen — /kudos (anon) › K-7 — carousel next/prev buttons move the slide (2.1s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  41 [anon] › e2e/homepage.spec.ts:144:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-16 [FR-107] — awards grid is responsive: 3 columns at desktop, 2 columns at tablet/mobile (2.8s)
+  ✓  45 [anon] › e2e/award-system.spec.ts:345:7 › Award System screen — /awards-information (anon) › ID-8 — Sun* Kudos block renders eyebrow, title, subtitle and the Chi tiết control (1.6s)
+  ✓  48 [anon] › e2e/homepage.spec.ts:193:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-17 [FR-108] — footer displays logo, navigation links, and copyright text (1.0s)
+  ✓  46 [anon] › e2e/login-screen.spec.ts:256:7 › Login Screen (anon project) › C5 [FR-202, FR-601, SM-001, SC-003] — clicking login button initiates OAuth flow with provider=google (1.7s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  47 [anon] › e2e/kudos-live-board.spec.ts:326:7 › Kudos Live Board screen — /kudos (anon) › K-8 — filter selection resets carousel to slide 1 (1.8s)
+  ✓  51 [anon] › e2e/login-screen.spec.ts:296:7 › Login Screen (anon project) › C10 — callback open-redirect protection rejects external next URL (1.7s)
+  ✓  52 [anon] › e2e/kudos-live-board.spec.ts:342:7 › Kudos Live Board screen — /kudos (anon) › K-9 — kudos card renders sender, receiver, badge, time, campaign, hashtags, heart (1.7s)
+  ✓  50 [anon] › e2e/homepage.spec.ts:221:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-18 [FR-108b] — header logo navigates to home from non-home route (2.3s)
+  ✓  53 [anon] › e2e/kudos-live-board.spec.ts:392:7 › Kudos Live Board screen — /kudos (anon) › K-24 — every kudos-heart is disabled for anon viewer (1.4s)
+  ✓  49 [anon] › e2e/award-system.spec.ts:360:7 › Award System screen — /awards-information (anon) › ID-9/11 — clicking each menu item scrolls to its section and keeps exactly one active item (3.7s)
+  ✓  54 [anon] › e2e/homepage.spec.ts:246:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-19 [FR-108c] — footer logo navigates to home from non-home route (1.5s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  55 [anon] › e2e/kudos-live-board.spec.ts:416:7 › Kudos Live Board screen — /kudos (anon) › K-11 — Copy Link shows toast with correct message (1.9s)
+  ✓  56 [anon] › e2e/award-system.spec.ts:394:7 › Award System screen — /awards-information (anon) › ID-10 — menu items are interactive links that respond to hover (1.8s)
+  ✓  58 [anon] › e2e/kudos-live-board.spec.ts:434:7 › Kudos Live Board screen — /kudos (anon) › K-12 — Xem chi tiết link present on highlight cards (941ms)
+  ✓  59 [anon] › e2e/award-system.spec.ts:411:7 › Award System screen — /awards-information (anon) › ID-12 — Kudos Chi tiết control navigates to /kudos (1.4s)
+  ✓  60 [anon] › e2e/kudos-live-board.spec.ts:449:7 › Kudos Live Board screen — /kudos (anon) › K-13 — SPOTLIGHT BOARD renders heading, count, and search (851ms)
+  ✓  57 [anon] › e2e/homepage.spec.ts:269:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-39 [FR-109] — countdown decreases in real time without a page reload (3.9s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  61 [anon] › e2e/award-system.spec.ts:423:7 › Award System screen — /awards-information (anon) › ID-13 — an invalid hash raises no page error and the screen stays functional (1.5s)
+  ✓  62 [anon] › e2e/kudos-live-board.spec.ts:476:7 › Kudos Live Board screen — /kudos (anon) › K-14 — spotlight nodes present and search narrows them (1.4s)
+  ✓  65 [anon] › e2e/kudos-live-board.spec.ts:496:7 › Kudos Live Board screen — /kudos (anon) › K-15 — spotlight pan/zoom and expand buttons have aria-pressed (1.1s)
+  ✓  64 [anon] › e2e/award-system.spec.ts:457:7 › Award System screen — /awards-information (anon) › Deep link — /awards-information#mvp lands on the MVP section with its menu item active (1.3s)
+  ✓  63 [anon] › e2e/homepage.spec.ts:297:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-2/3/4/20 [FR-117] — nav items navigate to home from non-home route; clicking selected nav item scrolls to top instead of navigating (2.2s)
+  ✓  66 [anon] › e2e/kudos-live-board.spec.ts:510:7 › Kudos Live Board screen — /kudos (anon) › K-16 — spotlight ticker rows present (955ms)
+  ✓  68 [anon] › e2e/kudos-live-board.spec.ts:518:7 › Kudos Live Board screen — /kudos (anon) › K-17 — ALL KUDOS section renders heading and feed (628ms)
+  ✓  67 [anon] › e2e/homepage.spec.ts:332:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-20 [FR-118] — footer logo scrolls to top when clicked on homepage (1.7s)
+  ✓  69 [anon] › e2e/kudos-live-board.spec.ts:542:7 › Kudos Live Board screen — /kudos (anon) › K-18 — sidebar renders 5 stat rows in exact order (880ms)
+  ✓  71 [anon] › e2e/kudos-live-board.spec.ts:560:7 › Kudos Live Board screen — /kudos (anon) › K-19 — Secret Box button present with correct label and href (909ms)
+  ✓  70 [anon] › e2e/homepage.spec.ts:360:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-41/42/43 [FR-110] — when event time passes, Coming soon hides and countdown holds at 00 (1.6s)
+  ✓  72 [anon] › e2e/kudos-live-board.spec.ts:572:7 › Kudos Live Board screen — /kudos (anon) › K-20 — gift leaderboard heading present (897ms)
+  ✓  73 [anon] › e2e/homepage.spec.ts:406:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-24/30-35 [FR-111] — language menu: click opens/closes, outside click closes, Enter/Space open, Esc closes (1.1s)
+  ✓  75 [anon] › e2e/homepage.spec.ts:448:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-25/26 [FR-112] — selecting EN in language menu switches UI to English, selecting VN reverts to Vietnamese (2.2s)
+  ✓  76 [anon] › e2e/homepage.spec.ts:494:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-44/45 [FR-113] — CTA buttons navigate to Awards Information and Kudos routes (1.5s)
+  ✓  77 [anon] › e2e/homepage.spec.ts:520:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-47/48/49/50/52 [FR-114] — award card (image, title, Chi tiết) navigates to /awards-information#<slug> (4.1s)
+  ✓  78 [anon] › e2e/homepage.spec.ts:551:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-53 [FR-115] — Kudos section Chi tiết button navigates to /kudos (948ms)
+  ✓  74 [anon] › e2e/kudos-live-board.spec.ts:582:7 › Kudos Live Board screen — /kudos (anon) › K-21 — placeholder routes /kudos/secret-box and /kudos/[id] render ComingSoon (11.7s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  80 [anon] › e2e/kudos-live-board.spec.ts:602:7 › Kudos Live Board screen — /kudos (anon) › K-22 — compose bar links to /kudos/new (1.1s)
+  ✓  81 [anon] › e2e/kudos-live-board.spec.ts:611:7 › Kudos Live Board screen — /kudos (anon) › K-23 — Sunner search maxlength is 100 (1.1s)
+  ✓  79 [anon] › e2e/homepage.spec.ts:573:7 › Homepage SAA — Anonymous Visitor (anon project) › ID-55/59 [FR-116] — all footer links resolve without 404 errors (4.8s)
+
+  81 passed (1.7m)

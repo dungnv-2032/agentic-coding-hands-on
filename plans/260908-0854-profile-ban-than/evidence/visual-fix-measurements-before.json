@@ -1,0 +1,1208 @@
+{
+  "id1-populated": {
+    "w1440": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=1",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 76,
+        "bottom": 76,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "w": 1440,
+        "h": 574,
+        "bottom": 650,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 76,
+        "w": 1440,
+        "h": 512,
+        "bottom": 588,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 485,
+        "y": 412,
+        "w": 470,
+        "h": 44,
+        "bottom": 456,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 524,
+        "w": 1440,
+        "h": 126,
+        "bottom": 650,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 440,
+        "y": 525,
+        "w": 80,
+        "h": 64,
+        "bottom": 589,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 620,
+        "y": 180,
+        "w": 200,
+        "h": 200,
+        "bottom": 380,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 788,
+        "w": 1440,
+        "h": 6412,
+        "bottom": 7200,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 7200,
+        "w": 1440,
+        "h": 145,
+        "bottom": 7345,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 1440
+    },
+    "w1024": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=1",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 124,
+        "bottom": 124,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 124,
+        "w": 1024,
+        "h": 574,
+        "bottom": 698,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 124,
+        "w": 1024,
+        "h": 512,
+        "bottom": 636,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 277,
+        "y": 460,
+        "w": 470,
+        "h": 44,
+        "bottom": 504,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 572,
+        "w": 1024,
+        "h": 126,
+        "bottom": 698,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 232,
+        "y": 573,
+        "w": 80,
+        "h": 64,
+        "bottom": 637,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 412,
+        "y": 228,
+        "w": 200,
+        "h": 200,
+        "bottom": 428,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 836,
+        "w": 1024,
+        "h": 8622,
+        "bottom": 9458,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 9458,
+        "w": 1024,
+        "h": 361,
+        "bottom": 9819,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 1024
+    },
+    "w768": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=1",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 768,
+        "h": 124,
+        "bottom": 124,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 124,
+        "w": 768,
+        "h": 574,
+        "bottom": 698,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 124,
+        "w": 768,
+        "h": 512,
+        "bottom": 636,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 149,
+        "y": 460,
+        "w": 470,
+        "h": 44,
+        "bottom": 504,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 572,
+        "w": 768,
+        "h": 126,
+        "bottom": 698,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 104,
+        "y": 573,
+        "w": 80,
+        "h": 64,
+        "bottom": 637,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 284,
+        "y": 228,
+        "w": 200,
+        "h": 200,
+        "bottom": 428,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 836,
+        "w": 768,
+        "h": 8942,
+        "bottom": 9778,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 9778,
+        "w": 768,
+        "h": 361,
+        "bottom": 10139,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 768
+    },
+    "w375": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=1",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 244,
+        "bottom": 244,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 244,
+        "w": 375,
+        "h": 618,
+        "bottom": 862,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 244,
+        "w": 375,
+        "h": 512,
+        "bottom": 756,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 0,
+        "y": 580,
+        "w": 375,
+        "h": 88,
+        "bottom": 668,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 736,
+        "w": 375,
+        "h": 126,
+        "bottom": 862,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": -92,
+        "y": 737,
+        "w": 80,
+        "h": 64,
+        "bottom": 801,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 88,
+        "y": 348,
+        "w": 200,
+        "h": 200,
+        "bottom": 548,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 1024,
+        "w": 375,
+        "h": 9072,
+        "bottom": 10096,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 10096,
+        "w": 375,
+        "h": 465,
+        "bottom": 10561,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 469
+    }
+  },
+  "self-sparse": {
+    "w1440": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 76,
+        "bottom": 76,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "w": 1440,
+        "h": 546,
+        "bottom": 622,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 76,
+        "w": 1440,
+        "h": 512,
+        "bottom": 588,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 397,
+        "y": 412,
+        "w": 647,
+        "h": 44,
+        "bottom": 456,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 496,
+        "w": 1440,
+        "h": 126,
+        "bottom": 622,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 440,
+        "y": 497,
+        "w": 80,
+        "h": 64,
+        "bottom": 561,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 620,
+        "y": 180,
+        "w": 200,
+        "h": 200,
+        "bottom": 380,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": {
+        "x": 380,
+        "y": 686,
+        "w": 680,
+        "h": 439,
+        "bottom": 1125,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "kudosSection": {
+        "x": 0,
+        "y": 1125,
+        "w": 1440,
+        "h": 417,
+        "bottom": 1542,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 1542,
+        "w": 1440,
+        "h": 145,
+        "bottom": 1687,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 1440
+    },
+    "w1024": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 124,
+        "bottom": 124,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 124,
+        "w": 1024,
+        "h": 546,
+        "bottom": 670,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 124,
+        "w": 1024,
+        "h": 512,
+        "bottom": 636,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 189,
+        "y": 460,
+        "w": 647,
+        "h": 44,
+        "bottom": 504,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 544,
+        "w": 1024,
+        "h": 126,
+        "bottom": 670,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 232,
+        "y": 545,
+        "w": 80,
+        "h": 64,
+        "bottom": 609,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 412,
+        "y": 228,
+        "w": 200,
+        "h": 200,
+        "bottom": 428,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": {
+        "x": 172,
+        "y": 734,
+        "w": 680,
+        "h": 439,
+        "bottom": 1173,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "kudosSection": {
+        "x": 0,
+        "y": 1173,
+        "w": 1024,
+        "h": 417,
+        "bottom": 1590,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 1590,
+        "w": 1024,
+        "h": 361,
+        "bottom": 1951,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 1024
+    },
+    "w768": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 768,
+        "h": 124,
+        "bottom": 124,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 124,
+        "w": 768,
+        "h": 546,
+        "bottom": 670,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 124,
+        "w": 768,
+        "h": 512,
+        "bottom": 636,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 61,
+        "y": 460,
+        "w": 647,
+        "h": 44,
+        "bottom": 504,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 544,
+        "w": 768,
+        "h": 126,
+        "bottom": 670,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 104,
+        "y": 545,
+        "w": 80,
+        "h": 64,
+        "bottom": 609,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 284,
+        "y": 228,
+        "w": 200,
+        "h": 200,
+        "bottom": 428,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": {
+        "x": 48,
+        "y": 734,
+        "w": 672,
+        "h": 439,
+        "bottom": 1173,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "kudosSection": {
+        "x": 0,
+        "y": 1173,
+        "w": 768,
+        "h": 417,
+        "bottom": 1590,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 1590,
+        "w": 768,
+        "h": 361,
+        "bottom": 1951,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 768
+    },
+    "w375": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 244,
+        "bottom": 244,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 244,
+        "w": 375,
+        "h": 590,
+        "bottom": 834,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 244,
+        "w": 375,
+        "h": 512,
+        "bottom": 756,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 0,
+        "y": 580,
+        "w": 375,
+        "h": 88,
+        "bottom": 668,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 708,
+        "w": 375,
+        "h": 126,
+        "bottom": 834,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": -92,
+        "y": 709,
+        "w": 80,
+        "h": 64,
+        "bottom": 773,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 88,
+        "y": 348,
+        "w": 200,
+        "h": 200,
+        "bottom": 548,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": {
+        "x": 24,
+        "y": 898,
+        "w": 327,
+        "h": 519,
+        "bottom": 1417,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "kudosSection": {
+        "x": 0,
+        "y": 1417,
+        "w": 375,
+        "h": 483,
+        "bottom": 1900,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 1900,
+        "w": 375,
+        "h": 465,
+        "bottom": 2365,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 469
+    }
+  },
+  "id2-other": {
+    "w1440": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=2",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 76,
+        "bottom": 76,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 76,
+        "w": 1440,
+        "h": 574,
+        "bottom": 650,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 76,
+        "w": 1440,
+        "h": 512,
+        "bottom": 588,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 536,
+        "y": 412,
+        "w": 368,
+        "h": 44,
+        "bottom": 456,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 524,
+        "w": 1440,
+        "h": 126,
+        "bottom": 650,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 440,
+        "y": 525,
+        "w": 80,
+        "h": 64,
+        "bottom": 589,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 620,
+        "y": 180,
+        "w": 200,
+        "h": 200,
+        "bottom": 380,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 788,
+        "w": 1440,
+        "h": 6932,
+        "bottom": 7720,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 7720,
+        "w": 1440,
+        "h": 145,
+        "bottom": 7865,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 1440
+    },
+    "w1024": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=2",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1024,
+        "h": 124,
+        "bottom": 124,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 124,
+        "w": 1024,
+        "h": 574,
+        "bottom": 698,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 124,
+        "w": 1024,
+        "h": 512,
+        "bottom": 636,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 328,
+        "y": 460,
+        "w": 368,
+        "h": 44,
+        "bottom": 504,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 572,
+        "w": 1024,
+        "h": 126,
+        "bottom": 698,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 232,
+        "y": 573,
+        "w": 80,
+        "h": 64,
+        "bottom": 637,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 412,
+        "y": 228,
+        "w": 200,
+        "h": 200,
+        "bottom": 428,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 836,
+        "w": 1024,
+        "h": 9142,
+        "bottom": 9978,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 9978,
+        "w": 1024,
+        "h": 361,
+        "bottom": 10339,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 1024
+    },
+    "w768": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=2",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 768,
+        "h": 124,
+        "bottom": 124,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 124,
+        "w": 768,
+        "h": 574,
+        "bottom": 698,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 124,
+        "w": 768,
+        "h": 512,
+        "bottom": 636,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 200,
+        "y": 460,
+        "w": 368,
+        "h": 44,
+        "bottom": 504,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 572,
+        "w": 768,
+        "h": 126,
+        "bottom": 698,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": 104,
+        "y": 573,
+        "w": 80,
+        "h": 64,
+        "bottom": 637,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 284,
+        "y": 228,
+        "w": 200,
+        "h": 200,
+        "bottom": 428,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 836,
+        "w": 768,
+        "h": 9462,
+        "bottom": 10298,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 10298,
+        "w": 768,
+        "h": 361,
+        "bottom": 10659,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 768
+    },
+    "w375": {
+      "status": 200,
+      "finalUrl": "http://127.0.0.1:3100/profile?id=2",
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 244,
+        "bottom": 244,
+        "position": "sticky",
+        "paddingTop": "12px",
+        "marginTop": "0px"
+      },
+      "headerBg": "rgba(16, 20, 23, 0.8)",
+      "hero": {
+        "x": 0,
+        "y": 244,
+        "w": 375,
+        "h": 574,
+        "bottom": 818,
+        "position": "relative",
+        "paddingTop": "104px",
+        "marginTop": "0px"
+      },
+      "keyvisual": {
+        "x": 0,
+        "y": 244,
+        "w": 375,
+        "h": 512,
+        "bottom": 756,
+        "position": "absolute",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "h1": {
+        "x": 4,
+        "y": 580,
+        "w": 368,
+        "h": 44,
+        "bottom": 624,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeRow": {
+        "x": 0,
+        "y": 692,
+        "w": 375,
+        "h": 126,
+        "bottom": 818,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "badgeCircle0": {
+        "x": -92,
+        "y": 693,
+        "w": 80,
+        "h": 64,
+        "bottom": 757,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "avatar": {
+        "x": 88,
+        "y": 348,
+        "w": 200,
+        "h": 200,
+        "bottom": 548,
+        "position": "static",
+        "paddingTop": "0px",
+        "marginTop": "0px"
+      },
+      "statsOrBar": null,
+      "kudosSection": {
+        "x": 0,
+        "y": 980,
+        "w": 375,
+        "h": 10604,
+        "bottom": 11584,
+        "position": "static",
+        "paddingTop": "64px",
+        "marginTop": "0px"
+      },
+      "footer": {
+        "x": 0,
+        "y": 11584,
+        "w": 375,
+        "h": 465,
+        "bottom": 12049,
+        "position": "static",
+        "paddingTop": "40px",
+        "marginTop": "0px"
+      },
+      "docScrollWidth": 469
+    }
+  }
+}

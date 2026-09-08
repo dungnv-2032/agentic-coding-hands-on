@@ -1,0 +1,32 @@
+{
+  "pageRootBg": {
+    "tag": "DIV",
+    "backgroundColor": "rgb(0, 16, 26)",
+    "fontFamily": "Montserrat, \"Montserrat Fallback\"",
+    "minHeight": "1000px",
+    "width": 1440
+  },
+  "bodyBg": "rgb(255, 255, 255)",
+  "secretBoxLabel": {
+    "fontSize": "22px",
+    "lineHeight": "28px",
+    "fontWeight": "700",
+    "color": "rgb(0, 16, 26)",
+    "text": "Mở Secret Box"
+  },
+  "secretBoxIcon": {
+    "w": 24,
+    "h": 24
+  },
+  "sentLabelHits": [
+    {
+      "index": 126952,
+      "context": "nhận đến {name}\\\"},\\\"direction\\\":{\\\"receivedLabel\\\":\\\"Đã nhận ({count})\\\",\\\"sentLabel\\\":\\\"Đã gửi ({count})\\\"},\\\"feed\\\":{\\\"emptyRec",
+      "inScript": false
+    }
+  ],
+  "sentLabelHitCount": 1,
+  "sentLabelAllInScript": false,
+  "sentLabelInRenderedText": false,
+  "optionCount": 1
+}

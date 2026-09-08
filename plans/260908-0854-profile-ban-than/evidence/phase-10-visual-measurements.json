@@ -1,0 +1,298 @@
+{
+  "pageRoot": {
+    "_w": 0,
+    "_h": 0,
+    "_x": 0,
+    "_y": 0,
+    "background-color": "rgba(0, 0, 0, 0)",
+    "font-family": "Arial, Helvetica, sans-serif"
+  },
+  "hero": {
+    "_w": 1440,
+    "_h": 574,
+    "_x": 0,
+    "_y": 76,
+    "padding-top": "104px",
+    "row-gap": "32px",
+    "align-items": "center"
+  },
+  "keyvisualImg": {
+    "_w": 1440,
+    "_h": 512,
+    "_x": 0,
+    "_y": 76,
+    "width": "1440px",
+    "height": "512px",
+    "object-fit": "cover",
+    "border-radius": "0px",
+    "border-top-width": "0px",
+    "border-top-color": "rgba(0, 0, 0, 0)"
+  },
+  "avatar": {
+    "_w": 200,
+    "_h": 200,
+    "_x": 620,
+    "_y": 180,
+    "width": "200px",
+    "height": "200px",
+    "border-radius": "3.35544e+07px",
+    "border-top-width": "4px",
+    "border-top-color": "rgb(255, 255, 255)",
+    "object-fit": "cover"
+  },
+  "name": {
+    "_w": 470,
+    "_h": 44,
+    "_x": 485,
+    "_y": 412,
+    "font-size": "36px",
+    "line-height": "44px",
+    "font-weight": "700",
+    "color": "rgb(255, 234, 158)",
+    "text-align": "center"
+  },
+  "department": {
+    "_w": 86,
+    "_h": 28,
+    "_x": 612.53,
+    "_y": 464,
+    "font-size": "22px",
+    "line-height": "28px",
+    "font-weight": "700",
+    "color": "rgb(255, 255, 255)"
+  },
+  "separatorDot": {
+    "_w": 4,
+    "_h": 4,
+    "_x": 708.53,
+    "_y": 476,
+    "width": "4px",
+    "height": "4px",
+    "background-color": "rgb(153, 153, 153)",
+    "opacity": "0.4",
+    "border-radius": "3.35544e+07px"
+  },
+  "tierBadge": {
+    "_w": 104.92,
+    "_h": 19,
+    "_x": 722.53,
+    "_y": 468.5,
+    "height": "19px",
+    "border-radius": "48px",
+    "border-top-width": "1px",
+    "border-top-color": "rgb(255, 234, 158)",
+    "font-size": "12.821px",
+    "line-height": "17px",
+    "font-weight": "700",
+    "color": "rgb(255, 255, 255)",
+    "text-shadow": "rgb(255, 255, 255) 0px 0px 1.3px"
+  },
+  "tierBadgeText": "Super Hero",
+  "badgeSlotCount": 6,
+  "badgeCircle0": {
+    "_w": 64,
+    "_h": 64,
+    "_x": 448,
+    "_y": 525,
+    "width": "64px",
+    "height": "64px",
+    "border-radius": "3.35544e+07px",
+    "border-top-width": "2px",
+    "border-top-color": "rgb(255, 255, 255)",
+    "background-color": "rgb(50, 50, 49)"
+  },
+  "badgeCircle5": {
+    "_w": 64,
+    "_h": 64,
+    "_x": 928,
+    "_y": 525,
+    "width": "64px",
+    "height": "64px",
+    "background-color": "rgb(50, 50, 49)"
+  },
+  "badgeCircleGaps": [
+    32,
+    32,
+    32,
+    32,
+    32
+  ],
+  "badgeCaption": {
+    "_w": 183,
+    "_h": 28,
+    "_x": 628.5,
+    "_y": 622,
+    "font-size": "22px",
+    "line-height": "28px",
+    "font-weight": "700",
+    "color": "rgb(255, 255, 255)",
+    "text-align": "center"
+  },
+  "badgeCaptionText": "Bộ sưu tập icon",
+  "badgeCaptionBelowCircles": true,
+  "kudosHeading": {
+    "_w": 213.75,
+    "_h": 64,
+    "_x": 380,
+    "_y": 917,
+    "font-size": "57px",
+    "line-height": "64px",
+    "font-weight": "700",
+    "color": "rgb(255, 234, 158)",
+    "letter-spacing": "-0.25px"
+  },
+  "directionTrigger": {
+    "_w": 192.81,
+    "_h": 58,
+    "_x": 867.19,
+    "_y": 920,
+    "border-top-width": "1px",
+    "border-top-color": "rgb(153, 140, 95)",
+    "border-radius": "4px",
+    "background-color": "rgba(255, 234, 158, 0.1)",
+    "padding-left": "24px",
+    "padding-top": "16px",
+    "font-size": "16px",
+    "font-weight": "700",
+    "color": "rgb(255, 255, 255)",
+    "column-gap": "8px"
+  },
+  "directionTriggerText": "Đã nhận (26)",
+  "feedContainer": {
+    "_w": 680,
+    "_h": 6115,
+    "_x": 380,
+    "_y": 1021,
+    "row-gap": "24px",
+    "flex-direction": "column",
+    "align-items": "flex-start"
+  },
+  "feedCardCount": 10,
+  "feedCard0": {
+    "_w": 680,
+    "_h": 585,
+    "_x": 380,
+    "_y": 1021,
+    "background-color": "rgb(255, 248, 225)",
+    "border-radius": "24px",
+    "padding-top": "40px",
+    "padding-left": "40px",
+    "padding-bottom": "16px"
+  },
+  "feedCardBoxes": [
+    {
+      "x": 380,
+      "y": 1021,
+      "w": 680
+    },
+    {
+      "x": 380,
+      "y": 1630,
+      "w": 680
+    },
+    {
+      "x": 380,
+      "y": 2239,
+      "w": 680
+    }
+  ],
+  "feedCardGaps": [
+    609,
+    609
+  ],
+  "feedSingleColumn": true,
+  "statsCard": {
+    "_w": 680,
+    "_h": 439,
+    "_x": 380,
+    "_y": 686,
+    "background-color": "rgb(0, 7, 12)",
+    "border-radius": "17px",
+    "border-top-width": "1px",
+    "border-top-color": "rgb(153, 140, 95)",
+    "padding-top": "40px",
+    "padding-left": "40px"
+  },
+  "statRowCount": 5,
+  "statLabel0": {
+    "_w": 298,
+    "_h": 28,
+    "_x": 421,
+    "_y": 733,
+    "font-size": "22px",
+    "line-height": "28px",
+    "font-weight": "700",
+    "color": "rgb(255, 255, 255)"
+  },
+  "statValue0": {
+    "_w": 21,
+    "_h": 40,
+    "_x": 998,
+    "_y": 727,
+    "font-size": "32px",
+    "line-height": "40px",
+    "font-weight": "700",
+    "color": "rgb(255, 234, 158)",
+    "text-align": "start"
+  },
+  "statTexts": [
+    "Số Kudos bạn nhận được:\n0",
+    "Số Kudos bạn đã gửi:\n0",
+    "Số tim bạn nhận được:\n0",
+    "Số Secret Box bạn đã mở:\n0",
+    "Số Secret Box chưa mở:\n0"
+  ],
+  "dividerCount": 1,
+  "divider": {
+    "_w": 598,
+    "_h": 1,
+    "_x": 421,
+    "_y": 895,
+    "background-color": "rgb(46, 57, 64)",
+    "height": "1px"
+  },
+  "dividerBetweenRows3And4": true,
+  "secretBoxButton": {
+    "_w": 598,
+    "_h": 60,
+    "_x": 421,
+    "_y": 1024,
+    "background-color": "rgb(255, 234, 158)",
+    "color": "rgb(0, 16, 26)",
+    "border-radius": "8px",
+    "font-size": "16px",
+    "font-weight": "400",
+    "padding-top": "16px",
+    "height": "60px"
+  },
+  "secretBoxDisabled": true,
+  "secretBoxText": "Mở Secret Box",
+  "sparseTierBadgeCount": 0,
+  "sparseHeroName": "e2e-1788853910088-396547-5avuk0",
+  "heroBox": {
+    "_w": 1440,
+    "_h": 546,
+    "_x": 0,
+    "_y": 76,
+    "padding-top": "104px"
+  },
+  "statsBox": {
+    "_w": 680,
+    "_h": 439,
+    "_x": 380,
+    "_y": 686,
+    "margin-top": "0px"
+  },
+  "kudosSectionBox": {
+    "_w": 1440,
+    "_h": 417,
+    "_x": 0,
+    "_y": 1125,
+    "padding-top": "64px",
+    "padding-bottom": "64px"
+  },
+  "id2_visibleTextHasDaGui": false,
+  "id2_htmlHasDaGui": true,
+  "id2_heroName": "Huỳnh Dương Xuân",
+  "id2_optionCountWhenOpen": 1
+}

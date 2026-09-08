@@ -1,0 +1,67 @@
+[
+  {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "summary": "tsc --noEmit clean after the three test-file edits."
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "0 errors, 29 warnings — all pre-existing e2e unused-locals; one warning fewer than before (the now-replaced cleanupAnonymousKudo helper)."
+  },
+  {
+    "command": "npx playwright test --project=profile-auth-setup --project=profile-authed --project=anon --list",
+    "exitCode": 0,
+    "summary": "108 tests in 11 files; each *-auth.setup.ts appears in exactly one project; profile test count unchanged at 26."
+  },
+  {
+    "command": "npx playwright test --project=profile-auth-setup --project=profile-authed",
+    "exitCode": 0,
+    "summary": "27 passed (2.1m) — profile suite alone, first run after the five repairs."
+  },
+  {
+    "command": "npx playwright test --project=profile-auth-setup --project=profile-authed --project=anon",
+    "exitCode": 0,
+    "summary": "108 passed (2.5m) — phase 02's RED command rerun verbatim, now GREEN."
+  },
+  {
+    "command": "npx playwright test --project=anon",
+    "exitCode": 0,
+    "summary": "81 passed (2.2m) — F004/F005 baseline held exactly; callback-security.spec.ts:91 did not flake."
+  },
+  {
+    "command": "npx playwright test --project=kudos-authed",
+    "exitCode": 0,
+    "summary": "62 passed (2.4m) — F004/F005 baseline held exactly."
+  },
+  {
+    "command": "npm run build",
+    "exitCode": 0,
+    "summary": "Production build clean; 13 routes, every one dynamic; /profile present."
+  },
+  {
+    "command": "npx playwright test --project=profile-auth-setup --project=profile-authed --project=anon",
+    "exitCode": 0,
+    "summary": "108 passed (2.6m) — second consecutive run, identical counts (idempotence)."
+  },
+  {
+    "command": "npx supabase db reset",
+    "exitCode": 0,
+    "summary": "Local database reset to kudos=58 anon=1 sunners=9 linked=0 kudos_likes=0 auth_users=0."
+  },
+  {
+    "command": "bash /tmp/probes.sh (phase 03's nine acceptance probes, captured to evidence/phase-03-security-probes.log)",
+    "exitCode": 0,
+    "summary": "All nine pass: view exists; anon GET on public.kudos = HTTP 401/42501; the anonymous row's five sender_* columns null through the view; a non-anonymous row names the expected sender, different from the receiver; the sender's own session sees sender_id=2 on that same row; a where sender_id=1 filter as anon is denied; kudos_likes INSERT and create_kudos() both still succeed; the seed carries one anonymous row. select on public.kudos = postgres, service_role only."
+  },
+  {
+    "command": "npx playwright test --project=profile-auth-setup --project=profile-authed --project=anon",
+    "exitCode": 0,
+    "summary": "108 passed (2.4m) — third run, from a pristine post-reset database; DB returned to kudos=58 anon=1 sunners=9 linked=0 kudos_likes=0."
+  },
+  {
+    "command": "npx playwright test --config <scratchpad>/visual/capture.config.ts (throwaway visual capture probe, deleted after the run)",
+    "exitCode": 0,
+    "summary": "3 passed — captured /profile?id=1, /profile and /profile?id=2 at 1440px with pointer and focus parked at the reference state, plus computed-style measurements written to evidence/phase-10-visual-measurements*.json."
+  }
+]

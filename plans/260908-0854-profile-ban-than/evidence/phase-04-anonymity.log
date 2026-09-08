@@ -1,0 +1,62 @@
+### P1 — base table still denied to anon (the revoke phase 03 shipped)
+HTTP 401
+{"code":"42501","details":null,"hint":"Grant the required privileges to the current role with: GRANT SELECT ON public.kudos TO anon;","message":"permission denied for table kudos"}
+### P2 — the EXACT shipped fetchKudos select, anon, on the anonymous row id=58
+{'id': 58, 'is_anonymous': True, 'anonymous_name': None, 'sender_id': None, 'sender_full_name': None, 'sender_avatar_url': None, 'sender_kudos_received_baseline': None, 'sender_department_name': None}
+receiver: 1 Huỳnh Dương Xuân Nhật
+embeds resolved: ['attachments', 'hashtags', 'likes', 'receiver']
+HTTP 200
+
+### P3 — same select, anon, on a NON-anonymous row: is the sender the RIGHT person?
+sender_id 1 | Huỳnh Dương Xuân Nhật | dept CEVC10
+receiver  2 | Huỳnh Dương Xuân
+### P3b — ground truth straight from the base table (service role)
+(eval):15: command not found: psql
+### P4 — can anon reconstruct the anonymous sender by filtering the view?
+?sender_id=eq.2&is_anonymous=is.true -> {"code":"22P02","details":null,"hint":null,"message":"invalid input syntax for type bigint: \"2&is_anonymous=is.true\""}
+?sender_full_name=eq.Huỳnh Dương Xuân&is_anonymous=is.true -> []
+### P3b (redo) — ground truth from the base table, inside the DB container
+kudos 1: sender=1 (Huỳnh Dương Xuân Nhật) receiver=2 (Huỳnh Dương Xuân) is_anonymous=false
+kudos 58: sender=2 (Huỳnh Dương Xuân) receiver=1 (Huỳnh Dương Xuân Nhật) is_anonymous=true
+### P4 (redo) — no filter oracle on the view for anon
+?sender_id=eq.2&is_anonymous=is.true -> []
+?sender_id=not.is.null&is_anonymous=is.true -> []
+?sender_full_name=ilike.*Xuân*&is_anonymous=is.true -> []
+### P5 — toggle-kudos-like.ts's two reads, replayed verbatim as anon through the view
+readHeartState select on id=58 -> [{"heart_baseline":1,"likes":[{"count": 0}]}]
+BR-003 sender_id select on id=58 -> [{"sender_id":null}]
+PASS  A non-anonymous row, other viewer: real sender, no chip, badge from baseline+received
+PASS  B masked row, authed viewer with NO sunners row: chip, heart still ENABLED (F004 parity)
+PASS  C masked row, anonymous visitor: chip, heart disabled
+PASS  D revealed row on the BOARD (revealOwnAnonymous off): author still sees the chip, cannot heart it
+PASS  E revealed row on the profile SENT list (revealOwnAnonymous on): author shown, still marked anonymous
+PASS  F revealOwnAnonymous cannot unmask SOMEONE ELSE's anonymous Kudo
+PASS  G a published anonymous_name is used; whitespace-only falls back
+PASS  H a non-anonymous row whose sender columns arrive null degrades to the chip, never to a fake identity
+
+ALL 8 MAPPER CHECKS PASS
+MAPPER_CHECK_EXIT=0
+
+### P6 / P6b — the author-side reveal, measured inside a rolled-back transaction
+(real auth user from auth.users linked to sunner 2, role authenticated + request.jwt.claims)
+BEGIN
+UPDATE 1
+SET
+ claim_set 
+-----------
+ t
+(1 row)
+
+### P6 — as the AUTHOR of kudos 58 (sunner 2), through the view:
+ id | sender_id | sender_full_name | is_anonymous 
+----+-----------+------------------+--------------
+ 58 |         2 | Huỳnh Dương Xuân | t
+(1 row)
+
+### P6b — the Sent-list filter phase 05 needs: sender_id = me returns my own ANONYMOUS row too
+ my_sent_total | my_anonymous_sent 
+---------------+-------------------
+            12 |                 1
+(1 row)
+
+ROLLBACK

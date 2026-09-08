@@ -1,0 +1,88 @@
+
+Running 62 tests using 2 workers
+
+✓ Kudos session created and saved to e2e/.auth/kudos-user.json
+  Test user email: e2e-1788857878693-519885-ps9ehf@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓   1 [kudos-auth-setup] › e2e/kudos-auth.setup.ts:31:6 › kudos: create independent session (204ms)
+  ✓   3 [kudos-authed] › e2e/viet-kudo.spec.ts:178:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-0 — authenticated user navigates to /kudos/new and form renders (2.2s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   4 [kudos-authed] › e2e/viet-kudo.spec.ts:189:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid (754ms)
+  ✓   5 [kudos-authed] › e2e/viet-kudo.spec.ts:197:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-3 — fields render in correct order: recipient → title → body → hashtags → images → anonymous (682ms)
+  ✓   6 [kudos-authed] › e2e/viet-kudo.spec.ts:232:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-4 — recipient input has placeholder 'Tìm kiếm' (500ms)
+  ✓   2 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:58:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 (4.4s)
+  ✓   7 [kudos-authed] › e2e/viet-kudo.spec.ts:243:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-5 — body editor has correct placeholder (729ms)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   9 [kudos-authed] › e2e/viet-kudo.spec.ts:252:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default (612ms)
+  ✓  10 [kudos-authed] › e2e/viet-kudo.spec.ts:258:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-7 — recipient field shows error on empty submit (889ms)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  11 [kudos-authed] › e2e/viet-kudo.spec.ts:280:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-8 — recipient autocomplete filters by query (925ms)
+  ✓  12 [kudos-authed] › e2e/viet-kudo.spec.ts:295:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-9 — recipient autocomplete shows empty state when no matches (633ms)
+  ✓  13 [kudos-authed] › e2e/viet-kudo.spec.ts:312:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-10 — recipient autocomplete trims leading/trailing whitespace (630ms)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓  14 [kudos-authed] › e2e/viet-kudo.spec.ts:329:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-11 — body field error on empty submit (932ms)
+  ✓   8 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:100:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload (5.6s)
+  ✓  15 [kudos-authed] › e2e/viet-kudo.spec.ts:353:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-12 — typing @ in body opens mention menu (598ms)
+  ✓  16 [kudos-authed] › e2e/viet-kudo.spec.ts:368:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-13 — selecting mention inserts colleague name into body (612ms)
+  ✓  17 [kudos-authed] › e2e/viet-kudo.spec.ts:394:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit (654ms)
+  ✓  18 [kudos-authed] › e2e/viet-kudo.spec.ts:415:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-15 — add one hashtag successfully (607ms)
+  ✓  19 [kudos-authed] › e2e/viet-kudo.spec.ts:431:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-16 — add 5 hashtags successfully (870ms)
+  ✓  20 [kudos-authed] › e2e/viet-kudo.spec.ts:456:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added (938ms)
+  ✓  21 [kudos-authed] › e2e/viet-kudo.spec.ts:493:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-18 — upload 3 images and button remains visible (585ms)
+  ✓  22 [kudos-authed] › e2e/viet-kudo.spec.ts:519:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden (647ms)
+  ✓  23 [kudos-authed] › e2e/viet-kudo.spec.ts:547:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-20 — at 5 images, button is hidden and 6th cannot be added (790ms)
+  ✓  24 [kudos-authed] › e2e/viet-kudo.spec.ts:568:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-21 — .jpg image uploads successfully and shows thumbnail (652ms)
+  ✓  25 [kudos-authed] › e2e/viet-kudo.spec.ts:583:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-22 — .png image uploads successfully and shows thumbnail (570ms)
+  ✓  26 [kudos-authed] › e2e/viet-kudo.spec.ts:598:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-23 — .pdf file is rejected with format error (590ms)
+  ✓  27 [kudos-authed] › e2e/viet-kudo.spec.ts:616:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-24 — .mp4 file is rejected with format error (569ms)
+  ✓  28 [kudos-authed] › e2e/viet-kudo.spec.ts:634:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-25 — recipient search filters menu by query (552ms)
+  ✓  29 [kudos-authed] › e2e/viet-kudo.spec.ts:647:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-26 — selecting recipient fills field and closes menu (564ms)
+  ✓  30 [kudos-authed] › e2e/viet-kudo.spec.ts:667:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-27 — toolbar bold button has aria-pressed attribute (512ms)
+  ✓  31 [kudos-authed] › e2e/viet-kudo.spec.ts:676:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-28 — toolbar italic button has aria-pressed attribute (498ms)
+  ✓  32 [kudos-authed] › e2e/viet-kudo.spec.ts:685:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-29 — toolbar strikethrough button has aria-pressed attribute (506ms)
+  ✓  33 [kudos-authed] › e2e/viet-kudo.spec.ts:694:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-30 — toolbar ordered list button present (484ms)
+  ✓  34 [kudos-authed] › e2e/viet-kudo.spec.ts:701:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-31 — toolbar link button opens dialog with URL input (587ms)
+  ✓  35 [kudos-authed] › e2e/viet-kudo.spec.ts:713:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-32 — toolbar quote button present (468ms)
+  ✓  36 [kudos-authed] › e2e/viet-kudo.spec.ts:720:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-33 — typing @Nguyen filters mention menu (557ms)
+  ✓  37 [kudos-authed] › e2e/viet-kudo.spec.ts:734:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-34 — add hashtag displays as removable chip (601ms)
+  ✓  38 [kudos-authed] › e2e/viet-kudo.spec.ts:753:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips (759ms)
+  ✓  39 [kudos-authed] › e2e/viet-kudo.spec.ts:772:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-36 — removing one hashtag chip leaves others intact (707ms)
+  ✓  40 [kudos-authed] › e2e/viet-kudo.spec.ts:798:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-37 — clicking image add opens file picker and shows thumbnail (562ms)
+  ✓  41 [kudos-authed] › e2e/viet-kudo.spec.ts:813:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-38 — uploading 5 images hides the add button (658ms)
+  ✓  42 [kudos-authed] › e2e/viet-kudo.spec.ts:830:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact (787ms)
+  ✓  43 [kudos-authed] › e2e/viet-kudo.spec.ts:854:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-40 — removing one image from 5 shows the add button again (661ms)
+  ✓  44 [kudos-authed] › e2e/viet-kudo.spec.ts:878:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-41 — anonymous checkbox can be checked (609ms)
+  ✓  45 [kudos-authed] › e2e/viet-kudo.spec.ts:889:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-42 — anonymous checkbox can be unchecked (636ms)
+  ✓  46 [kudos-authed] › e2e/viet-kudo.spec.ts:901:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-43 — checking anonymous checkbox reveals name input field (565ms)
+  ✓  47 [kudos-authed] › e2e/viet-kudo.spec.ts:917:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-44 — unchecking anonymous checkbox hides name input field (600ms)
+  ✓  48 [kudos-authed] › e2e/viet-kudo.spec.ts:934:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving (1.0s)
+[WebServer] [browser] An async function with useActionState was called outside of a transition. This is likely not what you intended (for example, isPending will not update correctly). Either call the returned function inside startTransition, or pass it to an `action` or `formAction` prop. 
+[WebServer]     at ComposeForm.useCallback[handleSubmit] (app/kudos/new/_components/compose-form.tsx:80:5)
+[WebServer]   78 |       return;
+[WebServer]   79 |     }
+[WebServer] > 80 |     submit(payload);
+[WebServer]      |     ^
+[WebServer]   81 |   }, [pending, awaitingUploads, submit]);
+[WebServer]   82 |
+[WebServer]   83 |   return ( (app/kudos/new/_components/compose-form.tsx:80:5)
+  ✓  49 [kudos-authed] › e2e/viet-kudo.spec.ts:961:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-46/ID-47 — successful submission creates kudos and navigates to board (1.8s)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/c4b63154-7a74-4571-a28b-8129c49086c0/1788857912756-6d852cda-457a-47fd-ae82-4a7ea6bad6e2.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓  50 [kudos-authed] › e2e/viet-kudo.spec.ts:1004:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-48 — submit button not ready when required fields empty (489ms)
+  ✓  51 [kudos-authed] › e2e/viet-kudo.spec.ts:1016:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-49 — submit button ready when required fields filled (702ms)
+  ✓  52 [kudos-authed] › e2e/viet-kudo.spec.ts:1039:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-50 — recipient field shows error with red border when empty (718ms)
+  ✓  53 [kudos-authed] › e2e/viet-kudo.spec.ts:1062:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-51 — body field shows error when empty on submit (731ms)
+  ✓  54 [kudos-authed] › e2e/viet-kudo.spec.ts:1087:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-52 — hashtag field shows error when empty on submit (703ms)
+  ✓  55 [kudos-authed] › e2e/viet-kudo.spec.ts:1110:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-53 — attempting 6th hashtag shows max error (1.0s)
+  ✓  56 [kudos-authed] › e2e/viet-kudo.spec.ts:1145:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-54 — at 5 images, button hidden, no 6th can be added (644ms)
+  ✓  57 [kudos-authed] › e2e/viet-kudo.spec.ts:1166:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-55 — .txt file rejected with format error (594ms)
+  ✓  58 [kudos-authed] › e2e/viet-kudo.spec.ts:1182:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-56 — all required field errors show simultaneously (592ms)
+  ✓  59 [kudos-authed] › e2e/viet-kudo.spec.ts:1201:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Title field: placeholder and hints present (508ms)
+  ✓  60 [kudos-authed] › e2e/viet-kudo.spec.ts:1217:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Body field: hint present (488ms)
+  ✓  61 [kudos-authed] › e2e/viet-kudo.spec.ts:1225:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present (540ms)
+  ✓  62 [kudos-authed] › e2e/viet-kudo.spec.ts:1235:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Cancel and Submit buttons have correct labels (563ms)
+
+  62 passed (1.5m)
