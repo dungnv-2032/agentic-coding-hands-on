@@ -9,6 +9,7 @@
 | 3 | F003 — Award System | P1 | ui | implemented |
 | 4 | F004 — Kudos Live Board | P1 | mixed | implemented |
 | 5 | F005 — Viet Kudo | P1 | mixed | implemented |
+| 6 | F006 — Profile ban than | P1 | mixed | implemented |
 
 ## Feature Details
 
@@ -51,3 +52,11 @@ Màn hình công khai Sun* Kudos - Live board tại `/kudos`: highlight carousel
 Màn soạn Kudo tại `/kudos/new`, thay shell `ComingSoon`: chọn người nhận bằng autocomplete, đặt danh hiệu, viết nội dung trong editor rich-text (đậm/nghiêng/gạch/danh sách/liên kết/trích dẫn và @mention), gắn 1-5 hashtag, đính kèm tối đa 5 ảnh upload thật lên Supabase Storage, và tuỳ chọn gửi ẩn danh. Route được gác đăng nhập đầu tiên kể từ F001, và là đường ghi nhiều bảng đầu tiên của repo.
 
 **Related:** screens: SCR005 | routes: /kudos/new | models: kudos, kudos_hashtags, kudos_attachments, sunners, departments
+
+### F006 — Profile ban than
+
+**Priority:** P1 | **Type:** mixed | **Status:** implemented | **Slug:** F006_ProfileBanThan
+
+Màn Profile tại `/profile`, thay shell `ComingSoon`: hero keyvisual với avatar, tên, phòng ban và huy hiệu danh hiệu; hàng 6 ô icon (đều khoá); và mục KUDOS phân trang bằng keyset cursor. `?id=` mở profile người khác — khi đó card thống kê được thay hoàn toàn bằng thanh viết Kudo, và số Kudos đã gửi bị ẩn vì nó đếm cả Kudos gửi ẩn danh. Route được gác đăng nhập; migration kèm theo biến tính ẩn danh của Kudos từ quy ước tầng render thành bảo đảm tầng dữ liệu.
+
+**Related:** screens: SCR006 | routes: /profile | models: kudos, kudos_likes, sunners, hashtags, departments, gift_awards, kudos_readable

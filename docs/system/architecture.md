@@ -7,7 +7,7 @@ lang: vi
 
 # Architecture
 
-**Project**: my-app (SAA 2025) — forward-draft cho màn Viết Kudo, viết trước khi code (SDD).
+**Project**: my-app (SAA 2025) — mô tả tới F006 (Profile bản thân).
 
 ## System Architecture
 
@@ -20,7 +20,7 @@ này mang vào lớp Postgres đầu tiên: migration trong `supabase/migrations
 `supabase/seed.sql`, và RLS policy đầu tiên của dự án. Từ đây, "không có database" không còn
 đúng, và mọi tính năng sau đều thừa hưởng tiền lệ RLS mà nó đặt ra.
 
-**Thay đổi của vòng này (Viết Kudo):** trước màn này, mọi thứ repo làm với database là **đọc**,
+**Thay đổi của vòng F005 (Viết Kudo):** trước màn đó, mọi thứ repo làm với database là **đọc**,
 cộng đúng một thao tác ghi nhỏ (thả tim). Viết Kudo là **form ghi đầu tiên của người dùng**, và nó
 mang vào ba thứ mới:
 - **Supabase Storage** — object storage đầu tiên. Ảnh đính kèm là file thật của người dùng, upload
@@ -35,6 +35,15 @@ mang vào ba thứ mới:
   người vừa đăng nhập Google chưa có danh tính người gửi. Action tự tạo dòng đó (upsert theo
   `auth_user_id`, vốn đã `unique`) trước khi insert kudos.
 
+**Thay đổi của vòng này (F006 — Profile bản thân):** trước màn này, mọi bảng `public.*` mở `select`
+thẳng cho `anon`+`authenticated` (tiền lệ F004, `kudos_select_all`). F006 là lần đầu tiên một bảng
+bị **revoke** quyền đọc trực tiếp: `public.kudos` không còn cho `select` từ `anon`/`authenticated`
+— mọi đọc phải qua view `public.kudos_readable` (§ Data Flow → "Reader-view data layer"). Đây là
+ranh giới đọc thật đầu tiên của repo, khác hẳn "mọi bảng đọc công khai" đã đúng từ F004 tới F005.
+
+Route `/profile` cũng là route guarded thứ ba (sau `/todo`, `/kudos/new`) — vẫn cùng một điều kiện
+`isGuarded` trong `proxy.ts`, không phải cơ chế mới.
+
 ```mermaid
 graph TB
     subgraph Browser
@@ -43,7 +52,7 @@ graph TB
     subgraph "Next.js App Router (my-app)"
         PX["proxy.ts — session refresh + route guard"]
         PC["app/_page-context.ts — điểm đọc duy nhất: locale + dictionary + isAuthenticated + isAdmin"]
-        SC["Server Components — app/page.tsx, /awards-information, /kudos, /login, /todo, placeholder pages"]
+        SC["Server Components — app/page.tsx, /awards-information, /kudos, /login, /todo, /profile, placeholder pages"]
         SA["Server Actions — signOut(), setLocale(), signInWithGoogle(), toggleKudosLike()"]
         CB["app/auth/callback/route.ts — Route Handler GET (OAuth callback)"]
         CC["Client Components — home-header, language-selector, account-menu, countdown-timer, kudos filters/carousel/heart/spotlight"]
@@ -54,8 +63,8 @@ graph TB
     subgraph Supabase
         SSR["@supabase/ssr — createServerClient / createBrowserClient"]
         AUTH["GoTrue Auth — auth.users, session, refresh token"]
-        PG["Postgres — public schema: sunners, kudos, kudos_likes, hashtags, departments, gift_awards, spotlight_events"]
-        RLS["RLS — select cho anon+authenticated; insert/delete kudos_likes chỉ auth.uid()"]
+        PG["Postgres — public schema: sunners, kudos, kudos_likes, hashtags, departments, gift_awards, spotlight_events + view kudos_readable"]
+        RLS["RLS + grants — select cho anon+authenticated, TRỪ kudos (đã revoke — đọc qua view kudos_readable); insert/delete kudos_likes chỉ auth.uid()"]
         GOOGLE["Google OAuth (qua GoTrue)"]
     end
 
@@ -107,11 +116,14 @@ duy nhất (thả tim) đi qua Server Action. Không có `/api/kudos`.
 
 ## Data Flow
 
-**Route-guard đổi ở vòng này.** `proxy.ts` vẫn chạy trên mọi request trừ asset tĩnh và vẫn gọi
+**Route-guard đổi ở vòng F005.** `proxy.ts` vẫn chạy trên mọi request trừ asset tĩnh và vẫn gọi
 `updateSession()`, nhưng danh sách guard không còn là hai route: `/kudos/new` được thêm vào cùng
 `/todo`. Đây là guard đầu tiên kể từ F001. Lý do đơn giản — viết một lời cảm ơn cần có danh tính,
 nên ở đây thật sự có thứ cần bảo vệ, khác với bảng đọc công khai. Bề mặt đọc của Kudos (`/kudos`,
 `/kudos/[id]`, `/kudos/secret-box`) **không đổi**, vẫn công khai có chủ đích.
+
+**Vòng F006 thêm route guarded thứ ba:** `/profile`, cùng điều kiện `isGuarded`, cộng thêm việc
+page tự re-check session lần nữa (defense in depth).
 
 Sơ đồ dưới là luồng riêng của Kudos Live Board: đọc khi render, và ghi khi thả tim.
 
@@ -187,6 +199,73 @@ sequenceDiagram
     end
 ```
 
+### Reader-view data layer (view giữa app và bảng `kudos`) — mới ở F006
+
+Từ F006, không còn điểm nào trong `app/` hay `lib/` đọc `public.kudos` trực tiếp — `grep` cho
+`from("kudos")` trả về 0 kết quả. Bảy điểm đọc, trải trên ba file, đều đi qua
+`public.kudos_readable`:
+
+| File | Số điểm đọc |
+|---|---|
+| `lib/kudos/queries.ts` (`fetchKudos`) | 1 |
+| `app/kudos/_actions/toggle-kudos-like.ts` | 2 |
+| `lib/profile/profile-queries.ts` | 4 |
+
+View null hoá **cả năm cột `sender_*`** (`sender_id`, `sender_full_name`, `sender_avatar_url`,
+`sender_kudos_received_baseline`, `sender_department_name`) của một Kudos ẩn danh trừ khi caller
+chính là người gửi — không chỉ `sender_id`; che một mình `sender_id` mà để lại `sender_full_name`
+thì tên người gửi vẫn lộ. `receiver_id` giữ nguyên (người nhận vẫn công khai kể cả trên Kudos ẩn
+danh), và cùng với `id` nó là cột phẳng truy được, nên bốn embed của `fetchKudos` vẫn resolve qua
+view này. View chạy dưới quyền chủ sở hữu (Postgres mặc định, **không** set `security_invoker`) —
+tương đương "security definer" ở cấp function, cho phép view vẫn đọc được `kudos` sau khi bảng gốc
+bị revoke khỏi `anon`/`authenticated`. Chi tiết cột và predicate:
+`docs/features/F006_ProfileBanThan/technical-spec.md § 4.2`.
+
+**Hệ quả kiến trúc:** từ nay "đọc Kudos" có hai lớp — bảng gốc (chỉ chủ sở hữu/migration đọc được)
+và view công khai (mọi read-path của app đi qua đây). Một tính năng sau này thêm một điểm đọc
+`kudos` mới PHẢI trỏ vào `kudos_readable`, không phải `kudos` — trỏ thẳng vào bảng gốc sẽ vỡ ngay
+vì quyền đã bị revoke.
+
+### Hai chiến lược phân trang cùng tồn tại (ghi nhận, chưa hợp nhất)
+
+F004's `all-kudos-feed.tsx` đọc hết bảng `kudos` một lần rồi cắt phía client theo `FEED_PAGE_SIZE`
+(giả định A4: bảng nhỏ). F006's feed hồ sơ (`fetchProfileKudosPage`) là điểm phân trang SERVER
+thật đầu tiên của repo — keyset cursor `(sent_at, id)`, mỗi lần cuộn là một truy vấn mới, không đọc
+lại phần đã có. Hai chiến lược này cùng tồn tại có chủ đích ở bản vẽ này (ADV-1,
+`technical-spec.md § 5.3`) — ai chạm lại `all-kudos-feed.tsx` sau này nên biết keyset cursor đã có
+tiền lệ ở `lib/profile/`, không cần phát minh lại cách tiếp cận.
+
+### Sequence diagram — đọc hồ sơ + đổi chiều KUDOS (F006)
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant PX as "proxy.ts (guard, +/profile)"
+    participant PG as "app/profile/page.tsx (A1)"
+    participant PD as "lib/profile/profile-data.ts"
+    participant KR as "public.kudos_readable (view)"
+    participant KDS as "KudosDirectionSection (Client)"
+    participant A2 as "fetchProfileKudosPage (A2)"
+
+    B->>PX: GET /profile?id=...
+    alt chưa đăng nhập
+        PX-->>B: 307 redirect /login
+    else đã đăng nhập
+        PX->>PG: cho request đi tiếp
+        PG->>PG: shape-check ?id, resolve self/other
+        PG->>PD: getProfileData(targetId, viewerSunnerId)
+        PD->>KR: select ... from kudos_readable (trang 1, keyset)
+        KR-->>PD: rows đã che sender ẩn danh đúng caller
+        PD-->>PG: ProfileViewModel (stats null nếu không phải viewer)
+        PG-->>B: HTML — hero, badges, B.self|B.other, trang 1 feed
+        B->>KDS: đổi chiều hoặc cuộn
+        KDS->>A2: fetchProfileKudosPage({direction, cursor})
+        A2->>KR: select ... where (sender|receiver)_id = ... and keyset
+        KR-->>A2: trang tiếp theo
+        A2-->>KDS: cards + nextCursor + hasMore
+    end
+```
+
 **Ghi chú kiến trúc quan trọng**:
 - `_page-context.ts` vẫn là **điểm đọc duy nhất** cho locale + dictionary + hai cờ suy ra. Object
   `user` gốc của Supabase **không bao giờ** vượt biên sang Client Component. Kudos không phá lệ
@@ -199,6 +278,10 @@ sequenceDiagram
 - **Sunner ẩn danh đọc được hết, ghi thì không.** RLS mở `select` cho `anon` và `authenticated`;
   `insert`/`delete` trên `kudos_likes` chỉ mở cho `authenticated` và khớp `auth.uid()`. Nút tim
   disabled ở UI chỉ là lớp thứ hai — chặn thật nằm ở DB.
+  **Sửa ở F006:** câu trên không còn đúng nguyên văn với `public.kudos`. Bảng đó đã bị revoke
+  `select` khỏi cả `anon` và `authenticated`; người xem ẩn danh vẫn đọc được nội dung Kudos, nhưng
+  qua view `kudos_readable` chứ không phải bảng gốc (xem § "Reader-view data layer" ở trên). Các
+  bảng khác giữ nguyên như câu gốc mô tả.
 - **Không cache.** Route đụng `cookies()` nên render động mỗi request; trạng thái tim theo từng
   người xem, nên cache trang sẽ sai. Đây là lý do không dùng `use cache` ở đây.
 - **`db reset` là bước trước khi chạy test, không bao giờ giữa phiên.** Nó truncate cả schema
@@ -216,8 +299,16 @@ sequenceDiagram
   nút `Gửi`; server validate lại toàn bộ vì client không đáng tin. Kiểu file ảnh cũng vậy.
 - **Ẩn danh che người gửi, không che người nhận.** `is_anonymous` chỉ đổi cách thẻ Kudos hiển thị
   phía người gửi; `sender_id` vẫn được lưu thật để còn truy được khi cần kiểm duyệt.
+  **Sửa ở F006:** phần "vẫn được lưu thật" đúng, nhưng "chỉ đổi cách hiển thị" thì không còn đúng —
+  từ F006 việc che người gửi là bảo đảm ở **tầng đọc**, không phải quy ước hiển thị. Xem
+  `docs/system/permissions.md` § Special Conditions để có phát biểu đầy đủ.
 - **Không có policy UPDATE/DELETE nào cho `kudos`.** Sửa và xoá bài là commission khác
   (`Màn Sửa bài viết`, `Admin - Review content`). Không mở sẵn quyền chưa có màn nào dùng.
+- **Ba policy `INSERT` đã được viết lại ở F006 để sống qua đợt revoke.** `kudos_likes_insert_own`,
+  `kudos_hashtags_insert_own` và `kudos_attachments_insert_own` từng join `public.kudos` ngay trong
+  `with check`; policy được đánh giá bằng quyền của **caller**, nên revoke sẽ tự vô hiệu hoá chính
+  chúng và giết thao tác thả tim của F004. Phần đọc đó giờ nằm trong một biên `security definer`:
+  `public.is_kudos_sender(bigint)`, trả `boolean` và không bao giờ trả id người gửi.
 
 ## Deployment View
 
