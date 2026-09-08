@@ -57,6 +57,15 @@ export interface KudosCardView {
   messageFormat: MessageFormat;
   /** Non-null ⇒ the card renders the anonymous chip with this label instead of `sender`. */
   anonymousSenderLabel: string | null;
+  /**
+   * Internal marker: the Kudos was sent anonymously (F006 FR-602). It has NO
+   * visual surface in this commission — the design frame publishes no such
+   * element, so a chip would be invented design data. It exists so the
+   * profile Sent list can reveal its own author (`anonymousSenderLabel: null`)
+   * while still knowing the row was anonymous, which is what makes the Sent
+   * count and the Sent list agree (SEC_002).
+   */
+  sentAnonymously: boolean;
 }
 
 export interface FilterOptionView {
@@ -74,6 +83,12 @@ export interface SidebarCountsView {
 
 export interface GiftRowView {
   id: number;
+  /**
+   * `gift_awards.sunner_id` — the recipient's `sunners.id`, added additively
+   * by F006 phase 09 so the row's name can link to `/profile?id=` (FR-003).
+   * NOT NULL on the base table, so there is no nullability to handle.
+   */
+  sunnerId: number;
   sunnerName: string;
   giftLabel: string;
 }

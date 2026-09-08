@@ -170,6 +170,13 @@ export type Database = {
             referencedRelation: "kudos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "kudos_attachments_kudos_id_fkey"
+            columns: ["kudos_id"]
+            isOneToOne: false
+            referencedRelation: "kudos_readable"
+            referencedColumns: ["id"]
+          },
         ]
       }
       kudos_hashtags: {
@@ -203,6 +210,13 @@ export type Database = {
             referencedRelation: "kudos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "kudos_hashtags_kudos_id_fkey"
+            columns: ["kudos_id"]
+            isOneToOne: false
+            referencedRelation: "kudos_readable"
+            referencedColumns: ["id"]
+          },
         ]
       }
       kudos_likes: {
@@ -232,6 +246,13 @@ export type Database = {
             referencedRelation: "kudos"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "kudos_likes_kudos_id_fkey"
+            columns: ["kudos_id"]
+            isOneToOne: false
+            referencedRelation: "kudos_readable"
+            referencedColumns: ["id"]
+          },
         ]
       }
       spotlight_ticker_events: {
@@ -259,6 +280,13 @@ export type Database = {
             columns: ["kudos_id"]
             isOneToOne: false
             referencedRelation: "kudos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "spotlight_ticker_events_kudos_id_fkey"
+            columns: ["kudos_id"]
+            isOneToOne: false
+            referencedRelation: "kudos_readable"
             referencedColumns: ["id"]
           },
           {
@@ -313,7 +341,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      kudos_readable: {
+        Row: {
+          anonymous_name: string | null
+          campaign: string | null
+          heart_baseline: number | null
+          id: number | null
+          is_anonymous: boolean | null
+          message: string | null
+          message_format: string | null
+          receiver_id: number | null
+          sender_avatar_url: string | null
+          sender_department_name: string | null
+          sender_full_name: string | null
+          sender_id: number | null
+          sender_kudos_received_baseline: number | null
+          sent_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kudos_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "sunners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_kudos: {
@@ -329,6 +383,7 @@ export type Database = {
         }
         Returns: number
       }
+      is_kudos_sender: { Args: { p_kudos_id: number }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
