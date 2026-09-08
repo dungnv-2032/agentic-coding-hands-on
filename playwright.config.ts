@@ -47,9 +47,9 @@ export default defineConfig({
     // Setup project — runs auth.setup.ts once before tests
     {
       name: "setup",
-      // Excludes the per-suite setups (homepage-auth.setup.ts, kudos-auth.setup.ts)
+      // Excludes the per-suite setups (homepage-auth.setup.ts, kudos-auth.setup.ts, profile-auth.setup.ts)
       // so each runs only in its OWN setup project, not twice.
-      testMatch: /^((?!homepage)(?!kudos).)*auth\.setup\.ts$/,
+      testMatch: /^((?!homepage)(?!kudos)(?!profile).)*auth\.setup\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
     // Homepage auth setup — creates independent session for homepage-authed tests
@@ -66,12 +66,20 @@ export default defineConfig({
       testMatch: /kudos-auth\.setup\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
+    // Profile auth setup — creates independent session for profile-authed tests
+    // for the same reason kudos and homepage have one: authenticated.spec.ts's C9
+    // signs out globally and revokes any session it shares.
+    {
+      name: "profile-auth-setup",
+      testMatch: /profile-auth\.setup\.ts$/,
+      use: { ...devices["Desktop Chrome"] },
+    },
     // Unauthenticated tests (login screen, error paths, open-redirect, callback security, homepage)
-    // NOTE: kudos-live-board.spec.ts only (not -authed variant)
+    // NOTE: kudos-live-board.spec.ts only (not -authed variant), profile-anon.spec.ts for route guards
     {
       name: "anon",
       testMatch:
-        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|kudos-live-board(?!-authed))\.spec\.ts/,
+        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|kudos-live-board(?!-authed))\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },
@@ -115,6 +123,19 @@ export default defineConfig({
         storageState: "e2e/.auth/homepage-user.json",
       },
       dependencies: ["homepage-auth-setup"],
+    },
+    // Profile authenticated tests — independent session, isolated from C9 sign-out
+    {
+      name: "profile-authed",
+      testMatch: /profile\.spec\.ts/,
+      // 15s instead of the 5s default, scoped to THIS project only. The heart toggle
+      // is server-authoritative and under multi-file contention can exceed 5s.
+      expect: { timeout: 15_000 },
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/profile-user.json",
+      },
+      dependencies: ["profile-auth-setup"],
     },
     // Visual capture project — runs on demand only, not in default suite
     {

@@ -351,9 +351,16 @@ test.describe("Kudos Live Board screen — /kudos (anon)", () => {
     const sender = card.getByTestId("kudos-sender");
     const receiver = card.getByTestId("kudos-receiver");
     await expect(sender).toBeVisible();
-    await expect(sender).toHaveAttribute("href", "/profile");
+    // F006 phase 09 — DELIBERATE NARROWING of a ratified assertion, not a
+    // relaxation: the href was the fixed literal "/profile"; both chips now
+    // carry the viewed Sunner's id (FR-003, clarifications premise 3), so this
+    // pins the SHAPE `/profile?id=<digits>` instead. Anything else — a bare
+    // "/profile", an `?id=0` from a redacted anonymous stub, a non-numeric id
+    // — still fails here.
+    await expect(sender).toHaveAttribute("href", /^\/profile\?id=\d+$/);
     await expect(receiver).toBeVisible();
-    await expect(receiver).toHaveAttribute("href", "/profile");
+    // F006 phase 09 — same deliberate narrowing, receiver side.
+    await expect(receiver).toHaveAttribute("href", /^\/profile\?id=\d+$/);
 
     // Badge (one of the four tiers)
     const badge = card.getByTestId("sunner-badge");
