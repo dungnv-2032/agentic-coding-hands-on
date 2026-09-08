@@ -52,9 +52,14 @@ export function GiftLeaderboard({
                 className="h-16 w-16 shrink-0 rounded-full border border-white object-cover"
               />
               <div className="flex flex-col gap-0.5">
-                {/* mm:I2940:13516;256:7462 (Name) */}
+                {/* mm:I2940:13516;256:7462 (Name). The href WAS the fixed
+                    literal "/profile"; F006 phase 09 makes it carry the
+                    recipient's `sunners.id` (FR-003, clarifications premise
+                    3), which is what `gift_awards.sunner_id` was added to
+                    `fetchGifts` for. That column is NOT NULL, so unlike
+                    `sunner-chip.tsx` there is no masked stub to guard. */}
                 <Link
-                  href="/profile"
+                  href={`/profile?id=${gift.sunnerId}`}
                   className="text-[22px] leading-7 font-bold text-[#FFEA9E] hover:underline"
                 >
                   {gift.sunnerName}

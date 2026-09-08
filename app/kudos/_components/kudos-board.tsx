@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { Fragment, useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -58,7 +59,20 @@ export function KudosBoard({
   spotlightSlot: ReactNode;
   sidebarSlot: ReactNode;
 }) {
-  const [hashtagFilterId, setHashtagFilterId] = useState<number | null>(null);
+  // FR-405 (F006 phase 09) — a hashtag click on a profile card pushes
+  // `/kudos?hashtag=<name>`, so the board has to READ that param: without
+  // this, the destination URL would carry the tag while the board rendered
+  // unfiltered, and a URL-only assertion would pass on a half-truth (the
+  // same failure shape as F004's K-21). Resolved by NAME against
+  // `board.hashtagOptions` — the id is a database key and must never appear
+  // in a link. Absent, empty or unrecognised → `null`, byte-identical to the
+  // state this board shipped with, which is what keeps F004's 27 board
+  // assertions true. Read as the initial value only: once mounted, the
+  // filter menu owns the state, so re-picking is not fighting the URL.
+  const initialHashtagName = useSearchParams().get("hashtag");
+  const [hashtagFilterId, setHashtagFilterId] = useState<number | null>(
+    () => board.hashtagOptions.find((option) => option.name === initialHashtagName)?.id ?? null,
+  );
   const [departmentFilterId, setDepartmentFilterId] = useState<number | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const [pages, setPages] = useState(1);
