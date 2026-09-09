@@ -255,6 +255,57 @@ export type Database = {
           },
         ]
       }
+      rule_items: {
+        Row: {
+          description: string | null
+          id: number
+          image_path: string
+          kind: string
+          label: string
+          position: number
+        }
+        Insert: {
+          description?: string | null
+          id?: never
+          image_path: string
+          kind: string
+          label: string
+          position: number
+        }
+        Update: {
+          description?: string | null
+          id?: never
+          image_path?: string
+          kind?: string
+          label?: string
+          position?: number
+        }
+        Relationships: []
+      }
+      rule_sections: {
+        Row: {
+          body: string
+          closing_body: string | null
+          heading: string
+          id: number
+          position: number
+        }
+        Insert: {
+          body: string
+          closing_body?: string | null
+          heading: string
+          id?: never
+          position: number
+        }
+        Update: {
+          body?: string
+          closing_body?: string | null
+          heading?: string
+          id?: never
+          position?: number
+        }
+        Relationships: []
+      }
       spotlight_ticker_events: {
         Row: {
           id: number
