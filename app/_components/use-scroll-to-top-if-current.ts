@@ -11,7 +11,7 @@ import type { MouseEvent } from "react";
  * The condition is the whole point. Header logo, footer logo and the three
  * nav items all want this behaviour, and the two logos originally applied it
  * unconditionally — which turned "back to home" into a dead end on every
- * route that reuses the header and footer (the five ComingSoon placeholders).
+ * route that reuses the header and footer (the ComingSoon placeholders).
  * Three separate copies of the same five lines is how that divergence
  * happened, so the behaviour lives here once.
  */
