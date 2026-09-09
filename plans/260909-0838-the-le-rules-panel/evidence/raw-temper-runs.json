@@ -1,0 +1,27 @@
+[
+  {
+    "command": "npx playwright test --project=anon --list",
+    "exitCode": 0,
+    "summary": "Registration proof: 92 tests in 10 files after adding `the-le` to the anon testMatch regex, vs 81 tests in 9 files before — exactly +1 file, +11 tests (9 live + 2 DEC-002 skips), no other suite affected."
+  },
+  {
+    "command": "npx tsc --noEmit -p tsconfig.json",
+    "exitCode": 0,
+    "summary": "Typecheck clean across the tree with the new spec and constants fixture in place."
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "Lint clean; 29 pre-existing no-unused-vars warnings in other e2e specs, none from e2e/the-le.spec.ts or e2e/fixtures/the-le-constants.ts."
+  },
+  {
+    "command": "npx playwright test e2e/the-le.spec.ts --project=anon",
+    "exitCode": 1,
+    "summary": "VALID e2e-red-first RED. 9 failed, 2 skipped (DEC-002), 1 passed (the `setup` dependency, not a screen test). First failure: GUI_001 expect(getByRole('heading',{level:1})).toHaveText('Thể lệ') got 'Coming soon'; the other 8 fail on missing rules-section/rules-hero-tier/rules-collectible-icon/rules-panel-content/rules-close-button/rules-write-kudos-link testids. No browser-install, webServer, env or Supabase failure signature present in the log; the setup project signed up against local GoTrue and the dev server served pages."
+  },
+  {
+    "command": "npm run typecheck (canary: deliberate type error injected, then removed)",
+    "exitCode": 2,
+    "summary": "Post-run trustworthiness canary for the previously-masked typecheck. With a deliberate `const __canary: number = \"not a number\"` in the constants fixture, typecheck exits 2; with it removed, exits 0. Typecheck is genuinely catching errors after the dev server shutdown. The non-zero code here is the EXPECTED canary result, not a defect."
+  }
+]

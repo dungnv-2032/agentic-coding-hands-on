@@ -1,0 +1,721 @@
+
+> my-app@0.1.0 test:e2e
+> playwright test
+
+
+Running 191 tests using 6 workers
+
+✓ Kudos session created and saved to e2e/.auth/kudos-user.json
+  Test user email: e2e-1788927851275-203803-vqevnr@example.com
+  Auth token cookie: sb-127-auth-token
+✓ Homepage session created and saved to e2e/.auth/homepage-user.json
+  Test user email: e2e-1788927851274-203801-tn6pa0@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓    2 [homepage-auth-setup] › e2e/homepage-auth.setup.ts:24:6 › homepage: create independent session (358ms)
+  ✓    1 [kudos-auth-setup] › e2e/kudos-auth.setup.ts:31:6 › kudos: create independent session (353ms)
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788927853118-203800-py3q4z@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Profile session created and saved to e2e/.auth/profile-user.json
+  Test user email: e2e-1788927854597-203808-ejtnc4@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓    4 [profile-auth-setup] › e2e/profile-auth.setup.ts:25:6 › profile: create independent session (354ms)
+  ✘    3 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+  ✓    8 [homepage-authed] › e2e/homepage-authed.spec.ts:6:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-1 [FR-200] — authenticated user sees notification bell and account menu button in header (28.0s)
+  ✓    6 [kudos-authed] › e2e/viet-kudo.spec.ts:178:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-0 — authenticated user navigates to /kudos/new and form renders (28.6s)
+  ✓    7 [profile-authed] › e2e/profile.spec.ts:195:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_001 — /profile?id={other} renders that Sunner's profile (29.6s)
+✓ Desktop screenshot captured: 1512px width
+  ✘    5 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:58:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 (30.9s)
+  ✘    9 [visual-capture] › e2e/capture-homepage-visual.spec.ts:10:7 › Visual Capture — Homepage › capture desktop (1512px) and mobile (375px) screenshots (35.0s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+  ✘   10 [homepage-authed] › e2e/homepage-authed.spec.ts:28:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-27 [FR-201] — clicking notification bell opens the notification panel (35.1s)
+  ✘   11 [kudos-authed] › e2e/viet-kudo.spec.ts:189:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid (35.0s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   12 [profile-authed] › e2e/profile.spec.ts:235:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_002 — ?id= is resolved against the viewer's own identity, with no redirect (35.3s)
+  ✘   13 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:100:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload (46.2s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+  ✓   15 [kudos-authed] › e2e/viet-kudo.spec.ts:197:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-3 — fields render in correct order: recipient → title → body → hashtags → images → anonymous (27.7s)
+  ✓   14 [homepage-authed] › e2e/homepage-authed.spec.ts:52:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-36 [FR-202] — clicking account button opens menu with Profile and Sign out (27.8s)
+  ✓   16 [profile-authed] › e2e/profile.spec.ts:260:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_003 — ?id={non-existent} returns 404 (27.8s)
+  ✓   17 [kudos-authed] › e2e/viet-kudo.spec.ts:232:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-4 — recipient input has placeholder 'Tìm kiếm' (26.5s)
+  ✓   18 [homepage-authed] › e2e/homepage-authed.spec.ts:80:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-38 [FR-203] — regular user does not see Admin Dashboard in account menu (26.7s)
+  -   21 [homepage-authed] › e2e/homepage-authed.spec.ts:104:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-5/37 [FR-204] — admin user sees Admin Dashboard in account menu
+  ✘   19 [profile-authed] › e2e/profile.spec.ts:271:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_004 — malformed ?id values return 404 (35.3s)
+  ✓   20 [kudos-authed] › e2e/viet-kudo.spec.ts:243:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-5 — body editor has correct placeholder (26.2s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   22 [profile-authed] › e2e/profile.spec.ts:286:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_005 — empty and repeated ?id values (35.3s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   23 [kudos-authed] › e2e/viet-kudo.spec.ts:252:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default (33.4s)
+  ✘   24 [profile-authed] › e2e/profile.spec.ts:322:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_001 — hero renders avatar, name, department, tier badge (35.3s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   25 [kudos-authed] › e2e/viet-kudo.spec.ts:258:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-7 — recipient field shows error on empty submit (25.6s)
+  ✓   26 [profile-authed] › e2e/profile.spec.ts:352:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_002 — 6 badge slots always rendered, all greyed (3.0s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   27 [kudos-authed] › e2e/viet-kudo.spec.ts:280:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-8 — recipient autocomplete filters by query (26.8s)
+  ✘   28 [profile-authed] › e2e/profile.spec.ts:366:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_003 — badge heading is first-person on self, neutral on other (35.6s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   29 [kudos-authed] › e2e/viet-kudo.spec.ts:295:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-9 — recipient autocomplete shows empty state when no matches (29.9s)
+  ✓   30 [profile-authed] › e2e/profile.spec.ts:380:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_009 — sparse profile renders without broken elements (19.5s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   31 [kudos-authed] › e2e/viet-kudo.spec.ts:312:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-10 — recipient autocomplete trims leading/trailing whitespace (28.1s)
+  ✓   32 [profile-authed] › e2e/profile.spec.ts:398:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_004 — self view shows 5 statistics rows (28.1s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   33 [kudos-authed] › e2e/viet-kudo.spec.ts:329:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-11 — body field error on empty submit (28.6s)
+  ✓   34 [profile-authed] › e2e/profile.spec.ts:415:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_005 — Secret Box rows show 0, button is disabled (28.4s)
+  ✓   35 [kudos-authed] › e2e/viet-kudo.spec.ts:353:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-12 — typing @ in body opens mention menu (26.6s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   36 [profile-authed] › e2e/profile.spec.ts:452:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_006 — another's profile shows write-Kudo bar, no stats (26.7s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   37 [kudos-authed] › e2e/viet-kudo.spec.ts:368:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-13 — selecting mention inserts colleague name into body (27.6s)
+  ✓   38 [profile-authed] › e2e/profile.spec.ts:467:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_007 — write-Kudo bar links to /kudos/new?receiverId={id} (27.4s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   40 [profile-authed] › e2e/profile.spec.ts:479:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_008 — own profile shows stats, no write-Kudo bar (30.4s)
+  ✘   39 [kudos-authed] › e2e/viet-kudo.spec.ts:394:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit (31.1s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   42 [kudos-authed] › e2e/viet-kudo.spec.ts:415:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-15 — add one hashtag successfully (29.7s)
+  ✓   41 [profile-authed] › e2e/profile.spec.ts:497:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_009 — self view dropdown offers both Received and Sent (30.6s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   43 [kudos-authed] › e2e/viet-kudo.spec.ts:431:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-16 — add 5 hashtags successfully (30.0s)
+  ✓   44 [profile-authed] › e2e/profile.spec.ts:515:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_SEC_001 — another's profile dropdown shows Received only (29.7s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   45 [kudos-authed] › e2e/viet-kudo.spec.ts:456:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added (30.0s)
+  ✘   46 [profile-authed] › e2e/profile.spec.ts:535:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_010 — switching direction discards previous pages (30.8s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   47 [kudos-authed] › e2e/viet-kudo.spec.ts:493:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-18 — upload 3 images and button remains visible (26.2s)
+  ✓   48 [profile-authed] › e2e/profile.spec.ts:564:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_011 — re-picking active direction is a no-op (26.6s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   49 [kudos-authed] › e2e/viet-kudo.spec.ts:519:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden (31.4s)
+  ✘   50 [profile-authed] › e2e/profile.spec.ts:584:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_012 — each direction has its own empty state copy (30.9s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   51 [kudos-authed] › e2e/viet-kudo.spec.ts:547:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-20 — at 5 images, button is hidden and 6th cannot be added (24.5s)
+  ✘   52 [profile-authed] › e2e/profile.spec.ts:616:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_013 — feed paging with infinite scroll and end-of-feed message (30.3s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+  ✓   53 [kudos-authed] › e2e/viet-kudo.spec.ts:568:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-21 — .jpg image uploads successfully and shows thumbnail (27.7s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   54 [profile-authed] › e2e/profile.spec.ts:652:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_006 — feed cards match board format (shape and masking) (20.4s)
+  ✓   55 [kudos-authed] › e2e/viet-kudo.spec.ts:583:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-22 — .png image uploads successfully and shows thumbnail (29.0s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   56 [profile-authed] › e2e/profile.spec.ts:672:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_007 — no Spam chip on cards (28.8s)
+  ✓   57 [kudos-authed] › e2e/viet-kudo.spec.ts:598:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-23 — .pdf file is rejected with format error (28.8s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   58 [profile-authed] › e2e/profile.spec.ts:688:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_014 — heart toggle updates count to server value (30.7s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+  ✓   59 [kudos-authed] › e2e/viet-kudo.spec.ts:616:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-24 — .mp4 file is rejected with format error (24.5s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   60 [profile-authed] › e2e/profile.spec.ts:738:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_015 — hashtag click navigates to filtered board (30.3s)
+  ✓   61 [kudos-authed] › e2e/viet-kudo.spec.ts:634:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-25 — recipient search filters menu by query (23.3s)
+  ✘   62 [profile-authed] › e2e/profile.spec.ts:813:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_SEC_002 — own anonymous Kudo is named in the author's Sent list and masked for everyone else (30.8s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   63 [kudos-authed] › e2e/viet-kudo.spec.ts:647:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-26 — selecting recipient fills field and closes menu (26.3s)
+  ✓   65 [kudos-authed] › e2e/viet-kudo.spec.ts:667:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-27 — toolbar bold button has aria-pressed attribute (23.1s)
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✓   64 [profile-authed] › e2e/profile.spec.ts:901:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_SEC_004 — neither face of the route exposes an email or an auth uuid (28.2s)
+  ✓   66 [kudos-authed] › e2e/viet-kudo.spec.ts:676:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-28 — toolbar italic button has aria-pressed attribute (22.7s)
+  ✓   67 [kudos-authed] › e2e/viet-kudo.spec.ts:685:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-29 — toolbar strikethrough button has aria-pressed attribute (24.3s)
+  ✓   68 [kudos-authed] › e2e/viet-kudo.spec.ts:694:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-30 — toolbar ordered list button present (23.0s)
+  ✓   69 [kudos-authed] › e2e/viet-kudo.spec.ts:701:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-31 — toolbar link button opens dialog with URL input (24.1s)
+  ✓   70 [kudos-authed] › e2e/viet-kudo.spec.ts:713:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-32 — toolbar quote button present (22.2s)
+  ✓   71 [kudos-authed] › e2e/viet-kudo.spec.ts:720:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-33 — typing @Nguyen filters mention menu (23.3s)
+  ✓   72 [kudos-authed] › e2e/viet-kudo.spec.ts:734:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-34 — add hashtag displays as removable chip (27.1s)
+  ✘   73 [kudos-authed] › e2e/viet-kudo.spec.ts:753:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips (35.0s)
+  ✓   74 [kudos-authed] › e2e/viet-kudo.spec.ts:772:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-36 — removing one hashtag chip leaves others intact (1.3s)
+  ✓   75 [kudos-authed] › e2e/viet-kudo.spec.ts:798:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-37 — clicking image add opens file picker and shows thumbnail (29.5s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET'
+[WebServer] }
+  ✓   76 [kudos-authed] › e2e/viet-kudo.spec.ts:813:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-38 — uploading 5 images hides the add button (29.6s)
+  ✘   77 [kudos-authed] › e2e/viet-kudo.spec.ts:830:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact (33.5s)
+  ✓   78 [kudos-authed] › e2e/viet-kudo.spec.ts:854:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-40 — removing one image from 5 shows the add button again (25.4s)
+  ✓   79 [kudos-authed] › e2e/viet-kudo.spec.ts:878:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-41 — anonymous checkbox can be checked (27.8s)
+  ✓   80 [kudos-authed] › e2e/viet-kudo.spec.ts:889:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-42 — anonymous checkbox can be unchecked (24.9s)
+  ✓   81 [kudos-authed] › e2e/viet-kudo.spec.ts:901:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-43 — checking anonymous checkbox reveals name input field (29.6s)
+  ✓   82 [kudos-authed] › e2e/viet-kudo.spec.ts:917:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-44 — unchecking anonymous checkbox hides name input field (29.4s)
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘   83 [kudos-authed] › e2e/viet-kudo.spec.ts:934:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving (31.2s)
+[WebServer] [browser] An async function with useActionState was called outside of a transition. This is likely not what you intended (for example, isPending will not update correctly). Either call the returned function inside startTransition, or pass it to an `action` or `formAction` prop. 
+[WebServer]     at ComposeForm.useCallback[handleSubmit] (app/kudos/new/_components/compose-form.tsx:80:5)
+[WebServer]   78 |       return;
+[WebServer]   79 |     }
+[WebServer] > 80 |     submit(payload);
+[WebServer]      |     ^
+[WebServer]   81 |   }, [pending, awaitingUploads, submit]);
+[WebServer]   82 |
+[WebServer]   83 |   return ( (app/kudos/new/_components/compose-form.tsx:80:5)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/ca9f93a4-cd3a-4bfe-8b03-1b2aadaae9ca/1788929144420-61b4a466-7d66-46c7-9d73-20a67c579fe7.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✓   84 [kudos-authed] › e2e/viet-kudo.spec.ts:961:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-46/ID-47 — successful submission creates kudos and navigates to board (24.9s)
+  ✓   85 [kudos-authed] › e2e/viet-kudo.spec.ts:1004:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-48 — submit button not ready when required fields empty (26.5s)
+  ✓   86 [kudos-authed] › e2e/viet-kudo.spec.ts:1016:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-49 — submit button ready when required fields filled (28.7s)
+  ✓   87 [kudos-authed] › e2e/viet-kudo.spec.ts:1039:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-50 — recipient field shows error with red border when empty (29.0s)
+  ✓   88 [kudos-authed] › e2e/viet-kudo.spec.ts:1062:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-51 — body field shows error when empty on submit (27.5s)
+  ✓   89 [kudos-authed] › e2e/viet-kudo.spec.ts:1087:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-52 — hashtag field shows error when empty on submit (25.9s)
+  ✓   90 [kudos-authed] › e2e/viet-kudo.spec.ts:1110:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-53 — attempting 6th hashtag shows max error (28.5s)
+  ✓   91 [kudos-authed] › e2e/viet-kudo.spec.ts:1145:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-54 — at 5 images, button hidden, no 6th can be added (28.3s)
+  ✓   92 [kudos-authed] › e2e/viet-kudo.spec.ts:1166:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-55 — .txt file rejected with format error (27.7s)
+  ✓   93 [kudos-authed] › e2e/viet-kudo.spec.ts:1182:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-56 — all required field errors show simultaneously (25.5s)
+  ✓   94 [kudos-authed] › e2e/viet-kudo.spec.ts:1201:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Title field: placeholder and hints present (25.8s)
+  ✓   95 [kudos-authed] › e2e/viet-kudo.spec.ts:1217:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Body field: hint present (28.1s)
+  ✘   96 [kudos-authed] › e2e/viet-kudo.spec.ts:1225:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present (30.1s)
+  ✓   97 [kudos-authed] › e2e/viet-kudo.spec.ts:1235:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Cancel and Submit buttons have correct labels (23.9s)
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  2) [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:58:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByTestId('kudos-card').first().getByTestId('kudos-heart')
+    Expected: "true"
+    Received: "false"
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 15000ms
+      - waiting for getByTestId('kudos-card').first().getByTestId('kudos-heart')
+        7 × locator resolved to <button type="button" aria-pressed="false" data-testid="kudos-heart" class="flex h-8 w-8 shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50">…</button>
+          - unexpected value "false"
+      - Test timeout of 30000ms exceeded.
+
+
+      82 |
+      83 |     // Verify aria-pressed flips (auto-retry, tolerates timing variation)
+    > 84 |     await expect(heart).toHaveAttribute("aria-pressed", expectedPressed);
+         |                         ^
+      85 |
+      86 |     // Verify count changed (auto-retry)
+      87 |     await expect(count).not.toHaveText(initialCount ?? "");
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/kudos-live-board-authed.spec.ts:84:25
+
+    Error Context: test-results/kudos-live-board-authed-Ku-5158e-ssed-and-updates-count-by-1-kudos-authed/error-context.md
+
+  3) [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:100:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByTestId('kudos-card').first().getByTestId('kudos-heart')
+    Expected: "true"
+    Received: "false"
+    Timeout:  15000ms
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 15000ms
+      - waiting for getByTestId('kudos-card').first().getByTestId('kudos-heart')
+        34 × locator resolved to <button type="button" aria-pressed="false" data-testid="kudos-heart" class="flex h-8 w-8 shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50">…</button>
+           - unexpected value "false"
+
+
+      125 |     // the reload below a real persistence proof rather than a race.
+      126 |     await heart.click();
+    > 127 |     await expect(heart).toHaveAttribute("aria-pressed", expectedPressed);
+          |                         ^
+      128 |     await expect(count).not.toHaveText(initialCount ?? "");
+      129 |
+      130 |     // Reload the page
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/kudos-live-board-authed.spec.ts:127:25
+
+    Error Context: test-results/kudos-live-board-authed-Ku-7c495-persists-across-page-reload-kudos-authed/error-context.md
+
+  4) [kudos-authed] › e2e/viet-kudo.spec.ts:189:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:3000/kudos/new", waiting until "load"
+
+
+      190 |     page,
+      191 |   }) => {
+    > 192 |     await page.goto(ROUTE);
+          |                ^
+      193 |     await expect(composeForm(page)).toBeVisible();
+      194 |   });
+      195 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:192:16
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-e2a31-rk-present-with-data-testid-kudos-authed/error-context.md
+
+  5) [kudos-authed] › e2e/viet-kudo.spec.ts:252:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-401b0-eckbox-unchecked-by-default-kudos-authed/error-context.md
+
+  6) [kudos-authed] › e2e/viet-kudo.spec.ts:394:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-83e11--error-when-empty-on-submit-kudos-authed/error-context.md
+
+  7) [kudos-authed] › e2e/viet-kudo.spec.ts:456:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-1960f-hows-error-and-is-not-added-kudos-authed/error-context.md
+
+  8) [kudos-authed] › e2e/viet-kudo.spec.ts:519:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-8d314-s-and-button-becomes-hidden-kudos-authed/error-context.md
+
+  9) [kudos-authed] › e2e/viet-kudo.spec.ts:753:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/kudos/new", waiting until "load"
+
+
+      754 |     page,
+      755 |   }) => {
+    > 756 |     await page.goto(ROUTE);
+          |                ^
+      757 |
+      758 |     const tags = [TEST_HASHTAG_1, TEST_HASHTAG_2, TEST_HASHTAG_3];
+      759 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:756:16
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-06c31-display-as-3-separate-chips-kudos-authed/error-context.md
+
+  10) [kudos-authed] › e2e/viet-kudo.spec.ts:830:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-79a60--thumb-leaves-others-intact-kudos-authed/error-context.md
+
+  11) [kudos-authed] › e2e/viet-kudo.spec.ts:934:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-303b9-tes-to-kudos-without-saving-kudos-authed/error-context.md
+
+  12) [kudos-authed] › e2e/viet-kudo.spec.ts:1225:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator:  getByTestId('community-standards-link')
+    Expected: visible
+    Received: undefined
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for getByTestId('community-standards-link')
+      - Protocol error (Runtime.callFunctionOn): Internal server error, session closed.
+
+
+      1226 |     await page.goto(ROUTE);
+      1227 |
+    > 1228 |     await expect(communityStandardsLink(page)).toBeVisible();
+           |                                                ^
+      1229 |     await expect(communityStandardsLink(page)).toContainText(
+      1230 |       COMMUNITY_STANDARDS_LABEL,
+      1231 |     );
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/viet-kudo.spec.ts:1228:48
+
+    Error Context: test-results/viet-kudo-Viết-Kudo-screen-65ec7-nity-Standards-link-present-kudos-authed/error-context.md
+
+  13) [homepage-authed] › e2e/homepage-authed.spec.ts:28:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-27 [FR-201] — clicking notification bell opens the notification panel 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:3000/", waiting until "load"
+
+
+      29 |     page,
+      30 |   }) => {
+    > 31 |     await page.goto("/");
+         |                ^
+      32 |
+      33 |     const notificationBell = page.getByRole("button", {
+      34 |       name: /notification|bell|thông báo/i,
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/homepage-authed.spec.ts:31:16
+
+    Error Context: test-results/homepage-authed-Homepage-S-f8824-pens-the-notification-panel-homepage-authed/error-context.md
+
+  14) [profile-authed] › e2e/profile.spec.ts:235:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_002 — ?id= is resolved against the viewer's own identity, with no redirect 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/profile", waiting until "load"
+
+
+      250 |
+      251 |     // The self face exists and is reached by the bare route, unqueried.
+    > 252 |     await page.goto(ROUTE);
+          |                ^
+      253 |     const self = new URL(page.url());
+      254 |     expect(self.pathname).toBe(ROUTE);
+      255 |     expect(self.search).toBe("");
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:252:16
+
+    Error Context: test-results/profile-Profile-screen-—-p-1a79e-n-identity-with-no-redirect-profile-authed/error-context.md
+
+  15) [profile-authed] › e2e/profile.spec.ts:271:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_004 — malformed ?id values return 404 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/profile?id=%27%20or%201%3D1", waiting until "networkidle"
+
+
+      275 |
+      276 |     for (const id of malformedIds) {
+    > 277 |       const res = await page.goto(`${ROUTE}?id=${encodeURIComponent(id)}`, {
+          |                              ^
+      278 |         waitUntil: "networkidle",
+      279 |       });
+      280 |       // Each malformed id returns 404 with no profile content
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:277:30
+
+    Error Context: test-results/profile-Profile-screen-—-p-28c05-formed-id-values-return-404-profile-authed/error-context.md
+
+  16) [profile-authed] › e2e/profile.spec.ts:286:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_005 — empty and repeated ?id values 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/profile?id=1&id=2", waiting until "networkidle"
+
+
+      293 |
+      294 |     // Repeated ?id=1&id=2 returns 404
+    > 295 |     const res = await page.goto(`${ROUTE}?id=${FRAME_VIEWER_ID}&id=${FRAME_RECEIVER_ID}`, {
+          |                            ^
+      296 |       waitUntil: "networkidle",
+      297 |     });
+      298 |     expect(res?.status()).toBe(404);
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:295:28
+
+    Error Context: test-results/profile-Profile-screen-—-p-6fa3d-mpty-and-repeated-id-values-profile-authed/error-context.md
+
+  17) [profile-authed] › e2e/profile.spec.ts:322:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_001 — hero renders avatar, name, department, tier badge 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/profile", waiting until "load"
+
+
+      336 |
+      337 |     // --- sparse hero (this session's own) -----------------------------------
+    > 338 |     await page.goto(ROUTE);
+          |                ^
+      339 |
+      340 |     await expect(hero).toBeVisible();
+      341 |     // The identity fallback: the email local-part, exactly as the setup
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:338:16
+
+    Error Context: test-results/profile-Profile-screen-—-p-761c2--name-department-tier-badge-profile-authed/error-context.md
+
+  18) [profile-authed] › e2e/profile.spec.ts:366:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_003 — badge heading is first-person on self, neutral on other 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/profile?id=2", waiting until "load"
+
+
+      372 |
+      373 |     // Other's view: neutral heading
+    > 374 |     await page.goto(`${ROUTE}?id=${FRAME_RECEIVER_ID}`);
+          |                ^
+      375 |     await expect(badgeRow(page)).toContainText("Bộ sưu tập icon");
+      376 |     // Should NOT contain the first-person version on another's profile
+      377 |     await expect(badgeRow(page)).not.toContainText("của tôi");
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:374:16
+
+    Error Context: test-results/profile-Profile-screen-—-p-ebcd7-on-on-self-neutral-on-other-profile-authed/error-context.md
+
+  19) [profile-authed] › e2e/profile.spec.ts:479:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_008 — own profile shows stats, no write-Kudo bar 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).not.toBeVisible() failed
+
+    Locator:  getByTestId('profile-write-bar')
+    Expected: not visible
+    Received: visible
+
+    Call log:
+      - Expect "not toBeVisible" with timeout 15000ms
+      - waiting for getByTestId('profile-write-bar')
+      - Protocol error (Runtime.callFunctionOn): Internal server error, session closed.
+
+
+      488 |     // Write bar is NOT shown on own profile
+      489 |     const bar = writeBar(page);
+    > 490 |     await expect(bar).not.toBeVisible();
+          |                           ^
+      491 |   });
+      492 |
+      493 |   // ========================================================================
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:490:27
+
+    Error Context: test-results/profile-Profile-screen-—-p-6005e-ows-stats-no-write-Kudo-bar-profile-authed/error-context.md
+
+  20) [profile-authed] › e2e/profile.spec.ts:535:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_010 — switching direction discards previous pages 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('profile-direction-trigger')
+    Expected substring: "Đã gửi"
+    Received string:    "Đã nhận (0)"
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for getByTestId('profile-direction-trigger')
+        7 × locator resolved to <button type="button" aria-expanded="false" aria-haspopup="listbox" data-testid="profile-direction-trigger" class="flex items-center gap-2 self-stretch rounded border border-[#998C5F] bg-[rgba(255,234,158,0.10)] px-6 py-4 text-base leading-6 font-bold tracking-[0.15px] text-white">…</button>
+          - unexpected value "Đã nhận (0)"
+      - Test timeout of 30000ms exceeded.
+
+
+      553 |
+      554 |     // The trigger only moves once the new page has landed (FR-403) ...
+    > 555 |     await expect(trigger).toContainText(DIRECTION_LABELS.sent);
+          |                           ^
+      556 |     // ... and the previous direction's content is DISCARDED, not appended to:
+      557 |     // the committed empty copy is Sent's and Received's is gone. Asserting the
+      558 |     // trigger alone would pass on a feed that never swapped.
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:555:27
+
+    Error Context: test-results/profile-Profile-screen-—-p-b3098-ion-discards-previous-pages-profile-authed/error-context.md
+
+  21) [profile-authed] › e2e/profile.spec.ts:584:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_012 — each direction has its own empty state copy 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for getByTestId('profile-direction-trigger')
+
+
+      600 |     // `Số Kudos bạn đã gửi:` label also matches a bare `getByText("Đã gửi")`.
+      601 |     const trigger = directionTrigger(page);
+    > 602 |     await trigger.click();
+          |                   ^
+      603 |     const sentOption = directionOption(page, DIRECTION_LABELS.sent);
+      604 |     await expect(sentOption).toHaveCount(1);
+      605 |     await sentOption.click();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:602:19
+
+    Error Context: test-results/profile-Profile-screen-—-p-c48e7-as-its-own-empty-state-copy-profile-authed/error-context.md
+
+  22) [profile-authed] › e2e/profile.spec.ts:616:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_013 — feed paging with infinite scroll and end-of-feed message 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('profile-feed-end')
+    Expected: visible
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for getByTestId('profile-feed-end')
+      - Test timeout of 30000ms exceeded.
+
+
+      643 |
+      644 |     // Paging really happened, it stopped, and it said so.
+    > 645 |     await expect(endMessage).toBeVisible();
+          |                              ^
+      646 |     await expect(endMessage).toHaveText(END_OF_FEED_MESSAGE);
+      647 |     expect(await cards.count()).toBeGreaterThan(firstPageCount);
+      648 |     // `hasMore` false unmounts the sentinel, which is what stops the observer.
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:645:30
+
+    Error Context: test-results/profile-Profile-screen-—-p-b42b1-oll-and-end-of-feed-message-profile-authed/error-context.md
+
+  23) [profile-authed] › e2e/profile.spec.ts:688:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_014 — heart toggle updates count to server value 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator:  getByTestId('kudos-card').first().getByTestId('kudos-heart')
+    Expected: "true"
+    Received: "false"
+
+    Call log:
+      - Expect "toHaveAttribute" with timeout 15000ms
+      - waiting for getByTestId('kudos-card').first().getByTestId('kudos-heart')
+        8 × locator resolved to <button type="button" aria-pressed="false" data-testid="kudos-heart" class="flex h-8 w-8 shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50">…</button>
+          - unexpected value "false"
+      - Test timeout of 30000ms exceeded.
+
+
+      707 |     // aria-pressed should flip
+      708 |     const expectedPressed = initialPressed === "true" ? "false" : "true";
+    > 709 |     await expect(heart).toHaveAttribute("aria-pressed", expectedPressed);
+          |                         ^
+      710 |
+      711 |     // Count should change (server-authoritative)
+      712 |     await expect(count).not.toHaveText(initialCount ?? "");
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:709:25
+
+    Error Context: test-results/profile-Profile-screen-—-p-2be66-dates-count-to-server-value-profile-authed/error-context.md
+
+  24) [profile-authed] › e2e/profile.spec.ts:738:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_015 — hashtag click navigates to filtered board 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForURL: Test timeout of 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+      751 |
+      752 |     await hashtag.click();
+    > 753 |     await page.waitForURL((url) => url.pathname === "/kudos");
+          |                ^
+      754 |
+      755 |     // The deep link carries the BARE name, exactly once.
+      756 |     const landed = new URL(page.url());
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:753:16
+
+    Error Context: test-results/profile-Profile-screen-—-p-56703-navigates-to-filtered-board-profile-authed/error-context.md
+
+  25) [profile-authed] › e2e/profile.spec.ts:813:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_SEC_002 — own anonymous Kudo is named in the author's Sent list and masked for everyone else 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.waitForURL: Test timeout of 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+      852 |       await submit.click();
+      853 |       // `createKudos` redirects to /kudos only after the row is written.
+    > 854 |       await page.waitForURL((url) => url.pathname === "/kudos", { timeout: 20_000 });
+          |                  ^
+      855 |
+      856 |       // --- the author's own Sent list reveals them -------------------------
+      857 |       await page.goto(ROUTE);
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/profile.spec.ts:854:18
+
+    Error Context: test-results/profile-Profile-screen-—-p-386ef-nd-masked-for-everyone-else-profile-authed/error-context.md
+
+  26) [visual-capture] › e2e/capture-homepage-visual.spec.ts:10:7 › Visual Capture — Homepage › capture desktop (1512px) and mobile (375px) screenshots 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:3000/", waiting until "load"
+
+
+      26 |     // Mobile capture at 375px
+      27 |     await page.setViewportSize({ width: 375, height: 812 });
+    > 28 |     await page.goto("/");
+         |                ^
+      29 |     await page.waitForLoadState("networkidle");
+      30 |
+      31 |     await page.screenshot({
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/capture-homepage-visual.spec.ts:28:16
+
+    Error Context: test-results/capture-homepage-visual-Vi-896bb-nd-mobile-375px-screenshots-visual-capture/error-context.md
+
+  26 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+    [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:58:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 
+    [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:100:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:189:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:252:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:394:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:456:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:519:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-19 — upload 5 images and button becomes hidden 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:753:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-35 — add 3 hashtags display as 3 separate chips 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:830:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-39 — removing one image thumb leaves others intact 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:934:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-45 — cancel button navigates to /kudos without saving 
+    [kudos-authed] › e2e/viet-kudo.spec.ts:1225:7 › Viết Kudo screen — /kudos/new (kudos-authed) › Community Standards link present 
+    [homepage-authed] › e2e/homepage-authed.spec.ts:28:7 › Homepage SAA — Authenticated User (homepage-authed project) › ID-27 [FR-201] — clicking notification bell opens the notification panel 
+    [profile-authed] › e2e/profile.spec.ts:235:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_002 — ?id= is resolved against the viewer's own identity, with no redirect 
+    [profile-authed] › e2e/profile.spec.ts:271:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_004 — malformed ?id values return 404 
+    [profile-authed] › e2e/profile.spec.ts:286:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_005 — empty and repeated ?id values 
+    [profile-authed] › e2e/profile.spec.ts:322:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_001 — hero renders avatar, name, department, tier badge 
+    [profile-authed] › e2e/profile.spec.ts:366:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_GUI_003 — badge heading is first-person on self, neutral on other 
+    [profile-authed] › e2e/profile.spec.ts:479:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_008 — own profile shows stats, no write-Kudo bar 
+    [profile-authed] › e2e/profile.spec.ts:535:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_010 — switching direction discards previous pages 
+    [profile-authed] › e2e/profile.spec.ts:584:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_012 — each direction has its own empty state copy 
+    [profile-authed] › e2e/profile.spec.ts:616:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_013 — feed paging with infinite scroll and end-of-feed message 
+    [profile-authed] › e2e/profile.spec.ts:688:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_014 — heart toggle updates count to server value 
+    [profile-authed] › e2e/profile.spec.ts:738:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_FUN_015 — hashtag click navigates to filtered board 
+    [profile-authed] › e2e/profile.spec.ts:813:7 › Profile screen — /profile (profile-authed) › TC_WEB_PROFILE_SEC_002 — own anonymous Kudo is named in the author's Sent list and masked for everyone else 
+    [visual-capture] › e2e/capture-homepage-visual.spec.ts:10:7 › Visual Capture — Homepage › capture desktop (1512px) and mobile (375px) screenshots 
+  1 skipped
+  94 did not run
+  70 passed (29.5m)
+EXIT=1

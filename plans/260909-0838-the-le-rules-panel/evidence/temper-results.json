@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "command": "npx supabase db reset",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Migrations + seed applied from scratch; rule_sections=3, rule_items=10 (4 hero_tier / 6 collectible_icon); collectible_icon position 6 reads ROOT FURTHER after the V-3 correction.",
+      "ts": "2026-09-09T07:12:00Z"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "> my-app@0.1.0 typecheck > tsc --noEmit",
+      "ts": "2026-09-09T07:38:25Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "✖ 29 problems (0 errors, 29 warnings)",
+      "ts": "2026-09-09T07:38:45Z"
+    },
+    {
+      "command": "npm run build",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "ƒ  (Dynamic)  server-rendered on demand",
+      "ts": "2026-09-09T07:39:51Z"
+    },
+    {
+      "command": "npx playwright test e2e/the-le.spec.ts --project=anon --timeout=180000",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "2 skipped   10 passed (1.7m)",
+      "ts": "2026-09-09T07:41:48Z"
+    }
+  ]
+}

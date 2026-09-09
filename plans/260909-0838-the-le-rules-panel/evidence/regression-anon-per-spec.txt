@@ -1,0 +1,286 @@
+### npx playwright test e2e/smoke.spec.ts --project=anon
+
+Running 2 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788931550258-301980-x0nvxu@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘  1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  1 did not run
+exitCode: 1
+
+### npx playwright test e2e/login-screen.spec.ts --project=anon
+
+Running 11 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788931677079-305803-u2j7cu@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  10 did not run
+exitCode: 1
+
+### npx playwright test e2e/route-guard.spec.ts --project=anon
+
+Running 3 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788931803082-308921-czfw2q@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+  ✘  1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  2 did not run
+exitCode: 1
+
+### npx playwright test e2e/callback-security.spec.ts --project=anon
+
+Running 8 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788931936127-312255-pmza8k@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘  1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  7 did not run
+exitCode: 1
+
+### npx playwright test e2e/homepage.spec.ts --project=anon
+
+Running 22 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788932065114-315345-bmskws@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  21 did not run
+exitCode: 1
+
+### npx playwright test e2e/award-system.spec.ts --project=anon
+
+Running 14 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788932198125-318504-vdgb8f@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  13 did not run
+exitCode: 1
+
+### npx playwright test e2e/profile-anon.spec.ts --project=anon
+
+Running 3 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788932327910-321540-iac810@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘  1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  2 did not run
+exitCode: 1
+
+### npx playwright test e2e/kudos-live-board.spec.ts --project=anon
+
+Running 25 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788932453560-324528-ejj7lf@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  24 did not run
+exitCode: 1
+
+### npx playwright test e2e/the-le.spec.ts --project=anon
+
+Running 12 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788932573011-327282-y48zz9@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+
+
+  1) [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ────────────────────────────────
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: test-results/auth.setup.ts-authenticate-and-save-state-setup/error-context.md
+
+  1 failed
+    [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state ─────────────────────────────────
+  11 did not run
+exitCode: 1
+

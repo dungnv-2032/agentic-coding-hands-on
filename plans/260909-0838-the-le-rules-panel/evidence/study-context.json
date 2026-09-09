@@ -1,0 +1,49 @@
+{
+  "task": "Implement the MoMorph screen \"Thể lệ UPDATE\" (b1Filzi9i6) as the /standards route, with its editorial content served from the local Supabase project.",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "GET /standards renders the Thể lệ drawer panel with title, the 4 hero-badge tiers, the 6 collectible icons, the KUDOS QUỐC DÂN section and a footer holding Đóng + Viết KUDOS",
+    "All editorial copy on the panel is read from Postgres (public.rule_sections / public.rule_items) at request time, not hardcoded in TSX",
+    "The new tables carry RLS with a <table>_select_all policy for anon+authenticated, matching the F004 precedent",
+    "supabase/seed.sql seeds every rule row verbatim from the Figma frame; no invented copy",
+    "Clicking Đóng returns the viewer to the previous page (history back), falling back to / on a direct visit",
+    "Clicking Viết KUDOS navigates to /kudos/new",
+    "The panel body scrolls independently while the footer stays pinned",
+    "Below the 553px design width the drawer occupies the full viewport width",
+    "e2e/the-le.spec.ts passes under the anon project via npx playwright test e2e/the-le.spec.ts --project=anon",
+    "npm run lint and npm run typecheck both exit 0"
+  ],
+  "touchpoints": [
+    "app/standards/page.tsx",
+    "app/standards/_components/*",
+    "lib/rules/queries.ts",
+    "lib/rules/rules-data.ts",
+    "lib/rules/rules-view-model.ts",
+    "lib/i18n/messages/dictionary.ts",
+    "lib/i18n/messages/vi-rules.ts",
+    "lib/i18n/messages/en-rules.ts",
+    "lib/i18n/messages/vi.ts",
+    "lib/i18n/messages/en.ts",
+    "lib/supabase/database.types.ts",
+    "supabase/migrations/<new>_the_le_rules_content.sql",
+    "supabase/seed.sql",
+    "playwright.config.ts",
+    "e2e/the-le.spec.ts",
+    "e2e/fixtures/the-le-constants.ts",
+    "public/images/rules/*"
+  ],
+  "blastRadius": [
+    "playwright.config.ts anon testMatch regex is edited — a malformed regex silences existing anon specs",
+    "supabase/seed.sql gains a section — a syntax error there breaks supabase db reset for every suite",
+    "lib/i18n/messages/dictionary.ts gains a namespace — vi.ts and en.ts must both be updated or tsc fails",
+    "lib/supabase/database.types.ts is regenerated wholesale by npm run db:types",
+    "app/standards/page.tsx currently renders ComingSoon; the footer link and the floating widget both point at it"
+  ],
+  "contracts": [
+    "public read RLS: create policy \"<table>_select_all\" ... for select to anon, authenticated using (true) — binding precedent from docs/system/permissions.md",
+    "queries.ts holds typed Supabase reads only; <feature>-data.ts orchestrates and maps rows to a frozen view model",
+    "Dictionary namespaces are added to dictionary.ts plus a vi-<feature>.ts and en-<feature>.ts pair wired into vi.ts/en.ts",
+    "e2e Vietnamese copy is asserted through exported constants in e2e/fixtures/, never inline literals",
+    "baseURL stays http://127.0.0.1:3000; Supabase local must be running before any e2e run"
+  ]
+}
