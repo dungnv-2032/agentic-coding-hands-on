@@ -6,7 +6,7 @@ authored_by: rebuild-spec (Core pass, generated layer)
 
 **Project**: my-app (SAA 2025)
 **Generated**: 2026-09-05
-**Analysis Scope**: `proxy.ts`, `app/_page-context.ts`, `app/_components/account-menu.tsx`, `app/_components/home-header.tsx`, `supabase/migrations/20260906140914_kudos_live_board.sql` (F004), `supabase/migrations/20260907025909_viet_kudo_write_path.sql` (F005, added below)
+**Analysis Scope**: `proxy.ts`, `app/_page-context.ts`, `app/_components/account-menu.tsx`, `app/_components/home-header.tsx`, `supabase/migrations/20260906140914_kudos_live_board.sql` (F004), `supabase/migrations/20260907025909_viet_kudo_write_path.sql` (F005, added below), `supabase/migrations/20260909093000_the_le_rules_content.sql` (F007, PERM014/PERM015 below)
 
 > Raw PERM### inventory (code-derived). The curated plain-language view is the forward-draft
 > `docs/system/permissions.md` — that file predates this Core pass and should be reconciled
@@ -33,34 +33,44 @@ not merely rejected by a check.
 
 | Code | Name | Type | Enforced At |
 |------|------|------|--------------|
-| PERM001 | Todo + Viết-Kudo route guard | route-guard | `proxy.ts:47-50` |
-| PERM002 | Login route bounce | route-guard | `proxy.ts:52-53` |
-| PERM003 | Auth callback deliberate no-guard exemption | route-guard | `proxy.ts:11-13` (reasoning), matcher config `:59-65` |
+| PERM001 | Todo + Viết-Kudo route guard | route-guard | `proxy.ts:51-58` |
+| PERM002 | Login route bounce | route-guard | `proxy.ts:60-62` |
+| PERM003 | Auth callback deliberate no-guard exemption | route-guard | `proxy.ts:11-13` (reasoning), matcher config `:67-72` |
 | PERM004 | Admin Dashboard menu-link visibility | screen-permission | `app/_page-context.ts:40` + `app/_components/account-menu.tsx:99-107` |
 | PERM005 | Authenticated-only header controls | screen-permission | `app/_components/home-header.tsx:66,75` |
 | PERM006 | Kudos public read (RLS) | data-permission | `supabase/migrations/20260906140914_kudos_live_board.sql:161-170,194` |
 | PERM007 | Kudos like write ownership + anti-self-like (RLS) | resource-ownership | `supabase/migrations/20260906140914_kudos_live_board.sql:174-184,195` |
-| PERM008 | Viết Kudo route guard (`/kudos/new`) | route-guard | `proxy.ts:47-50` |
+| PERM008 | Viết Kudo route guard (`/kudos/new`) | route-guard | `proxy.ts:51-58` |
 | PERM009 | Kudos content-write ownership, no update/delete (RLS + `create_kudos` RPC) | resource-ownership | `supabase/migrations/20260907025909_viet_kudo_write_path.sql:41-75,120-235` |
 | PERM010 | Kudos attachment Storage bucket (authenticated write / public read) | data-permission | `supabase/migrations/20260907025909_viet_kudo_write_path.sql:89-101` |
+| PERM014 | Rules sections public read (RLS) | data-permission | `supabase/migrations/20260909093000_the_le_rules_content.sql:59,63,77` |
+| PERM015 | Rules items public read (RLS) | data-permission | `supabase/migrations/20260909093000_the_le_rules_content.sql:60,64,78` |
+
+> **PERM011–PERM013 are deliberately unallocated here.** `docs/system/permissions.md`
+> § "Mã `PERM###` dự kiến của vòng F006" reserves those three numbers for F006's boundaries
+> (the `/profile` route guard, the `kudos` revoke + `kudos_readable` grant, and the self-scoped
+> "Đã gửi" list). Those boundaries have shipped and been measured, but no entry has been written
+> for them in this registry yet — F007 takes the next free numbers rather than stepping on the
+> reservation. Run `/tkm:rebuild-spec --artifact permissions-matrix` to close the gap.
 
 ---
 
 ## PERM001: Todo + Viết-Kudo route guard
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:47-50`
+**Enforced At**: `proxy.ts:51-58`
 
 ### Description
 
 `!user && isGuarded` → redirect to `/login`, carrying forward any rotated session cookies from
 `updateSession()` (BL003 in `behavior-logic.md` — a bare `NextResponse.redirect()` here would drop
 single-use refresh tokens and silently log the user out on the next request). `isGuarded` is one
-shared boolean (`proxy.ts:47-48`) covering **two** independent route conditions:
-`pathname.startsWith("/todo")` and `pathname === "/kudos/new" || pathname.startsWith("/kudos/new/")`
-— the latter added by F005 (see PERM008 below for the route-specific detail). The two conditions
-are OR-combined in one `if`, not two separate guard rules, which is why this entry and PERM008
-cite the same line range.
+shared boolean (`proxy.ts:51-56`) covering **three** independent route conditions:
+`pathname.startsWith("/todo")`, `pathname === "/kudos/new" || pathname.startsWith("/kudos/new/")`
+(added by F005 — see PERM008 for the route-specific detail), and `pathname === "/profile" ||
+pathname.startsWith("/profile/")` (added by F006 — **no PERM### written for it yet**, reserved as
+PERM011). All three are OR-combined in one `if`, not separate guard rules, which is why these
+entries cite the same line range.
 
 ### Related Routes
 
@@ -85,7 +95,7 @@ cite the same line range.
 ## PERM002: Login route bounce
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:52-53`
+**Enforced At**: `proxy.ts:60-62`
 
 ### Description
 
@@ -113,11 +123,11 @@ as PERM001. Prevents an already-authenticated session from re-seeing the login f
 ## PERM003: Auth callback deliberate no-guard exemption
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:11-13` (reasoning comment), matcher config `:59-65`
+**Enforced At**: `proxy.ts:11-13` (reasoning comment), matcher config `:67-72`
 
 ### Description
 
-`/auth/callback` is deliberately **not** matched by either guard rule in `proxy.ts:47-53`.
+`/auth/callback` is deliberately **not** matched by either guard rule in `proxy.ts:51-62`.
 This is a documented decision, not an oversight: guarding the OAuth callback would make the
 Google → app round-trip structurally impossible, since the request arrives with no session yet.
 Origin-pinning and open-redirect defence are handled inside the handler itself
@@ -283,7 +293,7 @@ all — an unauthenticated direct call is rejected by Postgres regardless of wha
 ## PERM008: Viết Kudo route guard (`/kudos/new`)
 
 **Type**: route-guard
-**Enforced At**: `proxy.ts:47-50`
+**Enforced At**: `proxy.ts:51-58`
 
 ### Description
 
@@ -414,6 +424,106 @@ only clears client state, it does not delete the Storage object).
 
 ---
 
+## PERM014: Rules sections public read (RLS)
+
+**Type**: data-permission
+**Enforced At**: `supabase/migrations/20260909093000_the_le_rules_content.sql:59` (RLS on), `:63` (policy), `:77` (grant)
+**Owner F###**: F007
+
+### Description
+
+`public.rule_sections` holds the three ordered prose sections of the Thể lệ screen. RLS is enabled
+and the table carries exactly one policy — `rule_sections_select_all`,
+`for select to anon, authenticated using (true)` — with an explicit
+`grant select on public.rule_sections to anon, authenticated`. There is **no** `insert`, `update`
+or `delete` policy: RLS denies by default, so the silence is the deny. No Server Action exists on
+`/standards`, so the application exposes no write path either. Editing the rules copy today means
+editing a migration or the seed.
+
+Verified live (`pg_policies`, `pg_class.relrowsecurity`): RLS is on, exactly one `SELECT` policy
+with `qual = true` for `{anon,authenticated}`.
+
+### Related Routes
+
+- (GET) `/standards` — the only reader
+
+### Related Screens
+
+- SCR007_TheLe
+
+### Permission Rules
+
+| Principal | Allowed | Notes |
+|-----------|---------|-------|
+| Anonymous | ✓ read | Same copy as everyone else — the rules carry no per-viewer variation |
+| Authenticated | ✓ read | Identical |
+| Admin | ✓ read | Identical — the admin role unlocks nothing here |
+| Any principal | ✗ write | No `insert`/`update`/`delete` policy exists on the table |
+
+### Related Modules
+
+- `lib/rules/queries.ts` (`fetchRuleSections`)
+- `lib/rules/rules-data.ts`
+
+---
+
+## PERM015: Rules items public read (RLS)
+
+**Type**: data-permission
+**Enforced At**: `supabase/migrations/20260909093000_the_le_rules_content.sql:60` (RLS on), `:64` (policy), `:78` (grant)
+**Owner F###**: F007
+
+### Description
+
+`public.rule_items` holds the four Hero tiers and the six collectible icons in one table,
+discriminated by `kind`. Identical boundary to PERM014 — one `rule_items_select_all` policy,
+`for select to anon, authenticated using (true)`, explicit `grant select`, no write policy. The
+`kind` discriminator is a schema concern, not an authorization one: both kinds are equally public,
+and no policy branches on it.
+
+Verified live: RLS on, one `SELECT` policy with `qual = true` for `{anon,authenticated}`, 10 rows
+(4 `hero_tier` + 6 `collectible_icon`).
+
+### Related Routes
+
+- (GET) `/standards` — the only reader
+
+### Related Screens
+
+- SCR007_TheLe
+
+### Permission Rules
+
+| Principal | Allowed | Notes |
+|-----------|---------|-------|
+| Anonymous | ✓ read | Both `kind` values, no distinction |
+| Authenticated | ✓ read | Identical |
+| Admin | ✓ read | Identical |
+| Any principal | ✗ write | No `insert`/`update`/`delete` policy exists on the table |
+
+### Related Modules
+
+- `lib/rules/queries.ts` (`fetchRuleItems`, `RULE_ITEM_KIND`)
+- `lib/rules/rules-data.ts`
+
+---
+
+### Note on the grant set behind PERM014/PERM015 (applies repo-wide, not new in F007)
+
+The migration's explicit `grant select … to anon, authenticated` is belt-and-braces, not the thing
+that stops a write. Measured on the running database, `anon` and `authenticated` in fact hold
+`SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER` on both new tables — and on every
+pre-existing `public` table too (`hashtags`, `departments`, `gift_awards` show the identical set).
+That comes from the Supabase stack's own `alter default privileges` on schema `public`
+(`pg_default_acl`: `anon=arwdDxtm`, `authenticated=arwdDxtm`), applied to every new table
+automatically. **RLS is what actually denies the writes**, which is why "enable RLS on every
+`public` table" is stated as a binding precedent in `docs/system/permissions.md` rather than a
+nicety. One privilege is outside that backstop — `TRUNCATE` is not governed by RLS — but PostgREST
+exposes no path to it, so no client-reachable surface uses it. Recorded because it is measurably
+true, not because F007 introduced it.
+
+---
+
 ## Principal × Resource Matrix
 
 | Route | Anonymous | Authenticated | Admin | Enforced by |
@@ -427,18 +537,21 @@ only clears client state, it does not delete the Storage object).
 | `/kudos/new` | Redirect → `/login` | Allow (compose + submit) | Allow (compose + submit) | Route: PERM001/PERM008 (session required). Data: PERM009 (content write, `authenticated` only, no update/delete) + PERM010 (Storage attachment write, own-folder only) |
 | `/kudos/secret-box` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder) |
 | `/kudos/[id]` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder; `params.id` never read) |
-| `/standards` | Allow | Allow | Allow | None — public, no gate |
-| `/profile` | Allow | Allow | Allow | None — public, no gate. **Explicitly documented as deliberate** (`app/profile/page.tsx:9-11`): no protected content exists yet. |
+| `/standards` | Allow (read) | Allow (read) | Allow (read) | Route: none — public, no gate, deliberately (F007). Data: PERM014 + PERM015 (read, all roles; no write policy on either table) |
+| `/profile` | Redirect → `/login` | Allow | Allow | Route: session required (`proxy.ts:51-57`, exact-path guard on `/profile`/`/profile/*`, shipped with F006), plus a second session re-check inside the page. **No PERM### allocated yet** — reserved as `PERM011`, see the note under the Permissions Index. |
 | `/admin` | Allow | Allow | Allow | None — public, no gate. **The admin role controls only the menu link (PERM004), not this route.** |
 
 ## Summary
 
-- **Total Permission Items**: 10
-- **By Type**: route-guard: 4, screen-permission: 2, action-permission: 0, data-permission: 2, role-based: 0, resource-ownership: 2, field-permission: 0, api-scope: 0, feature-flag: 0, experiment: 0, env-gate: 0, locale-gate: 0
+- **Total Permission Items**: 12 (PERM001–PERM010, PERM014, PERM015 — PERM011–PERM013 reserved for
+  F006 and not yet written, see the note under the Permissions Index)
+- **By Type**: route-guard: 4, screen-permission: 2, action-permission: 0, data-permission: 4, role-based: 0, resource-ownership: 2, field-permission: 0, api-scope: 0, feature-flag: 0, experiment: 0, env-gate: 0, locale-gate: 0
 
 ## Cross-Reference Validation
 
 - [x] All PERM### codes are unique
 - [x] All related route references are valid (ROUTE### in `route-list.md`)
-- [x] All related screen references are valid (SCR001_Login, SCR002_Homepage, SCR004_KudosLiveBoard, SCR005_VietKudo per `docs/generated/screen-list.md`)
+- [x] All related screen references are valid (SCR001_Login, SCR002_Homepage, SCR004_KudosLiveBoard, SCR005_VietKudo, SCR007_TheLe per `docs/generated/screen-list.md`)
 - [x] No orphaned permission references
+- [ ] **PERM### numbering is contiguous** — it is not, and the gap is deliberate: PERM011–PERM013
+      are reserved for F006's shipped boundaries, which have no entry in this registry yet

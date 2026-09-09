@@ -21,6 +21,9 @@ trong `supabase/migrations/`.
 > không được kể ở trang này vì cả hai là `screen-permission` ở tầng hiển thị, không phải ranh giới
 > route hay RLS — xem thẳng `permissions-matrix.md`.
 > Ba ranh giới mới của F006 **chưa có mã thật**; xem § "Mã `PERM###` dự kiến của vòng F006".
+> Thể lệ (F007) thêm hai mã **đã cấp thật**: `PERM014` (`rule_sections_select_all`) và `PERM015`
+> (`rule_items_select_all`) — xem § "Ranh giới mới của vòng F007". Số hiệu bỏ trống `PERM011`–
+> `PERM013` là có chủ đích: chúng vẫn dành cho F006, chưa ai viết entry cho chúng trong registry.
 
 ## Reconciliation Note
 
@@ -111,6 +114,13 @@ Phân biệt cho rõ, vì hai vế nghe giống nhau mà khác hẳn: **bề m�
 (`/kudos/new`) thì không: nó cần biết ai đang gửi, nên nó được gác. `/profile` cũng vậy — nó là
 hồ sơ của một người cụ thể, nên nó cần biết người đó là ai.
 
+**`/standards` là route công khai, và đó là quyết định có chủ đích (F007).** `proxy.ts` canh
+`/todo`, `/kudos/new` (khớp chính xác) và `/profile`; `/standards` không nằm trong danh sách và
+không được thêm vào. Thể lệ chương trình là thứ người chưa đăng nhập cần đọc *trước* khi quyết định
+tham gia — đặt nó sau tường đăng nhập sẽ đảo ngược thứ tự đó. Nút `Viết KUDOS` trên màn này cũng
+không tự phán quyền: nó luôn điều hướng, và `proxy.ts` chặn ở `/kudos/new` theo luật sẵn có. Nhân
+bản luật đó ở màn Thể lệ sẽ tạo ra nguồn sự thật thứ hai cho cùng một quyết định.
+
 **Ranh giới ở tầng database (RLS — mới)**:
 - ~~`select` trên toàn bộ bảng Kudos mở cho `anon` và `authenticated` (`PERM006`)~~ — **câu này
   đã bị F006 thay thế; xem ba gạch đầu dòng ngay dưới.** Phần lý do vẫn đúng và vẫn giữ: dữ liệu
@@ -173,8 +183,32 @@ hồ sơ của một người cụ thể, nên nó cần biết người đó l�
   `auth.uid()` của người gọi) — đọc công khai (ảnh hiện trên bảng công khai). Kiểu file được kiểm
   **cả ở server**, vì client không phải biên: kiểm MIME khai báo trước, rồi soi tiếp byte đầu file
   so với chữ ký nhị phân thật của định dạng đó trước khi ghi.
+- **Hai bảng nội dung thể lệ chỉ đọc được, cho cả `anon` lẫn `authenticated` (`PERM014`,
+  `PERM015` — mới ở F007).** `public.rule_sections` và `public.rule_items` theo đúng khuôn
+  `kudos_select_all` mà F004 đặt ra: `enable row level security`, đúng một policy
+  `<table>_select_all` `for select to anon, authenticated using (true)`, `grant select` tường minh.
+  **Không có policy `insert`/`update`/`delete` nào**, nên RLS từ chối mặc định — im lặng chính là
+  từ chối, không cần viết policy deny thừa. Màn `/standards` cũng không có Server Action nào, nên
+  không tồn tại con đường ghi nào từ phía ứng dụng. Đo trên database đang chạy: RLS bật trên cả hai
+  bảng, đúng một policy `SELECT` mỗi bảng, `qual = true`, role `{anon,authenticated}`.
+
+  Điều này an toàn được vì nội dung thể lệ **không có biến thiên theo người xem**: mọi người đọc
+  đúng cùng một chữ. Không cần masked view kiểu `kudos_readable` (F006) — đó là cơ chế cho dữ liệu
+  mà *ai đang hỏi* làm đổi *câu trả lời*, và không có gì như thế ở đây. Dựng một view che cho nội
+  dung tĩnh là chi phí không mua được gì.
+
+  **Sửa nội dung thể lệ hiện chỉ làm được qua migration/seed.** Không có bề mặt quản trị. Nếu sau
+  này có màn admin sửa thể lệ, nó phải mang theo policy ghi **và** một kiểm tra vai trò phía server
+  — cả hai đều chưa tồn tại, và không được mở sẵn quyền cho một màn chưa có.
 - Mọi bảng bật RLS. Một bảng `public` không bật RLS sẽ đọc được không giới hạn qua PostgREST —
-  đó là lỗi cấu hình, không phải mặc định chấp nhận được.
+  đó là lỗi cấu hình, không phải mặc định chấp nhận được. **Đo được, cần nói thẳng:** `grant select`
+  tường minh trong migration là thắt lưng cộng dây đeo quần, KHÔNG phải thứ chặn ghi. Trên stack
+  Supabase local, `anon` và `authenticated` thực tế giữ `SELECT, INSERT, UPDATE, DELETE, TRUNCATE,
+  REFERENCES, TRIGGER` trên mọi bảng `public` — kể cả các bảng cũ, do `alter default privileges`
+  của chính Supabase (`pg_default_acl`: `anon=arwdDxtm`). **RLS mới là thứ từ chối ghi.** Đúng một
+  quyền nằm ngoài lớp chặn đó — `TRUNCATE` không chịu sự chi phối của RLS — nhưng PostgREST không
+  phơi ra đường nào tới nó, nên không có bề mặt nào client chạm được. Ghi lại vì nó đo được, không
+  phải vì F007 tạo ra nó.
 
 **Điểm cần nói thẳng:** nút heart `disabled` ở UI **không** phải ranh giới bảo vệ. Nó là chỉ dẫn
 cho người dùng. Ranh giới thật là policy RLS. Hai lớp này phải cùng đúng, và nếu chỉ một lớp
@@ -218,3 +252,19 @@ cho người dùng. Ranh giới thật là policy RLS. Hai lớp này phải cù
 Mã thật (`PERM0NN`) được cấp ở bước promote/rebuild-spec, không phải ở trang này — bảng trên chỉ
 ghi nhận ý định. Các **grant** mà ba mã này mô tả thì đã ship và đã đo (xem § Access Boundaries);
 chỉ số hiệu của mã là chưa cấp.
+
+## Ranh giới mới của vòng F007 (Thể lệ)
+
+| Mã | Mô tả | Thay thế/bổ sung |
+|---|---|---|
+| `PERM014` | `rule_sections_select_all` — đọc công khai nội dung thể lệ (`anon` + `authenticated`), không policy ghi | Bổ sung |
+| `PERM015` | `rule_items_select_all` — đọc công khai danh sách huy hiệu/icon (`anon` + `authenticated`), không policy ghi | Bổ sung |
+
+Khác với bảng F006 phía trên, **hai mã này đã được cấp thật** trong
+[`docs/generated/permissions-matrix.md`](../generated/permissions-matrix.md) — có entry đầy đủ, có
+Principal × Resource, có Related Modules. Chúng lấy `PERM014`/`PERM015` chứ không lấy
+`PERM011`/`PERM012` vì ba số đó vẫn đang dành cho F006; lấy chồng lên sẽ làm hai trang tài liệu nói
+hai chuyện khác nhau về cùng một mã.
+
+F007 **không** thêm route guard nào, không thêm Server Action nào, không thêm bucket Storage nào, và
+không đổi bất kỳ ranh giới nào đã có.

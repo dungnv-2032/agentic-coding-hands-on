@@ -28,6 +28,14 @@ across `kudos` + `kudos_hashtags` + `kudos_attachments` in one call. It also bri
 **first Supabase Storage integration** — a real object-storage bucket (`kudos-attachments`),
 not the four SELECT-only PostgREST tables F004 added. Still no `/api/*` route.
 
+**Update (F007, Thể lệ):** two more SELECT-only PostgREST tables — `rule_sections` and
+`rule_items` — read through `lib/rules/queries.ts` (`fetchRuleSections`, `fetchRuleItems`), both
+with an explicit `.order("position", { ascending: true })`. This feature adds **no** endpoint, no
+Server Action, no RPC and no Storage surface: `/standards` is read-only, and its two footer
+controls are a `<button>` that calls `router.back()`/`router.push("/")` and a plain
+`<a href="/kudos/new">`. Still no `/api/*` route. RLS boundary: `permissions-matrix.md`
+PERM014/PERM015.
+
 ## Endpoints by Domain
 
 ### Auth (Route Handler)

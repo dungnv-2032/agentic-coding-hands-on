@@ -2,25 +2,25 @@
   "primary_lang": "vi",
   "last_rebuild_sha": "bcb31cb24ad6499e659c751197dedc6a23eb515c",
   "last_feature_spec_run_sha": "851c4660bcf2716f5d4757094e8afeae1c46ae15",
-  "fcode_index_sha": "f4226ac898c3c628abe539b107fde52ec02fbeb15cbfe63c50947ac730cf58e5",
+  "fcode_index_sha": "06dfb22024a4b81b45b7799e0f9d7b818c19ec8f4675470b979dfee386fa9093",
   "doc_shas": {
-    "docs/generated/api-map.md": "84c0c4301460ab3dc1c0756ba7d583c5e8df0c485f32ef6a9d298cee52a006f5",
-    "docs/generated/behavior-logic.md": "2025b65decc331d0f06281044c4a64c4a019cada724df94c5c0331d115084210",
-    "docs/generated/entities.md": "d59a38fa8aa66caa60493085d9284107d13070bf30e499971f2985e0e2562110",
-    "docs/generated/feature-list.md": "e559cd2896a6466c5a49fe2fe13226b2c45756469bb62f575a65f979e363e873",
-    "docs/generated/permissions-matrix.md": "8206835e7a03ed132ae691024f1176df9ec103c6fbd71155e9f90e4b9842d1bc",
-    "docs/generated/route-list.md": "67d1105f92ba1675b6bdfe6e3904e81ebc0ae57a94dded07bdf3e1efff73e829",
-    "docs/generated/screen-list.md": "72d24439f64c5aadc9700c47ac40a9df3727474b1295d920dbb21084bf5257b9",
+    "docs/generated/api-map.md": "704e123f1381c10b3f33dc082b644050fed283dca2aa9d37903b32a0ab3ff3ad",
+    "docs/generated/behavior-logic.md": "bfaf1ee609de36afbf3861e5a3d33d676925822e6e30da452d1f1da1777ef544",
+    "docs/generated/entities.md": "d772a3def0e5d570fedc56eecdbe0caf9fc5a7549cad0bf428ae2f8437346842",
+    "docs/generated/feature-list.md": "24ecdc19f0972189e5ea5d1d7cc5963929d687d358264114a4ee2bced86a460d",
+    "docs/generated/permissions-matrix.md": "2269fae80c90bebfb445c55a1a46bbd35035a40f63065e2e17695968a4f9e126",
+    "docs/generated/route-list.md": "35e85adfcf7ed6281ab53c488a70f3ad07c9e1c4dec32d55f847897da557cad7",
+    "docs/generated/screen-list.md": "ee732db8b3d88e7a7054eb5aa41f7ddcfad6d3fc185ae1113b6159428c1b7e5d",
     "docs/generated/user-stories.md": "a9268685d84b5b2f06d70ece942dc7e0c6173081e174e1d3c762667ac5a0f7a4",
-    "docs/system/architecture.md": "fd8cf7f86fb8eb7f8c848641a0e502a4426c13745445fdac9b7a1b32e8944ebd",
-    "docs/system/glossary.md": "641b4c87425e4b6cee3d65ff59fefb573bf0309b04ea4cd8202a9ab2f7a8aedb",
+    "docs/system/architecture.md": "33d79d18f0ab7a06863a95913aa55b621290ab5c2c7fc4d7e7b6a903cabf065b",
+    "docs/system/glossary.md": "f609c92a84bedcd08243b39203fc2835144aff79249321930dce729f8dfdcd4b",
     "docs/system/overview.md": "7a177c5902b5095542c867399ed1bbf4cd0814186579fc4a89a48cc73642e0cb",
-    "docs/system/permissions.md": "2bfb3b0116bebb6d257a4c92969db7a53045421fde386005a9184bd6e26dba39",
+    "docs/system/permissions.md": "462d0d0b60b513e8c9fb4233857d9c85da1274f551b4f97dac20b131c9c7653e",
     "docs/flows/google-oauth-sign-in.md": "aa4f685404ef0c6480656730b853c7eccfdc43fe988b68d587686289a90e2093",
-    "docs/flows/homepage-browse-and-navigate.md": "3c64a384158a5b0420679f8aa958eb1e8fef1fcd6d50d886fee7ea174032c44f",
-    "docs/flows/locale-switching.md": "94350e3bace57e1939c73c2b70e2bac059a75e56fa8bb48a83b230c067168da2",
-    "docs/flows/session-refresh-and-route-guarding.md": "24a84d99a36e380e68291c039ed3c3332bc5d6c874d86669789e6f7132b3ca7d",
-    "docs/flows/sign-out.md": "8f07b1c4971550892002076d9f5a39b9af294ee38ed69a2bcd2ce8478c11e6ee"
+    "docs/flows/homepage-browse-and-navigate.md": "d9a1c96d77ff58c53d85ea5a52a6005b34f373a579c7b79994d3ece2ff9426e1",
+    "docs/flows/locale-switching.md": "201a5531560014880fecb6563337266d465cee232a5aff3f492871cc45fb4a26",
+    "docs/flows/session-refresh-and-route-guarding.md": "10dc50367f794040c9a71a5e5aa147ac003e8b91d9674611d6ac30ef59093e3e",
+    "docs/flows/sign-out.md": "668ca5457a8520be4f7fe7c01d195e78c402690f641dfca95932cbc7cd5e5400"
   },
   "screen_spec_shas": {
     "SCR001": "09232088dd8cf7dccf4b1e42a4fcbb330ef11e6da24a11b3f60d2a7b35a37e13",
@@ -28,6 +28,7 @@
     "SCR003": "31144283b1b09345a2da3a1569434133115bace1a21e96533f8e2011c38422f8",
     "SCR004": "5eeea4a1efe43d8694efa32f14732801568d3b8b15bccb9757b5e0a7d92cd74a",
     "SCR005": "1117a9c219044c1079a4f5b1f794b30a9592de832c9ab913e0ed9f7aba3884bb",
-    "SCR006": "f3f381003de4a93b152ac595a7a7a172839df631daea3fe223d3f4716645c077"
+    "SCR006": "f3f381003de4a93b152ac595a7a7a172839df631daea3fe223d3f4716645c077",
+    "SCR007": "3ae13440ebb00e2bc136c4ffb261d6f9eaaf2a084794a5c7697ef5790ce87301"
   }
 }
