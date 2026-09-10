@@ -1,0 +1,27 @@
+[
+  {
+    "command": "npx playwright test e2e/floating-action-button.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "11/11 tests passed (8 FAB acceptance + 1 setup + 2 visual captures), exit 0 GREEN"
+  },
+  {
+    "command": "npx playwright test e2e/the-le.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "10/12 tests passed (2 skipped DEC-002), no regressions on FUN_003 two-step path"
+  },
+  {
+    "command": "npx playwright test e2e/homepage.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "22/22 tests passed, no FAB-related regressions"
+  },
+  {
+    "command": "npm run typecheck",
+    "exitCode": 0,
+    "summary": "TypeScript compilation clean, no errors"
+  },
+  {
+    "command": "npm run lint",
+    "exitCode": 0,
+    "summary": "0 errors, 30 warnings (pre-existing, unrelated to FAB code)"
+  }
+]

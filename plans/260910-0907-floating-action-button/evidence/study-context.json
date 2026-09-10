@@ -1,0 +1,35 @@
+{
+  "task": "Convert the homepage floating widget into the designed Floating Action Button quick-action menu (MoMorph _hphd32jN2 + Sv7DFwBw1h): collapsed pill trigger expands to Thể lệ / Viết KUDOS / Hủy, developed and tested against the local Supabase project.",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "The collapsed pill is a disclosure trigger with aria-expanded, not two direct links",
+    "Clicking the trigger reveals the Thể lệ, Viết KUDOS and Hủy buttons",
+    "Thể lệ navigates to /standards and the database-backed Thể lệ panel renders",
+    "Viết KUDOS navigates to /kudos/new, and anonymously is redirected to /login by the existing proxy guard",
+    "Hủy, Escape and an outside pointerdown each collapse the menu back to the pill",
+    "Measured MoMorph geometry is reproduced: 214x224 column, gap 20px, Thể lệ 149x64, Viết KUDOS 214x64, both radius 4 on #FFEA9E, Hủy 56x56 full-round on #D4271D, labels Montserrat 700 24/32 on #00101A",
+    "npx playwright test e2e/floating-action-button.spec.ts --project=anon exits 0",
+    "npm run typecheck and npm run lint both exit 0"
+  ],
+  "touchpoints": [
+    "app/_components/floating-widget.tsx",
+    "app/page.tsx",
+    "lib/i18n/messages/dictionary.ts",
+    "lib/i18n/messages/vi-home.ts",
+    "lib/i18n/messages/en-home.ts",
+    "e2e/floating-action-button.spec.ts",
+    "e2e/fixtures/floating-action-button-constants.ts",
+    "public/images/home/"
+  ],
+  "blastRadius": [
+    "Homepage / — the only route composing FloatingWidget",
+    "e2e/homepage.spec.ts and e2e/homepage-authed.spec.ts — existing assertions on the widget links",
+    "Dictionary type Dictionary[\"home\"][\"widget\"] — consumed only by FloatingWidget",
+    "/standards and /kudos/new — navigation targets, not modified"
+  ],
+  "contracts": [
+    "npx playwright test e2e/floating-action-button.spec.ts --project=anon",
+    "npm run typecheck",
+    "npm run lint"
+  ]
+}

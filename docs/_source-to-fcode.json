@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-09T07:28:19Z",
+  "generated_at": "2026-09-10T02:35:37Z",
   "index": {
     "app/_actions/auth.ts": [
       "F001"
@@ -59,6 +59,9 @@
       "F001",
       "F002",
       "F003"
+    ],
+    "app/_components/floating-widget.tsx": [
+      "F008"
     ]
   }
 }

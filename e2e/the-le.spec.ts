@@ -198,13 +198,18 @@ test.describe("Thể lệ panel (/standards) — anon", () => {
   test("FUN_003 — FR-401: Đóng returns to the page the visitor came from", async ({ page }) => {
     // A genuine client-side history entry, not `page.goBack()` (that would test
     // the browser, not the button) and not a faked `history.pushState`. The
-    // homepage's floating widget carries a real `<Link href="/standards">`
-    // labelled `home.widget.standards` ("Thể lệ SAA", vi-home.ts:79) and is
-    // `fixed` bottom-right, so it is in the viewport without scrolling.
+    // homepage's floating widget is now a disclosure trigger (phase 03) that
+    // opens a menu holding the `/standards` shortcut behind it. See
+    // `clarifications.md` § "Late finding — an existing test is coupled to the old shape".
     await page.goto("/");
 
-    const standardsShortcut = page.getByRole("link", { name: WIDGET_STANDARDS_LABEL });
+    const trigger = page.getByTestId("fab-trigger");
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+
+    const standardsShortcut = page.getByTestId("fab-standards");
     await expect(standardsShortcut).toBeVisible();
+    await expect(standardsShortcut).toHaveAccessibleName(WIDGET_STANDARDS_LABEL);
     await standardsShortcut.click();
     await expect(page).toHaveURL(new RegExp(`${ROUTE}$`));
 

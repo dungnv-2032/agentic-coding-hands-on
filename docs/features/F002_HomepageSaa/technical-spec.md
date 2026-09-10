@@ -53,7 +53,7 @@ Trang chủ công khai SAA 2025 tại `/`, thay thế trang boilerplate `create-
 **BR-001 — Trang chủ luôn công khai, không có guard mới.** `proxy.ts` hiện có (route guard của F001_Login) tiếp tục cho qua nguyên trạng route `/` — không có logic mới ở action này. *(§ 4.4)*
 **BR-003 — Bộ đếm ngược tick mỗi giây từ đồng hồ hệ thống (`Date.now()`), tự sửa lỗi lệch giờ (self-correcting), giữ nguyên `00` và ẩn "Coming soon" khi đã qua thời điểm sự kiện.** Tính từ `NEXT_PUBLIC_EVENT_START_AT` qua `ALG-001` — {tick mỗi giây, so sánh với thời điểm hiện tại, ẩn nhãn khi hiệu số ≤ 0} *(§ 4.5)*
 **BR-004 — Giá trị cấu hình thời gian sự kiện không hợp lệ (thiếu hoặc sai định dạng ISO-8601) thì hiện `00/00/00`, ẩn "Coming soon", ghi một dòng cảnh báo console, không bao giờ throw.** Bắt lỗi parse ngay ở `ALG-001`. *(§ 4.5)*
-**Result** · Chỉ render — không ghi dữ liệu. Bấm thẻ giải thưởng điều hướng `/awards-information#<slug>` (FR-405, mapping tĩnh 1-1 theo 6 hạng mục, không phải một quyết định rẽ nhánh). Bấm CTA/widget/footer điều hướng tới route tương ứng (FR-206, FR-207) — không có `DISC-###` nào chi phối màn hình này.
+**Result** · Chỉ render — không ghi dữ liệu. Bấm thẻ giải thưởng điều hướng `/awards-information#<slug>` (FR-405, mapping tĩnh 1-1 theo 6 hạng mục, không phải một quyết định rẽ nhánh). Bấm CTA/footer điều hướng tới route tương ứng (FR-207); nút widget nổi *(cập nhật 2026-09-10: từ F008_FloatingActionButton, bấm mở một menu thay vì điều hướng thẳng — FR-206, xem `docs/features/F008_FloatingActionButton/technical-spec.md`)* — không có `DISC-###` nào chi phối màn hình này.
 **Source:** `app/page.tsx:24-48`, `app/_components/home-hero.tsx`, `app/_components/awards-grid.tsx`, `app/_components/award-card.tsx`
 
 <!-- Không cần sequence diagram: dưới ngưỡng — read-only, không ghi ≥2 bảng, không phải background/async action. -->
@@ -120,7 +120,7 @@ Trang chủ công khai SAA 2025 tại `/`, thay thế trang boilerplate `create-
 | `RootFurtherBlock` | Watermark ROOT/FURTHER + đoạn giới thiệu chủ đề | A1 | `app/_components/root-further-block.tsx` |
 | `AwardsGrid` / `AwardCard` | Lưới 6 thẻ giải thưởng, responsive 3/2 cột (1 link/thẻ, FR-405) | A1 | `app/_components/awards-grid.tsx`, `app/_components/award-card.tsx` |
 | `KudosPromo` | Khối quảng bá Sun* Kudos | A1 | `app/_components/kudos-promo.tsx` |
-| `FloatingWidget` | Nút nổi 2 link (viết Kudos / thể lệ) | A1 | `app/_components/floating-widget.tsx` |
+| `FloatingWidget` | Nút nổi *(cập nhật 2026-09-10: từ F008_FloatingActionButton, một cần mở disclosure trigger thay cho 2 link trực tiếp — xem `docs/features/F008_FloatingActionButton/technical-spec.md`)* | A1 | `app/_components/floating-widget.tsx` |
 | `SiteFooter` | Footer 4 liên kết + bản quyền | A1, A3 | `app/_components/site-footer.tsx` |
 | `NotificationBell` | Toggle panel "Không có thông báo mới" | A2 | `app/_components/notification-bell.tsx` |
 | `AccountMenu` | Toggle menu Profile / Sign out / Admin Dashboard (điều kiện) | A2 | `app/_components/account-menu.tsx` |
