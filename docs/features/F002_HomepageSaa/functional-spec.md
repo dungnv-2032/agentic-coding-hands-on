@@ -57,7 +57,7 @@ None — no unresolved domain confirmations. (`/tkm:takumi --auto` đã giải q
 - **FR-203** Khối nội dung "Root Further" hiển thị watermark ảnh ROOT/FURTHER cùng đoạn giới thiệu chủ đề mùa giải. *(spec item B4)*
 - **FR-204** Hệ thống giải thưởng hiển thị tiêu đề "Hệ thống giải thưởng" và lưới 6 thẻ: Top Talent, Top Project, Top Project Leader, Best Manager, Signature 2025 - Creator, MVP (Most Valuable Person) — mỗi thẻ có ảnh, tên, mô tả cắt tối đa 2 dòng kèm dấu ba chấm, và liên kết "Chi tiết". *(spec item C1, C2, C2.1.3)*
 - **FR-205** Khối quảng bá Sun* Kudos hiển thị tiêu đề, mô tả, và nút "Chi tiết" điều hướng `/kudos`. *(spec item D1, D2)*
-- **FR-206** Nút widget nổi hiển thị hai biểu tượng phân tách bởi dấu "/": biểu tượng "viết kudos" điều hướng `/kudos`, biểu tượng "thể lệ SAA" điều hướng `/standards`. *(spec item, node "icon viết kudos" / "icon thể lệ saa" — clarifications.md)*
+- **FR-206** Nút widget nổi hiển thị hai biểu tượng phân tách bởi dấu "/": biểu tượng "viết kudos" điều hướng `/kudos`, biểu tượng "thể lệ SAA" điều hướng `/standards`. Từ 2026-09-10, F008_FloatingActionButton thay hình dạng hai-liên-kết-trực-tiếp này bằng một cần mở (disclosure trigger) — bấm mở menu ba lựa chọn `Thể lệ`/`Viết KUDOS`/`Hủy`, đích viết Kudos đổi thành `/kudos/new`. *(spec item, node "icon viết kudos" / "icon thể lệ saa" — clarifications.md; xem `docs/features/F008_FloatingActionButton/functional-spec.md`)*
 - **FR-207** Footer hiển thị 4 liên kết (About SAA 2025, Award Information, Sun* Kudos, Tiêu chuẩn chung) và dòng bản quyền "Bản quyền thuộc về Sun* © 2025". *(spec item — footer, 5 phần tử)*
 
 ### Interaction (4xx)

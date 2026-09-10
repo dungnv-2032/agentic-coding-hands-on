@@ -11,6 +11,7 @@
 | 5 | F005 — Viet Kudo | P1 | mixed | implemented |
 | 6 | F006 — Profile ban than | P1 | mixed | implemented |
 | 7 | F007 — The Le | P1 | mixed | implemented |
+| 8 | F008 — Floating Action Button | P2 | ui | implemented |
 
 ## Feature Details
 
@@ -69,3 +70,11 @@ Màn Profile tại `/profile`, thay shell `ComingSoon`: hero keyvisual với ava
 Màn Thể lệ tại `/standards`, thay shell `ComingSoon` cuối cùng do F002 để lại trên các lối tắt trang chủ: drawer 553px bám mép phải trên shell chuẩn, ba mục văn xuôi có thứ tự, 4 bậc huy hiệu Hero kèm ảnh pill, lưới 6 icon sưu tập, chân drawer hai nút `Đóng` / `Viết KUDOS`. Route công khai, không Server Action, không thao tác ghi. Đây là lần đầu **nội dung biên tập** của một màn hình sống trong Postgres thay vì hardcode trong `lib/` (F003 làm cách còn lại) — hai bảng chỉ đọc, RLS public-read, ảnh nằm trên đĩa và dòng dữ liệu chỉ giữ đường dẫn.
 
 **Related:** screens: SCR007 | routes: /standards | models: rule_sections, rule_items | perms: PERM014, PERM015
+
+### F008 — Floating Action Button
+
+**Priority:** P2 | **Type:** ui | **Status:** implemented | **Slug:** F008_FloatingActionButton
+
+Nút nổi góc dưới-phải trang chủ chuyển từ hai `<Link>` thẳng thành một disclosure trigger thật: bấm pill mở nhóm ba nút `Thể lệ` → `/standards`, `Viết KUDOS` → `/kudos/new`, và nút tròn đỏ `Hủy`. Đóng bằng `Hủy`, `Escape` hoặc bấm ra ngoài, dùng lại nguyên `use-dismiss-on-outside.ts`. Thuần client state — không bảng mới, không migration, không Server Action, không endpoint; hai đích đến đều đã ship (F007, F005) và không bị sửa. Frame thứ hai của thiết kế (`Sv7DFwBw1h`) lật lại kết luận "no quick-action menu" mà F002 rút ra khi chỉ nhìn thấy frame collapsed.
+
+**Related:** screens: SCR002 | routes: /, /standards, /kudos/new | models: — | perms: —
