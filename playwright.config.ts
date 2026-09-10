@@ -79,7 +79,7 @@ export default defineConfig({
     {
       name: "anon",
       testMatch:
-        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|the-le|kudos-live-board(?!-authed))\.spec\.ts/,
+        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|the-le|floating-action-button|kudos-live-board(?!-authed))\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },
@@ -143,6 +143,12 @@ export default defineConfig({
       testMatch: /capture-homepage-visual\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["homepage-auth-setup"],
+    },
+    // FAB visual capture project — runs on demand only, not in default suite
+    {
+      name: "fab-visual-capture",
+      testMatch: /capture-fab-visual\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
   webServer: {
