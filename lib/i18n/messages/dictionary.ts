@@ -98,6 +98,14 @@ export interface Dictionary {
     widget: {
       writeKudos: string;
       standards: string;
+      /** `aria-label` of the collapsed pill acting as the disclosure trigger. */
+      trigger: string;
+      /** Visible label on the expanded menu's `Thể lệ` button. */
+      menuStandards: string;
+      /** Visible label on the expanded menu's `Viết KUDOS` button. */
+      menuWriteKudos: string;
+      /** `aria-label` of the icon-only round close button. */
+      close: string;
     };
   };
   /**
