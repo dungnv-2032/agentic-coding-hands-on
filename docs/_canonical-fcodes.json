@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-09T14:14:00Z",
-  "plan": "260906-0719-award-system-screen",
+  "generated_at": "2026-09-10T02:35:37Z",
+  "plan": "260910-0907-floating-action-button",
   "features": [
     {
       "fcode": "F001",
@@ -147,6 +147,32 @@
         "user_stories": [],
         "routes": [
           "/standards"
+        ],
+        "models": [],
+        "bl": [],
+        "perms": []
+      }
+    },
+    {
+      "fcode": "F008",
+      "name": "Floating Action Button",
+      "slug": "F008_FloatingActionButton",
+      "priority": "P2",
+      "type": "ui",
+      "related": {
+        "screens": [
+          "SCR002_Homepage"
+        ],
+        "user_stories": [
+          "US001",
+          "US002",
+          "US003",
+          "US004"
+        ],
+        "routes": [
+          "/",
+          "/standards",
+          "/kudos/new"
         ],
         "models": [],
         "bl": [],

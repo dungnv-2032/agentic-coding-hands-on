@@ -74,5 +74,9 @@ export const enHome: Dictionary["home"] = {
   widget: {
     writeKudos: "Write kudos",
     standards: "SAA standards",
+    trigger: "Quick actions",
+    menuStandards: "Standards",
+    menuWriteKudos: "Write kudos",
+    close: "Cancel",
   },
 };

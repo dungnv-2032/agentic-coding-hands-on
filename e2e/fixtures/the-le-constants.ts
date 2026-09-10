@@ -83,10 +83,12 @@ export const CLOSE_LABEL = "Đóng";
 export const WRITE_KUDOS_LABEL = "Viết KUDOS";
 
 /**
- * The floating widget's `/standards` shortcut on the homepage
- * (`vi-home.ts:79` → `home.widget.standards`, used as the link's aria-label
- * in `app/_components/floating-widget.tsx`). FUN_003 clicks THIS to earn a
- * genuine client-side history entry before testing `Đóng`.
+ * The `/standards` shortcut in the floating widget's disclosure menu on the
+ * homepage (`vi-home.ts:79` → `home.widget.standards`, used as the menu item's
+ * `aria-label` in `app/_components/floating-widget.tsx`). FUN_003 opens the
+ * FAB trigger first (`fab-trigger`), then clicks the menu item (`fab-standards`)
+ * labelled with this constant to earn a genuine client-side history entry before
+ * testing `Đóng`.
  */
 export const WIDGET_STANDARDS_LABEL = "Thể lệ SAA";
 

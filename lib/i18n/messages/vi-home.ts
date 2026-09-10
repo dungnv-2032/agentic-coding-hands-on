@@ -77,5 +77,9 @@ export const viHome: Dictionary["home"] = {
   widget: {
     writeKudos: "Viết kudos",
     standards: "Thể lệ SAA",
+    trigger: "Hành động nhanh",
+    menuStandards: "Thể lệ",
+    menuWriteKudos: "Viết KUDOS",
+    close: "Hủy",
   },
 };

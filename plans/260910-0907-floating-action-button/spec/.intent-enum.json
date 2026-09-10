@@ -1,0 +1,7 @@
+{
+  "mode": "single",
+  "intents": [
+    "Sunner on the homepage reaches a primary destination (Thể lệ or Viết KUDOS) from a persistent floating quick-action affordance, without scrolling to find a link"
+  ],
+  "justification": "One intent. No conjunction smell fires on the task title ('Floating Action Button - phim nổi chức năng'). The two menu items are two OPTIONS of one navigation affordance, not two (actor, action-domain, outcome) triples: same actor, same action-domain (quick navigation), same outcome (arrive at an already-shipped destination). Both destinations are existing features (F007 /standards, F005 /kudos/new) and are not built here. The component maps to one screen-group — the homepage overlay — and no API boundary."
+}

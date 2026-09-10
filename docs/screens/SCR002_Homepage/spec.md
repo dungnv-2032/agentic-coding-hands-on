@@ -54,7 +54,7 @@ Một trang cuộn dọc liên tục, không có tab/wizard. R1 header cố đ�
 | R4 | Awards grid | static | yes | `TBD (draft)` |
 | R5 | Sun* Kudos promo | static | yes | `TBD (draft)` |
 | R6 | Footer | static | yes | `TBD (draft)` |
-| R7 | Floating widget button | fixed | no | `TBD (draft)` |
+| R7 | Floating widget button | fixed | no | E24 (trigger), E26-E28 (menu) |
 
 ## 3. UI Elements
 
@@ -83,8 +83,11 @@ Một trang cuộn dọc liên tục, không có tab/wizard. R1 header cố đ�
 | E21 | Awards section heading | region label | — | visible | Always | — | static | raw | — | N/A |
 | E22 | Award card *(nhóm lặp 6 lần: Top Talent, Top Project, Top Project Leader, Best Manager, Signature 2025 - Creator, MVP)* | link | — | visible | Always | Bấm bất kỳ đâu trên thẻ → điều hướng `/awards-information#<slug>` | static | truncate 2 dòng + ellipsis | — | N/A |
 | E23 | Sun* Kudos promo block | display field | — | visible | Always | "Chi tiết" điều hướng `/kudos` | static | raw | — | N/A |
-| E24 | Floating widget button | link *(nhóm 2 icon)* | — | visible | Always | Icon "viết kudos" → `/kudos`; icon "thể lệ SAA" → `/standards` | static | raw | — | N/A |
+| E24 | Floating widget button (trigger) | button | — | closed | Always | Toggle mở/đóng menu E26-E28 (`aria-expanded`/`aria-controls`) | component state | raw | — | N/A |
 | E25 | Footer links + copyright | link | — | visible | Always | Điều hướng theo từng link (About SAA 2025, Award Information, Sun* Kudos, Tiêu chuẩn chung) | static | raw | — | N/A |
+| E26 | Widget menu — Thể lệ | link | — | — | Conditional (E24 đang mở) | Điều hướng `/standards` | static | raw | — | N/A |
+| E27 | Widget menu — Viết KUDOS | link | — | — | Conditional (E24 đang mở) | Điều hướng `/kudos/new` (chưa đăng nhập bị `proxy.ts` chuyển hướng `/login`) | static | raw | — | N/A |
+| E28 | Widget menu — Hủy | button | — | — | Conditional (E24 đang mở) | Đóng menu, trả focus về E24 | static | raw | — | N/A |
 
 ## 4. User Actions
 
@@ -157,8 +160,9 @@ N/A — no validation rules or submit-side error feedback detected. *(Không có
 | Action | Element | Condition | Destination | Result | Source |
 |--------|---------|-----------|-------------|--------|--------|
 | Xem Award Information | E03, E18 | — | SCR003_AwardSystem (`/awards-information`) | redirect | `app/_components/home-nav.tsx`, `app/_components/home-hero.tsx` |
-| Xem Sun* Kudos | E04, E19, E23, E24 (icon viết kudos) | — | *(Sun* Kudos placeholder)* | redirect | `TBD (draft)` |
-| Xem Tiêu chuẩn chung | E24 (icon thể lệ SAA), footer link | — | *(Tiêu chuẩn chung placeholder)* | redirect | `TBD (draft)` |
+| Xem Sun* Kudos | E04, E19, E23 | — | *(Sun* Kudos placeholder)* | redirect | `TBD (draft)` |
+| Viết Kudos qua widget nổi | E27 | — | `/kudos/new` (chưa đăng nhập bị `proxy.ts` chuyển hướng `/login`) | redirect | `app/_components/floating-widget.tsx:112-113`, `proxy.ts:53-58` |
+| Xem Tiêu chuẩn chung | E26, footer link | — | *(Tiêu chuẩn chung placeholder)* | redirect | `TBD (draft)` |
 | Xem chi tiết một hạng mục giải thưởng | E22 | — | SCR003_AwardSystem `#<slug>` | redirect | `app/_components/award-card.tsx:32-59` |
 | Xem Profile | E08 | — | *(Profile placeholder — `/profile`)* | redirect | `TBD (draft)` |
 | Xem Admin Dashboard | E10 | chỉ khi role admin | *(Admin Dashboard placeholder — `/admin`, route riêng biệt với Profile)* | redirect | `TBD (draft)` |
