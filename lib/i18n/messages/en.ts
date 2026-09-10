@@ -5,6 +5,7 @@ import { enKudos } from "./en-kudos";
 import { enKudosCompose } from "./en-kudos-compose";
 import { enProfile } from "./en-profile";
 import { enRules } from "./en-rules";
+import { enSecretBox } from "./en-secret-box";
 
 /**
  * English copy, typed against the shared `Dictionary` shape so a missing or
@@ -57,4 +58,5 @@ export const en: Dictionary = {
   profile: enProfile,
   kudosCompose: enKudosCompose,
   rules: enRules,
+  secretBox: enSecretBox,
 };

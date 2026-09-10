@@ -313,4 +313,35 @@ export interface Dictionary {
     closeButton: string;
     writeKudosButton: string;
   };
+  /**
+   * Open Secret Box screen copy (F009, screen `J3-4YFIpMM`, frame `1466:7676`,
+   * `/kudos/secret-box`). Badge labels are NOT here — they come from
+   * `rule_items.label` (`kind = 'collectible_icon'`), the same catalogue the
+   * Thể lệ screen reads, per BR-005.
+   */
+  secretBox: {
+    /** The page's only `<h1>` (mm:1466:7678, FR-101). */
+    title: string;
+    /** Hidden when the viewer's unopened count is 0 (mm:1466:7683, FR-102). */
+    instruction: string;
+    /** Label beside the counter value (mm:1466:7692, FR-104). */
+    countLabel: string;
+    /** Accessible name of the clickable box control. Unauthored — the frame draws no separate a11y text. */
+    openerLabel: string;
+    /** Accessible name of the `X` close glyph (mm:1466:7679). Unauthored. */
+    closeLabel: string;
+    /** Shown to a signed-out visitor alongside the sign-in link (FR-105). Unauthored. */
+    signInPrompt: string;
+    /** The sign-in link's own label (FR-105). Unauthored. */
+    signInCta: string;
+    /**
+     * Prefix for an auxiliary accessible description of the awarded badge
+     * (e.g. an sr-only caption built by the consuming component) — NOT the
+     * `alt` attribute on the `secret-box-badge` image itself, which must
+     * equal `rule_items.label` verbatim (BR-005, e2e SB-03). Unauthored.
+     */
+    badgeAltPrefix: string;
+    /** Shown when `openSecretBox()` resolves `{ ok: false, reason: 'failed' }`. Unauthored. */
+    errorGeneric: string;
+  };
 }
