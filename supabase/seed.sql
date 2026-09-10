@@ -395,3 +395,29 @@ insert into public.rule_items (kind, position, label, description, image_path) v
   ('collectible_icon', 4, 'FLOW TO HORIZON', null, '/images/rules/icon-flow-to-horizon.png'),
   ('collectible_icon', 5, 'BEYOND THE BOUNDARY', null, '/images/rules/icon-beyond-the-boundary.png'),
   ('collectible_icon', 6, 'ROOT FURTHER', null, '/images/rules/icon-root-further.png');
+
+-- ---------------------------------------------------------------------------
+-- secret_box_badge_odds (F009 Open Secret Box) — relative draw weights for
+-- the six collectible_icon rule_items above. See
+-- supabase/migrations/20260910170000_secret_box_open_path.sql: db reset
+-- runs migrations before this seed, and rule_items content lives here too,
+-- so these rows cannot live in the migration — a label-joined insert there
+-- would match zero rows on a fresh database. Resolved by label, never a
+-- hardcoded id: labels are UPPERCASE, and the collectible_icon ids start at
+-- 5 (the four hero_tier rows above take 1-4 from the same identity
+-- sequence), so a hardcoded id would silently wire weights onto the wrong
+-- badges on a database whose sequence ran differently.
+-- ---------------------------------------------------------------------------
+insert into public.secret_box_badge_odds (rule_item_id, weight)
+select ri.id, w.weight
+from (values
+  ('STAY GOLD', 30),
+  ('FLOW TO HORIZON', 25),
+  ('TOUCH OF LIGHT', 20),
+  ('BEYOND THE BOUNDARY', 10),
+  ('REVIVAL', 10),
+  ('ROOT FURTHER', 5)
+) as w(label, weight)
+join public.rule_items ri
+  on ri.kind = 'collectible_icon' and ri.label = w.label
+on conflict (rule_item_id) do nothing;
