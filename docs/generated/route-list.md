@@ -43,6 +43,16 @@ authored_by: rebuild-spec (Core pass, generated layer)
 > tổng vẫn **12**; placeholder `ComingSoon` còn lại 5 → **3**: `/admin`, `/kudos/secret-box`,
 > `/kudos/[id]` — đếm bằng `grep -rn "ComingSoon" app/`, đúng ba file import và render component
 > đó.
+>
+> **Cập nhật 2026-09-10 (F009 promote):** `/kudos/secret-box` không còn là placeholder — nó
+> render màn Open Secret Box thật (`SCR009_OpenSecretBox`, `app/kudos/secret-box/page.tsx`) và
+> chuyển quyền sở hữu từ F004 sang F009. Route vẫn công khai (`proxy.ts` không đổi — hợp đồng
+> F004 giữ nguyên); mở hộp bị chặn ở tầng màn (mặt khoá cho khách vãng lai/session không có dòng
+> `sunners`/hết hộp) và ở tầng database (`EXECUTE` trên `open_secret_box()` bị revoke khỏi
+> `anon` — `permissions-matrix.md` PERM018). Một Server Action mới (`openSecretBox`) được thêm
+> vào bảng Server Actions bên dưới. Route tổng vẫn **12**; placeholder `ComingSoon` còn lại
+> 3 → **2**: `/admin`, `/kudos/[id]` — đếm bằng `grep -rn "ComingSoon" app/`, đúng hai file còn
+> lại import và render component đó.
 
 Mười hai route: 11 page + 1 route handler. **Một dynamic segment** — `app/kudos/[id]/page.tsx`, xem
 `ROUTE012` bên dưới (`app/kudos/[id]/page.tsx` — deliberately ignores `params`, xem `docs/features/F004_KudosLiveBoard/`).
@@ -66,11 +76,11 @@ Mười hai route: 11 page + 1 route handler. **Một dynamic segment** — `app
 | /profile | `ProfilePage` (`app/profile/page.tsx:52`) | ROUTE008 | F006 | ƒ dynamic | **Auth required** — bounced to `/login` when no session (`proxy.ts:51-57`, exact-path guard on `/profile`/`/profile/*`), and the page re-resolves the session itself as a second layer |
 | /admin | `Page` → `<ComingSoon />` (`app/admin/page.tsx`) | ROUTE009 | F002 | ƒ dynamic | **Public — no role check at the route.** `app/admin/page.tsx:8-12`: the role-gated Admin Dashboard *menu link* points here, but the route itself performs no admin check — it is a placeholder, not a stand-in that pretends to enforce the role. |
 | /kudos/new | `KudosComposePage` (`app/kudos/new/page.tsx`) | ROUTE010 | F005 | ƒ dynamic | **Auth required** — bounced to `/login` when no session (`proxy.ts:47-50`, exact-path guard on `/kudos/new`/`/kudos/new/*`, not a `/kudos` prefix — the rest of `/kudos/*` stays public per F004) |
-| /kudos/secret-box | `Page` → `<ComingSoon />` (`app/kudos/secret-box/page.tsx`) | ROUTE011 | F004 | ƒ dynamic | Public — declared placeholder for the sidebar's "Mở Secret Box" CTA |
+| /kudos/secret-box | `Page` (`app/kudos/secret-box/page.tsx`) | ROUTE011 | F009 | ƒ dynamic | Public — `proxy.ts` không chặn route này (hợp đồng F004 giữ nguyên); mở hộp cần đăng nhập, chặn ở tầng màn (mặt khoá) + tầng database (`permissions-matrix.md` PERM018 — `EXECUTE` trên `open_secret_box()` không cấp cho `anon`) |
 | /kudos/[id] | `Page` → `<ComingSoon />` (`app/kudos/[id]/page.tsx`) | ROUTE012 | F004 | ƒ dynamic | Public — declared placeholder for "Xem chi tiết"/card-body/Spotlight-node links; `params.id` is deliberately never read or echoed (no reflected-content surface) |
 
-**Why every route is ƒ dynamic**: the three remaining `ComingSoon` placeholders (`/admin`,
-`/kudos/secret-box`, `/kudos/[id]`) call `getPageContext()`
+**Why every route is ƒ dynamic**: the two remaining `ComingSoon` placeholders (`/admin`,
+`/kudos/[id]`) call `getPageContext()`
 (`app/_components/coming-soon.tsx:18`), which calls `cookies()` (`app/_page-context.ts:28`) —
 `cookies()` opts a route out of static generation. `/`, `/awards-information`, `/kudos`,
 `/kudos/new`, `/profile` and `/standards` reach the same call directly (`app/page.tsx:24-25`,
@@ -80,6 +90,8 @@ Mười hai route: 11 page + 1 route handler. **Một dynamic segment** — `app
 also each open their own Supabase server client per request, an independent reason these routes can
 never be static).
 `/login` and `/todo` call `cookies()` directly (`app/login/page.tsx:32`, `app/todo/page.tsx:19`).
+`/kudos/secret-box` (F009) also calls `cookies()` directly, alongside `createClient()`, in one
+`Promise.all` (`app/kudos/secret-box/page.tsx`).
 So **no route in this app is statically prerendered**. This is inferred from `cookies()` usage,
 not read off a build manifest — `next build` was not run and no build output is committed
 (scout-report.md §2).
@@ -97,9 +109,10 @@ only other way the client reaches server code in this app:
 | `toggleKudosLike(kudosId)` | `app/kudos/_actions/toggle-kudos-like.ts:59` | Every card's heart button on `/kudos`, passed down as the `toggleLike` prop from `KudosPage` → `KudosBoard` (F004) |
 | `createKudos(prevState, payload)` | `app/kudos/new/_actions/create-kudos.ts:73` | `ComposeForm`'s submit (`useActionState`) on `/kudos/new` (F005) — passed down as a prop from `KudosComposePage`, never imported directly by a Track A component; validates server-side, then calls the `create_kudos` Postgres RPC (`security invoker`, no `sender_id` parameter — see `api-map.md`) and redirects to `/kudos` on success |
 | `uploadKudosImage(file)` | `app/kudos/new/_actions/upload-kudos-image.ts:47` | `ImagePicker` on `/kudos/new` (F005) — one call per selected file; writes to Supabase Storage (`kudos-attachments` bucket), not Postgres; signals failure by rejecting with a typed `UploadKudosImageError`, not a returned `{error}` field |
+| `openSecretBox()` | `app/kudos/secret-box/_actions/open-secret-box.ts:37` | `SecretBoxOpener` on `/kudos/secret-box` (F009) — no arguments; calls the `open_secret_box` Postgres RPC (`security definer`, the project's first — see `api-map.md`), maps `error.code` to a typed `OpenSecretBoxResult`, and revalidates `/kudos/secret-box`, `/kudos` and `/profile` on success so all three box counters agree |
 
-`toggleKudosLike`, `createKudos`, and `uploadKudosImage` are now the three Server Actions in the app
-that write (Postgres or Storage) rather than to auth/cookies.
+`toggleKudosLike`, `createKudos`, `uploadKudosImage`, and `openSecretBox` are now the four Server
+Actions in the app that write (Postgres or Storage) rather than to auth/cookies.
 
 ## Summary
 
@@ -107,5 +120,5 @@ that write (Postgres or Storage) rather than to auth/cookies.
 |----------|-------|
 | Backend Routes (route handlers) | 1 |
 | Frontend Pages | 11 |
-| Server Actions (non-routable) | 6 |
+| Server Actions (non-routable) | 7 |
 | Total routes | 12 |

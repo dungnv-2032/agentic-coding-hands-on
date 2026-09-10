@@ -70,7 +70,7 @@ Trang một cột, căn giữa 680px (`mm:362:5073`/`362:5091`), nền `#00101A`
 | B.3 | B | `362:5078` | Hàng "Số tim bạn nhận được" | — | — | self | — | `stats.heartsReceived` |
 | B.4 | B | `362:5080` | Hàng "Số Secret Box bạn đã mở" | — | Đọc cột thật, `0` cho hồ sơ rỗng | self, sparse (0) | — | `stats.secretBoxOpened` |
 | B.5 | B | `362:5081` | Hàng "Số Secret Box chưa mở" | — | Đọc cột thật, `0` cho hồ sơ rỗng | self, sparse (0) | — | `stats.secretBoxUnopened` |
-| B.6 | B | `362:5082` | Nút "Mở Secret Box" | — | **Luôn `disabled`** | self | Bấm không làm gì (không dialog, không điều hướng) | `stats.secretBoxButton` |
+| B.6 | B | `362:5082` | Nút "Mở Secret Box" | — | **Luôn `disabled`** *(từ 2026-09-10, F009: là `<Link>` thật, xem ghi chú dưới bảng)* | self | Bấm không làm gì (không dialog, không điều hướng) *(từ F009: điều hướng `/kudos/secret-box`)* | `stats.secretBoxButton` |
 | B.other | B (cùng vị trí) | *(không có node riêng — dùng slot `362:5073`, mô hình theo thanh viết Kudo của bảng tin)* | Thanh viết Kudo, nêu tên người đang xem | — | Ẩn hoàn toàn trên mặt self | other / **ẩn trên self** | Bấm → `/kudos/new?receiverId={id}` | `writeBar.label` (interpolate tên) |
 | C.1 | C | `362:5085` | Tiêu đề "Sun* Annual Awards 2025" | — | — | self, other (giống nhau) | — | Tái dùng key `kudos.eyebrow` đã có — không phải copy mới của màn này |
 | C.2 | C | `362:5088` | Tiêu đề "KUDOS", vàng, 57px/700 | — | — | self, other | — | Tĩnh, không cần key riêng (đúng chữ "KUDOS") |
@@ -103,11 +103,11 @@ Trang một cột, căn giữa 680px (`mm:362:5073`/`362:5091`), nền `#00101A`
 | Bấm hashtag | D.card | click | — | Điều hướng `/kudos?hashtag={tag}` (xem `## 8. Navigation`) | TBD (draft) |
 | Copy Link | D.card | click | — | Copy link, hiện toast (y hệt bảng tin) | TBD (draft) |
 | Bấm thanh viết Kudo | B.other | click | chỉ hiện khi mặt other | Điều hướng `/kudos/new?receiverId={id}` (xem `## 8. Navigation`) | TBD (draft) |
-| Bấm nút "Mở Secret Box" | B.6 | click | chỉ hiện khi mặt self | Không làm gì — nút `disabled` | TBD (draft) |
+| Bấm nút "Mở Secret Box" | B.6 | click | chỉ hiện khi mặt self | *Từ 2026-09-10 (F009):* điều hướng `/kudos/secret-box` (`SCR009_OpenSecretBox`) — trước đó: không làm gì, nút `disabled` | `docs/features/F009_OpenSecretBox/functional-spec.md` |
 
 ### Happy Path
 
-**Mặt self:** 1. Sunner mở `/profile` → 2. Hero + 6 ô huy hiệu render → 3. Card thống kê (B) render 5 chỉ số thật + nút Secret Box disabled → 4. Header KUDOS (C) render, dropdown "Đã nhận" active → 5. Feed (D) render trang 1 Đã nhận → 6. Sunner có thể đổi dropdown sang "Đã gửi", cuộn thêm, thả tim, bấm hashtag/Copy Link.
+**Mặt self:** 1. Sunner mở `/profile` → 2. Hero + 6 ô huy hiệu render → 3. Card thống kê (B) render 5 chỉ số thật + nút Secret Box (từ 2026-09-10/F009: liên kết thật sang `/kudos/secret-box`; trước đó `disabled`) → 4. Header KUDOS (C) render, dropdown "Đã nhận" active → 5. Feed (D) render trang 1 Đã nhận → 6. Sunner có thể đổi dropdown sang "Đã gửi", cuộn thêm, thả tim, bấm hashtag/Copy Link.
 
 **Mặt other:** 1. Sunner mở `/profile?id={other}` → 2. Hero + 6 ô huy hiệu của người đó render → 3. Thanh viết Kudo (B.other) thay card thống kê → 4. Header KUDOS render, dropdown chỉ có "Đã nhận" → 5. Feed render Kudos người đó đã nhận → 6. Sunner bấm thanh viết Kudo để mở `/kudos/new?receiverId={id}` đã điền sẵn.
 

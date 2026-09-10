@@ -434,6 +434,19 @@ its own bubble-phase `document` keydown, see the "Outside/Escape dismissal contr
 *also* dismiss the panel and navigate the visitor off the page. `stopPropagation()` cannot separate
 the two, because both listeners are attached to the same node; only `defaultPrevented` can.
 
+### Secret Box dismissal — same idiom, different fallback (F009)
+
+**Source**: `app/kudos/secret-box/_components/secret-box-dismiss.tsx:23-40`
+**Trigger**: click on the `X` glyph (`secret-box-close`)
+
+Reuses `rules-panel-dismiss.tsx`'s `hasHistoryToReturnTo()` idiom (Navigation API
+`navigation.canGoBack`, falling back to `window.history.length > 1`) verbatim — the same measured
+Chromium behavior from F007 still applies, so it was not re-measured. One difference: the
+no-history fallback destination is `/kudos`, not `/`, because `/kudos/secret-box` is reached from
+the Kudos sidebar (`clarifications.md`), so a deep link with no history returns a visitor to the
+Kudos board, not the homepage. Unlike `/standards`, this is a plain route with no scrim and no
+`Escape` listener (plan DEC-02) — the glyph is the only exit.
+
 ### Debounce / Throttle, Optimistic UI, Polling, Upload Progress, Realtime
 
 N/A — no debounce/throttle, optimistic UI, polling, upload-progress, or realtime (WebSocket/SSE)
@@ -521,3 +534,29 @@ between them that this check deliberately does not constrain). An unrecognized d
 matches nothing — a whitelist, never a "no signature means trust it" fallback. Only after both the
 declared-type check and this byte-sniff pass does the object get written to the public
 `kudos-attachments` bucket.
+
+### Secret Box weighted draw + guarded decrement (F009)
+
+**Source**: `supabase/migrations/20260910170000_secret_box_open_path.sql:95-192` (`open_secret_box()`)
+**Trigger**: Every `openSecretBox` Server Action invocation from `/kudos/secret-box`
+
+Two decisions live entirely inside this one `plpgsql` function body, not in any of the 10 canonical
+BL types:
+
+1. **The race guard is the `UPDATE`'s own `WHERE` clause, not a preceding check.**
+   `update sunners set secret_box_unopened_count = secret_box_unopened_count - 1, ... where id =
+   v_sunner_id and secret_box_unopened_count > 0`. A separate `SELECT ... unopened_count > 0` run
+   first would leave a window two concurrent tabs could both walk through, double-spending the
+   same box — the guard has to be atomic with the write. `not found` after the `UPDATE` raises
+   `errcode 'P0002'`, which `openSecretBox` maps to `reason: 'no-boxes'`.
+2. **The weighted draw is Efraimidis-Spirakis, not a running-sum threshold.**
+   `select rule_item_id from secret_box_badge_odds order by random() ^ (1.0 / weight) desc limit
+   1` — correct for relative integer weights (30/25/20/10/10/5, summing to 100 but never required
+   to) and safe when `random()` returns exactly `0`, unlike a `-ln(random())/weight` formulation.
+   Measured over 2000 draws against the shipped weights: STAY GOLD 610 (30.5%), FLOW TO HORIZON
+   494 (24.7%), TOUCH OF LIGHT 421 (21.1%), BEYOND THE BOUNDARY 194 (9.7%), REVIVAL 173 (8.7%),
+   ROOT FURTHER 108 (5.4%) — within measurement noise of the declared 30/25/20/10/10/5 weights.
+
+Both steps, plus the `sunners` provisioning (identical to `create_kudos`'s block) and the
+`secret_box_openings` insert, run inside the single function call, i.e. one transaction (FR-602) —
+there is no partial state where a box is spent but no badge is recorded, or vice versa.

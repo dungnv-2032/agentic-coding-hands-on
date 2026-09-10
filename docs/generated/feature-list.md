@@ -12,6 +12,7 @@
 | 6 | F006 — Profile ban than | P1 | mixed | implemented |
 | 7 | F007 — The Le | P1 | mixed | implemented |
 | 8 | F008 — Floating Action Button | P2 | ui | implemented |
+| 9 | F009 — Open Secret Box | P1 | ui+api | implemented |
 
 ## Feature Details
 
@@ -78,3 +79,11 @@ Màn Thể lệ tại `/standards`, thay shell `ComingSoon` cuối cùng do F002
 Nút nổi góc dưới-phải trang chủ chuyển từ hai `<Link>` thẳng thành một disclosure trigger thật: bấm pill mở nhóm ba nút `Thể lệ` → `/standards`, `Viết KUDOS` → `/kudos/new`, và nút tròn đỏ `Hủy`. Đóng bằng `Hủy`, `Escape` hoặc bấm ra ngoài, dùng lại nguyên `use-dismiss-on-outside.ts`. Thuần client state — không bảng mới, không migration, không Server Action, không endpoint; hai đích đến đều đã ship (F007, F005) và không bị sửa. Frame thứ hai của thiết kế (`Sv7DFwBw1h`) lật lại kết luận "no quick-action menu" mà F002 rút ra khi chỉ nhìn thấy frame collapsed.
 
 **Related:** screens: SCR002 | routes: /, /standards, /kudos/new | models: — | perms: —
+
+### F009 — Open Secret Box
+
+**Priority:** P1 | **Type:** ui+api | **Status:** implemented | **Slug:** F009_OpenSecretBox
+
+Màn `/kudos/secret-box`, thay shell `ComingSoon` cuối cùng còn lại trong bề mặt Kudos: thẻ đơn không shell, tiêu đề, dòng hướng dẫn (ẩn khi hết hộp), khung hộp quà 557×557 bấm được, đếm số hộp chưa mở hai chữ số. Bấm hộp gọi hàm Postgres duy nhất `open_secret_box()` — `security definer` đầu tiên của repo, không tham số — rút một trong sáu huy hiệu `rule_items` (`kind = 'collectible_icon'`) theo trọng số tương đối, trừ một hộp chưa mở và cộng một hộp đã mở trong cùng một transaction. Nút "Mở Secret Box" trên card thống kê Profile (chỉ hồ sơ của chính mình) chuyển từ `disabled` sang một liên kết thật.
+
+**Related:** screens: SCR009 | routes: /kudos/secret-box | models: secret_box_badge_odds, secret_box_openings | perms: PERM016, PERM017, PERM018

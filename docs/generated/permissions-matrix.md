@@ -6,7 +6,7 @@ authored_by: rebuild-spec (Core pass, generated layer)
 
 **Project**: my-app (SAA 2025)
 **Generated**: 2026-09-05
-**Analysis Scope**: `proxy.ts`, `app/_page-context.ts`, `app/_components/account-menu.tsx`, `app/_components/home-header.tsx`, `supabase/migrations/20260906140914_kudos_live_board.sql` (F004), `supabase/migrations/20260907025909_viet_kudo_write_path.sql` (F005, added below), `supabase/migrations/20260909093000_the_le_rules_content.sql` (F007, PERM014/PERM015 below)
+**Analysis Scope**: `proxy.ts`, `app/_page-context.ts`, `app/_components/account-menu.tsx`, `app/_components/home-header.tsx`, `supabase/migrations/20260906140914_kudos_live_board.sql` (F004), `supabase/migrations/20260907025909_viet_kudo_write_path.sql` (F005, added below), `supabase/migrations/20260909093000_the_le_rules_content.sql` (F007, PERM014/PERM015 below), `supabase/migrations/20260910170000_secret_box_open_path.sql` (F009, PERM016/PERM017/PERM018 below)
 
 > Raw PERM### inventory (code-derived). The curated plain-language view is the forward-draft
 > `docs/system/permissions.md` — that file predates this Core pass and should be reconciled
@@ -27,7 +27,13 @@ authorization boundary — authenticated-write/public-read on the `kudos-attachm
 (PERM010). The multi-table write itself runs through a `security invoker` Postgres function
 (`create_kudos`, confirmed live via `pg_proc.prosecdef = f`) that takes no `sender_id` parameter at
 all — the caller has no argument in which to put someone else's id, so forgery is unrepresentable,
-not merely rejected by a check.
+not merely rejected by a check. **F009 adds:** the project's **first `security definer`
+function** — `open_secret_box()` (confirmed live via `pg_proc.prosecdef = t`), the only writer
+of `sunners.secret_box_*` and `secret_box_openings` (PERM018), plus two new SELECT-only RLS
+boundaries (PERM016, PERM017). Unlike `create_kudos`, this write must decrement a counter on a
+table (`sunners`) that intentionally carries no `UPDATE` policy at all — `security definer` with
+a pinned `search_path`, zero parameters, and `execute` revoked from `anon`/`public` is the
+containment for that privilege, not an RLS policy.
 
 ## Permissions Index
 
@@ -45,6 +51,9 @@ not merely rejected by a check.
 | PERM010 | Kudos attachment Storage bucket (authenticated write / public read) | data-permission | `supabase/migrations/20260907025909_viet_kudo_write_path.sql:89-101` |
 | PERM014 | Rules sections public read (RLS) | data-permission | `supabase/migrations/20260909093000_the_le_rules_content.sql:59,63,77` |
 | PERM015 | Rules items public read (RLS) | data-permission | `supabase/migrations/20260909093000_the_le_rules_content.sql:60,64,78` |
+| PERM016 | Secret box badge odds public read (RLS) | data-permission | `supabase/migrations/20260910170000_secret_box_open_path.sql:57,60,77` |
+| PERM017 | Secret box openings self-scoped read (RLS) | resource-ownership | `supabase/migrations/20260910170000_secret_box_open_path.sql:58,66,77` |
+| PERM018 | `open_secret_box()` execute — `authenticated` only, single writer (`security definer`) | action-permission | `supabase/migrations/20260910170000_secret_box_open_path.sql:95,197-198` |
 
 > **PERM011–PERM013 are deliberately unallocated here.** `docs/system/permissions.md`
 > § "Mã `PERM###` dự kiến của vòng F006" reserves those three numbers for F006's boundaries
@@ -508,6 +517,151 @@ Verified live: RLS on, one `SELECT` policy with `qual = true` for `{anon,authent
 
 ---
 
+## PERM016: Secret box badge odds public read (RLS)
+
+**Type**: data-permission
+**Enforced At**: `supabase/migrations/20260910170000_secret_box_open_path.sql:57` (RLS on), `:60` (policy), `:77` (grant)
+**Owner F###**: F009
+
+### Description
+
+`public.secret_box_badge_odds` holds the six relative draw weights (one row per `collectible_icon`
+`rule_item_id`). RLS is enabled and the table carries exactly one policy —
+`secret_box_badge_odds_select_all`, `for select to anon, authenticated using (true)` — with an
+explicit `grant select`. The odds are printed in the shipped design, not a secret, so public read
+is the correct boundary — same shape as PERM014/PERM015. **No** `insert`/`update`/`delete` policy
+exists: `open_secret_box()` (PERM018) is the only place weights are ever read for a draw, and
+nothing in the app writes this table after the seed.
+
+Verified live (`pg_class.relrowsecurity`, `pg_policy`): RLS on, one `SELECT` policy `qual = true`
+for `{anon,authenticated}`, 6 rows.
+
+### Related Routes
+
+- (GET) `/kudos/secret-box` — the only reader
+
+### Related Screens
+
+- SCR009_OpenSecretBox
+
+### Permission Rules
+
+| Principal | Allowed | Notes |
+|-----------|---------|-------|
+| Anonymous | ✓ read | The odds carry no per-viewer variation |
+| Authenticated | ✓ read | Identical |
+| Admin | ✓ read | Identical |
+| Any principal | ✗ write | No `insert`/`update`/`delete` policy exists on the table |
+
+### Related Modules
+
+- `supabase/seed.sql` (weight rows, joined by `rule_items.label`)
+
+---
+
+## PERM017: Secret box openings self-scoped read (RLS)
+
+**Type**: resource-ownership
+**Enforced At**: `supabase/migrations/20260910170000_secret_box_open_path.sql:58` (RLS on), `:66` (policy), `:77` (grant)
+**Owner F###**: F009
+
+### Description
+
+`public.secret_box_openings` is the audit trail `open_secret_box()` inserts into on every
+successful open. RLS is enabled with exactly one policy — `secret_box_openings_select_own`,
+`for select to authenticated using (exists (select 1 from sunners s where s.id =
+secret_box_openings.sunner_id and s.auth_user_id = (select auth.uid())))` — bridging ownership
+through `sunners`, the same idiom `kudos_likes_delete_own` (PERM007) and
+`secret_box_openings_select_own`'s sibling reads use elsewhere in the app. `anon` has no grant at
+all — an unauthenticated caller reads nothing. **No** `insert`/`update`/`delete` policy exists:
+`open_secret_box()` (PERM018) is the sole writer.
+
+Verified live (`pg_policy.polroles`, `pg_get_expr`): RLS on, one `SELECT` policy for
+`{authenticated}` only, `using` expression bridges through `sunners.auth_user_id = (select
+auth.uid())` exactly as designed.
+
+### Related Routes
+
+- (server action, no route) `openSecretBox` — the row is written as a side effect, never read
+  back through this policy by the current UI (no "my openings history" screen exists yet)
+
+### Related Screens
+
+- SCR009_OpenSecretBox
+
+### Permission Rules
+
+| Principal | Allowed | Notes |
+|-----------|---------|-------|
+| Anonymous | ✗ read | No `select` grant for `anon` |
+| Authenticated (own rows) | ✓ read | `sunners.auth_user_id = (select auth.uid())` |
+| Authenticated (another user's rows) | ✗ read | `using` clause excludes them |
+| Admin | ✓ / ✗ | Same rule as authenticated — the admin role is not read by this policy |
+| Any principal | ✗ write | `open_secret_box()` (PERM018) is the only writer |
+
+### Related Modules
+
+- `app/kudos/secret-box/_actions/open-secret-box.ts`
+
+---
+
+## PERM018: `open_secret_box()` execute — single writer, `security definer`
+
+**Type**: action-permission
+**Enforced At**: `supabase/migrations/20260910170000_secret_box_open_path.sql:95` (function), `:197-198` (revoke + grant)
+**Owner F###**: F009
+
+### Description
+
+The project's **first `security definer` function** — confirmed live via `pg_proc.prosecdef = t`
+(every prior function, `create_kudos`, is `security invoker`). It is the only writer of
+`sunners.secret_box_unopened_count` / `secret_box_opened_count` and of `secret_box_openings`,
+because `sunners` deliberately carries no `UPDATE` policy: opening that policy would let any
+authenticated session rewrite its own box count directly through PostgREST — the exact attack
+test case `5cc072ad` probes. Three measures contain the elevated privilege instead of an RLS
+policy:
+
+1. `set search_path = public` pinned in the function definition — a caller cannot shadow it with
+   an earlier schema on their own search path.
+2. `revoke execute on function public.open_secret_box() from public, anon` then
+   `grant execute ... to authenticated` — Postgres grants `EXECUTE` to `PUBLIC` by default on
+   `create function`, so the revoke is not optional; without it `anon` could call this function
+   directly over PostgREST RPC.
+3. **Zero parameters.** No `p_sunner_id`, no `p_badge_id` — the actor is resolved only from
+   `auth.uid()` inside the function body, so "open someone else's box" and "pick my own badge"
+   are unrepresentable in the call itself, not merely rejected by a check.
+
+The guarded decrement (`update ... where id = v_sunner_id and secret_box_unopened_count > 0`, the
+`> 0` check living inside the `UPDATE` rather than a preceding `SELECT`) closes the two-tab race a
+separate check-then-write would leave open.
+
+Verified live (`information_schema.role_routine_grants`): `EXECUTE` held by `postgres`,
+`authenticated`, `service_role` — **not** `anon`, confirming the revoke has effect.
+
+### Related Routes
+
+- (server action, no route) `openSecretBox` — writes reached only through `/kudos/secret-box`
+
+### Related Screens
+
+- SCR009_OpenSecretBox
+
+### Permission Rules
+
+| Principal | Allowed | Notes |
+|-----------|---------|-------|
+| Anonymous | ✗ | No `EXECUTE` grant; `auth.uid()` would also be null inside the function (`errcode 28000`) if it were somehow reached |
+| Authenticated, has unopened boxes | ✓ | Decrements one box, draws one badge, inserts one `secret_box_openings` row — all in one transaction |
+| Authenticated, zero unopened boxes | ✗ | Guarded `UPDATE` matches no row → `errcode P0002`, Server Action maps to `reason: 'no-boxes'` |
+| Admin | ✓ / ✗ | Same rule as authenticated — the admin role is not read by this function |
+
+### Related Modules
+
+- `app/kudos/secret-box/_actions/open-secret-box.ts`
+- `lib/secret-box/contract.ts` (`OpenSecretBoxResult`)
+
+---
+
 ### Note on the grant set behind PERM014/PERM015 (applies repo-wide, not new in F007)
 
 The migration's explicit `grant select … to anon, authenticated` is belt-and-braces, not the thing
@@ -535,7 +689,7 @@ true, not because F007 introduced it.
 | `/awards-information` | Allow | Allow | Allow | None — public, no gate |
 | `/kudos` | Allow (read only) | Allow (read + heart write) | Allow (read + heart write) | Route: none — public, no gate. Data: PERM006 (read, all roles) + PERM007 (heart write, `authenticated` only, not on own kudos) |
 | `/kudos/new` | Redirect → `/login` | Allow (compose + submit) | Allow (compose + submit) | Route: PERM001/PERM008 (session required). Data: PERM009 (content write, `authenticated` only, no update/delete) + PERM010 (Storage attachment write, own-folder only) |
-| `/kudos/secret-box` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder) |
+| `/kudos/secret-box` | Allow (read; open shows sign-in prompt, box inert) | Allow (read + open, if entitled) | Allow (same as authenticated) | Route: none — public, no gate, deliberately (F009, ratified F004 contract). Data: PERM016 (odds read, all roles) + PERM017 (own openings read, `authenticated` only) + PERM018 (open, `authenticated` only, no `EXECUTE` grant for `anon`) |
 | `/kudos/[id]` | Allow | Allow | Allow | None — public, no gate (declared `ComingSoon` placeholder; `params.id` never read) |
 | `/standards` | Allow (read) | Allow (read) | Allow (read) | Route: none — public, no gate, deliberately (F007). Data: PERM014 + PERM015 (read, all roles; no write policy on either table) |
 | `/profile` | Redirect → `/login` | Allow | Allow | Route: session required (`proxy.ts:51-57`, exact-path guard on `/profile`/`/profile/*`, shipped with F006), plus a second session re-check inside the page. **No PERM### allocated yet** — reserved as `PERM011`, see the note under the Permissions Index. |
@@ -543,15 +697,15 @@ true, not because F007 introduced it.
 
 ## Summary
 
-- **Total Permission Items**: 12 (PERM001–PERM010, PERM014, PERM015 — PERM011–PERM013 reserved for
+- **Total Permission Items**: 15 (PERM001–PERM010, PERM014–PERM018 — PERM011–PERM013 reserved for
   F006 and not yet written, see the note under the Permissions Index)
-- **By Type**: route-guard: 4, screen-permission: 2, action-permission: 0, data-permission: 4, role-based: 0, resource-ownership: 2, field-permission: 0, api-scope: 0, feature-flag: 0, experiment: 0, env-gate: 0, locale-gate: 0
+- **By Type**: route-guard: 4, screen-permission: 2, action-permission: 1, data-permission: 5, role-based: 0, resource-ownership: 3, field-permission: 0, api-scope: 0, feature-flag: 0, experiment: 0, env-gate: 0, locale-gate: 0
 
 ## Cross-Reference Validation
 
 - [x] All PERM### codes are unique
 - [x] All related route references are valid (ROUTE### in `route-list.md`)
-- [x] All related screen references are valid (SCR001_Login, SCR002_Homepage, SCR004_KudosLiveBoard, SCR005_VietKudo, SCR007_TheLe per `docs/generated/screen-list.md`)
+- [x] All related screen references are valid (SCR001_Login, SCR002_Homepage, SCR004_KudosLiveBoard, SCR005_VietKudo, SCR007_TheLe, SCR009_OpenSecretBox per `docs/generated/screen-list.md`)
 - [x] No orphaned permission references
 - [ ] **PERM### numbering is contiguous** — it is not, and the gap is deliberate: PERM011–PERM013
       are reserved for F006's shipped boundaries, which have no entry in this registry yet
