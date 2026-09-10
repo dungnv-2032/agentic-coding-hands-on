@@ -8,10 +8,12 @@ lang: vi
 `F001` `F005` `US002` `BL003` `BL004` `PERM001` `PERM002` `PERM003` `PERM008`
 
 Chạy trên **mọi** request không phải asset tĩnh — không riêng một action hay một feature nào.
-Ba nhánh: `/todo` **hoặc** `/kudos/new` (từ F005) không có session, `/login` đã có session, và
-phần còn lại (bao gồm `/`, `/auth/callback`, `/kudos`, `/kudos/[id]`, `/kudos/secret-box`, 3 route
-placeholder khác) đi qua nguyên trạng — `/kudos/new` là guard thứ hai kể từ F001, và match theo
-đúng path đó (không phải `startsWith("/kudos")`), nên phần còn lại của bề mặt Kudos vẫn công khai.
+Ba nhánh: `/todo` **hoặc** `/kudos/new` (từ F005) **hoặc** `/profile` (từ F006) không có session,
+`/login` đã có session, và phần còn lại (bao gồm `/`, `/auth/callback`, `/kudos`, `/kudos/[id]`,
+`/kudos/secret-box`, `/standards`, `/admin`) đi qua nguyên trạng — `/kudos/new` là guard thứ hai
+kể từ F001 và `/profile` là guard thứ ba, cả hai match theo đúng path đó (không phải
+`startsWith("/kudos")`), nên phần còn lại của bề mặt Kudos vẫn công khai. `/standards` (F007) vẫn
+công khai có chủ đích — xem `docs/system/permissions.md` § Access Boundaries.
 
 ### Trigger Sequence
 
@@ -41,14 +43,14 @@ sequenceDiagram
 
 ### Numbered Steps
 
-1. `proxy.ts` khớp mọi route trừ `_next/static`, `_next/image`, `favicon.ico`, và 9 phần mở rộng ảnh/font tĩnh — không làm chậm việc tải asset. `proxy.ts:51-56`. `BL004`
+1. `proxy.ts` khớp mọi route trừ `_next/static`, `_next/image`, `favicon.ico`, và 9 phần mở rộng ảnh/font tĩnh — không làm chậm việc tải asset. `proxy.ts:67-72`. `BL004`
 2. Gọi `updateSession(request)` trước tiên, không phụ thuộc route đích là gì. `proxy.ts:16`. `BL004`
 3. `updateSession` dựng `createServerClient` với cookie adapter đọc/ghi trực tiếp trên `request`/`response`; `supabase.auth.getUser()` là lệnh gọi thực sự thực hiện refresh token khi cần. `lib/supabase/update-session.ts:11-43`. `BL004`
 4. Nếu GoTrue rotate refresh token, callback `setAll` dựng lại `NextResponse.next({ request })` **mới** và ghi `Set-Cookie` rotate lên đó, đồng thời copy toàn bộ header gốc để CDN/reverse proxy không cache nhầm response mang cookie auth của người khác. `lib/supabase/update-session.ts:22-34`. `BL004`
-5. Nhánh chưa đăng nhập cố vào `/todo` **hoặc** `/kudos/new` (điều kiện `isGuarded` gộp cả hai route vào một `if`, từ F005) → gọi `redirectWithSessionCookies("/login")`. `proxy.ts:47-50`. `PERM001` / `PERM008`
-6. Nhánh đã đăng nhập cố vào `/login` → gọi `redirectWithSessionCookies("/todo")`. `proxy.ts:52-53`. `PERM002`
-7. **Bước bắt buộc trong cả hai nhánh redirect ở trên**: hàm `redirectWithSessionCookies` copy toàn bộ `response.cookies.getAll()` (kết quả refresh ở bước 4) sang response redirect vừa dựng — một `NextResponse.redirect()` trần sẽ là response **thứ ba** chưa từng thấy cookie rotate đó; vì refresh token của Supabase dùng một lần, người dùng sẽ bị đăng xuất ngầm ở request kế tiếp. `proxy.ts:36-45`. `BL003`
-8. Mọi trường hợp còn lại — `/`, `/auth/callback`, `/kudos`, `/kudos/[id]`, `/kudos/secret-box`, 3 route placeholder còn lại — trả thẳng `response` (đã refresh session) mà không rẽ nhánh redirect nào; guard hai route ở bước 5/6 không đụng tới các route này, kể cả phần còn lại của bề mặt Kudos. `proxy.ts:56`. `PERM003`
+5. Nhánh chưa đăng nhập cố vào `/todo` **hoặc** `/kudos/new` **hoặc** `/profile` (điều kiện `isGuarded` gộp cả ba route vào một `if` — `/kudos/new` từ F005, `/profile` từ F006) → gọi `redirectWithSessionCookies("/login")`. `proxy.ts:51-58`. `PERM001` / `PERM008` (mã cho `/profile` chưa cấp — xem `permissions-matrix.md`)
+6. Nhánh đã đăng nhập cố vào `/login` → gọi `redirectWithSessionCookies("/todo")`. `proxy.ts:60-61`. `PERM002`
+7. **Bước bắt buộc trong cả hai nhánh redirect ở trên**: hàm `redirectWithSessionCookies` copy toàn bộ `response.cookies.getAll()` (kết quả refresh ở bước 4) sang response redirect vừa dựng — một `NextResponse.redirect()` trần sẽ là response **thứ ba** chưa từng thấy cookie rotate đó; vì refresh token của Supabase dùng một lần, người dùng sẽ bị đăng xuất ngầm ở request kế tiếp. `proxy.ts:40-49`. `BL003`
+8. Mọi trường hợp còn lại — `/`, `/auth/callback`, `/awards-information`, `/kudos`, `/kudos/[id]`, `/kudos/secret-box`, `/standards`, `/admin` — trả thẳng `response` (đã refresh session) mà không rẽ nhánh redirect nào; guard ở bước 5/6 không đụng tới các route này, kể cả phần còn lại của bề mặt Kudos. `proxy.ts:64`. `PERM003`
 
 ### Failure / Edge Branches
 

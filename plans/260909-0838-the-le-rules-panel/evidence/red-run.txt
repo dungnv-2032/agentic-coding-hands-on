@@ -1,0 +1,124 @@
+F007 Thể lệ (SCR007) — phase 02 e2e-red-first gate
+RECORDED RED EVIDENCE
+Run date: 2026-09-09
+Branch: main
+Policy: e2e-red-first (clarifications.md § "Test policy and its preflight")
+
+-------------------------------------------------------------------------------
+redTestFiles:
+  e2e/the-le.spec.ts
+  e2e/fixtures/the-le-constants.ts        (constants fixture, no assertions)
+  playwright.config.ts                    (registration only: `the-le` added to the
+                                           `anon` project's testMatch regex)
+
+redCommand:
+  npx playwright test e2e/the-le.spec.ts --project=anon
+
+redExitCode:
+  1
+
+redFailure (first failing assertion, verbatim from the run):
+  1) [anon] › e2e/the-le.spec.ts:56:7 › Thể lệ panel (/standards) — anon › GUI_001 — FR-201: panel is a labelled dialog whose <h1> reads Thể lệ
+
+      Error: expect(locator).toHaveText(expected) failed
+
+      Locator:  getByRole('heading', { level: 1 })
+      Expected: "Thể lệ"
+      Received: "Coming soon"
+      Timeout:  5000ms
+
+      Call log:
+        - Expect "toHaveText" with timeout 5000ms
+        - waiting for getByRole('heading', { level: 1 })
+          14 × locator resolved to <h1 class="text-2xl font-bold text-white">Coming soon</h1>
+             - unexpected value "Coming soon"
+
+        59 |     await page.goto(ROUTE);
+        60 |
+      > 61 |     await expect(page.getByRole("heading", { level: 1 })).toHaveText(PANEL_TITLE);
+           |                                                           ^
+
+redEvidence:
+  plans/260909-0838-the-le-rules-panel/evidence/red-run.txt          (this file)
+  plans/260909-0838-the-le-rules-panel/evidence/red-run-full-output.txt (full reporter output)
+
+-------------------------------------------------------------------------------
+RESULT LINE (verbatim tail):
+  9 failed
+  2 skipped
+  1 passed (2.8m)
+
+The 1 passed is the `setup` project's `authenticate and save state` — a dependency
+of the `anon` project, not a test of this screen. All 9 live tests of
+e2e/the-le.spec.ts failed.
+
+-------------------------------------------------------------------------------
+WHY THIS IS A VALID RED (not an infrastructure failure)
+
+Every one of the 9 failures is a Playwright `expect()` diff against the real
+running app. `/standards` still renders `ComingSoon` (app/standards/page.tsx),
+so the `<h1>` reads "Coming soon" and none of the `rules-*` testids exist:
+
+  #1 GUI_001   toHaveText  getByRole('heading', { level: 1 })   Expected "Thể lệ"  Received "Coming soon"
+  #2 GUI_002   toHaveCount getByTestId('rules-section')          Expected 3  Received 0
+  #3 GUI_005   toHaveCount getByTestId('rules-hero-tier')        Expected 4  Received 0
+  #4 GUI_006   toHaveCount getByTestId('rules-collectible-icon') Expected 6  Received 0
+  #5 FUN_001   toBeVisible getByTestId('rules-panel-content')    element(s) not found
+  #6 FUN_002   toBeVisible getByTestId('rules-panel-content')    element(s) not found
+  #7 FUN_003   toBeVisible getByTestId('rules-close-button')     element(s) not found
+  #8 FUN_003b  toBeVisible getByTestId('rules-close-button')     element(s) not found
+  #9 FUN_004   toBeVisible getByTestId('rules-write-kudos-link') element(s) not found
+
+None of the four disqualifying signatures appears anywhere in the output
+(verified by grep over the full log):
+  - "browserType.launch: ... error while loading shared libraries"   ABSENT
+  - "Process from config.webServer was not able to start" / webServer timeout  ABSENT
+  - ".env.local not found" / "Missing NEXT_PUBLIC_SUPABASE_URL"      ABSENT
+  - "ECONNREFUSED" / GoTrue "signUp failed"                          ABSENT
+
+Positive proof the harness itself was healthy on this run:
+  - the `setup` project passed and wrote e2e/.auth/user.json against local GoTrue
+    (a real Supabase signUp: e2e-1788923537597-75635-oojvzl@example.com)
+  - the dev server booted and served pages ("Warming client bundles... ✓ Client
+    bundles warmed (hydration complete)")
+  - FUN_003 successfully clicked the homepage floating-widget link
+    <a href="/standards"> and passed its `toHaveURL(/\/standards$/)` check BEFORE
+    failing on the missing close button — i.e. navigation works; only the screen
+    is missing.
+
+-------------------------------------------------------------------------------
+SKIPPED, NOT FAKED (DEC-002)
+
+  -  11 [anon] › e2e/the-le.spec.ts:250:8 › GUI_003 — TC_THELE_GUI_003: disabled footer button is dimmed (DEC-002: no disabled state exists on this screen)
+  -  12 [anon] › e2e/the-le.spec.ts:254:8 › FUN_005 — TC_THELE_FUN_005: disabled footer button rejects clicks (DEC-002: no disabled state exists on this screen)
+
+Both carry the reason in their titles so the gap is visible in every run's output.
+
+-------------------------------------------------------------------------------
+REGISTRATION PROOF (playwright.config.ts change is scoped and correct)
+
+  before:  npx playwright test --project=anon --list  ->  Total: 81 tests in 9 files
+  after :  npx playwright test --project=anon --list  ->  Total: 92 tests in 10 files
+
+  +1 file, +11 tests (9 live + 2 skipped). No other suite gained or lost a test.
+
+-------------------------------------------------------------------------------
+SUPPORTING GATES (this run's tree)
+
+  npx tsc --noEmit -p tsconfig.json   -> exit 0
+  npm run typecheck                   -> exit 0
+  npm run lint                        -> exit 0 (29 pre-existing warnings, none in
+                                         e2e/the-le.spec.ts or the constants file)
+
+  Typecheck trustworthiness re-verified AFTER the Playwright run killed the dev
+  server (the scenario that previously corrupted .next/dev/types/routes.d.ts and
+  masked all errors): a deliberate type error injected into
+  e2e/fixtures/the-le-constants.ts produced exit 2, and removing it produced
+  exit 0. Typecheck is genuinely catching errors.
+
+-------------------------------------------------------------------------------
+PHASE 08 CONTRACT
+
+Phase 08 reruns the IDENTICAL redCommand for GREEN. Do not change the command,
+do not relax an assertion, do not delete a test. The two DEC-002 skips must
+still appear as skips in the GREEN output.

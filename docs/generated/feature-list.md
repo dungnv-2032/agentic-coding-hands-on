@@ -10,6 +10,7 @@
 | 4 | F004 — Kudos Live Board | P1 | mixed | implemented |
 | 5 | F005 — Viet Kudo | P1 | mixed | implemented |
 | 6 | F006 — Profile ban than | P1 | mixed | implemented |
+| 7 | F007 — The Le | P1 | mixed | implemented |
 
 ## Feature Details
 
@@ -60,3 +61,11 @@ Màn soạn Kudo tại `/kudos/new`, thay shell `ComingSoon`: chọn người nh
 Màn Profile tại `/profile`, thay shell `ComingSoon`: hero keyvisual với avatar, tên, phòng ban và huy hiệu danh hiệu; hàng 6 ô icon (đều khoá); và mục KUDOS phân trang bằng keyset cursor. `?id=` mở profile người khác — khi đó card thống kê được thay hoàn toàn bằng thanh viết Kudo, và số Kudos đã gửi bị ẩn vì nó đếm cả Kudos gửi ẩn danh. Route được gác đăng nhập; migration kèm theo biến tính ẩn danh của Kudos từ quy ước tầng render thành bảo đảm tầng dữ liệu.
 
 **Related:** screens: SCR006 | routes: /profile | models: kudos, kudos_likes, sunners, hashtags, departments, gift_awards, kudos_readable
+
+### F007 — The Le
+
+**Priority:** P1 | **Type:** mixed | **Status:** implemented | **Slug:** F007_TheLe
+
+Màn Thể lệ tại `/standards`, thay shell `ComingSoon` cuối cùng do F002 để lại trên các lối tắt trang chủ: drawer 553px bám mép phải trên shell chuẩn, ba mục văn xuôi có thứ tự, 4 bậc huy hiệu Hero kèm ảnh pill, lưới 6 icon sưu tập, chân drawer hai nút `Đóng` / `Viết KUDOS`. Route công khai, không Server Action, không thao tác ghi. Đây là lần đầu **nội dung biên tập** của một màn hình sống trong Postgres thay vì hardcode trong `lib/` (F003 làm cách còn lại) — hai bảng chỉ đọc, RLS public-read, ảnh nằm trên đĩa và dòng dữ liệu chỉ giữ đường dẫn.
+
+**Related:** screens: SCR007 | routes: /standards | models: rule_sections, rule_items | perms: PERM014, PERM015

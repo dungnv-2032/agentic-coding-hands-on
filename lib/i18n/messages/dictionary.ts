@@ -289,4 +289,20 @@ export interface Dictionary {
      */
     anonymousFallbackName: string;
   };
+  /**
+   * Thể lệ rules panel copy (F007, screen `b1Filzi9i6`, frame `3204:6051`,
+   * `/standards`).
+   *
+   * BR-002 draws the line this block must not cross: chrome lives here, the
+   * rules body lives in the database. The three prose sections, the four Hero
+   * tiers and the six collectible icons are rows in
+   * `rule_sections`/`rule_items` and reach the components through the frozen
+   * `lib/rules/view-model.ts` — never through a key added below.
+   */
+  rules: {
+    /** Panel title — rendered as the page's `<h1>` (FR-201). */
+    panelTitle: string;
+    closeButton: string;
+    writeKudosButton: string;
+  };
 }

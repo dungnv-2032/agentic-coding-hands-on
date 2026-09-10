@@ -398,6 +398,42 @@ applied to both the query and each candidate's `fullName`, never a per-keystroke
 One exported function, reused by both call sites rather than risking a second, divergent
 implementation.
 
+### Rules-panel dismissal — history-aware back, feature-detected (F007)
+
+**Source**: `app/standards/_components/rules-panel-dismiss.tsx:47-71`
+**Trigger**: click on `Đóng`, click on the scrim, or `Escape` — one `dismiss()` callback shared by all three
+
+`dismiss()` calls `router.back()` when there is somewhere to go back to, and `router.push("/")`
+when there is not (BR-004: never a dead end). The signal is read **at click time**, not at mount —
+both sources are live browser state.
+
+The interesting part is which signal. `window.history.length > 1` alone does **not** distinguish a
+deep link from a soft navigation, and that was measured rather than assumed (F007 phase 07, real
+Chromium):
+
+```
+fresh newPage()             -> url about:blank, history.length = 1
+after goto("/standards")    -> url /standards,  history.length = 2
+```
+
+A tab's initial `about:blank` entry stays in session history, so a deep link reports length 2,
+takes the `back()` branch, and lands the user on `about:blank` — exactly the dead end BR-004
+exists to forbid. The shipped code feature-detects `navigation.canGoBack` (Navigation API), which
+is `false` on a fresh tab and `true` after a soft navigation, and keeps `history.length > 1` as
+the fallback for engines without the API (Safari/Firefox at the time of writing). The detection
+tests `typeof navigation?.canGoBack === "boolean"`, not truthiness, so an engine returning a
+genuine `false` is respected.
+
+Neither destination is read from the URL — both are fixed literals, so there is no open-redirect
+surface here (contrast `/auth/callback`, where BL005 has to defend exactly that).
+
+**Escape and the `defaultPrevented` guard**: the listener sits on `document`
+(`rules-panel-dismiss.tsx:96-115`) and returns early when `event.defaultPrevented` is already
+true. Without it, closing the header's language dropdown with `Escape` — that popover registers
+its own bubble-phase `document` keydown, see the "Outside/Escape dismissal contract" above — would
+*also* dismiss the panel and navigate the visitor off the page. `stopPropagation()` cannot separate
+the two, because both listeners are attached to the same node; only `defaultPrevented` can.
+
 ### Debounce / Throttle, Optimistic UI, Polling, Upload Progress, Realtime
 
 N/A — no debounce/throttle, optimistic UI, polling, upload-progress, or realtime (WebSocket/SSE)

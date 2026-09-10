@@ -331,3 +331,67 @@ join public.sunners s on s.full_name = names.name;
 -- i18n copy, and not a live count(*) over the seeded kudos rows.
 -- ---------------------------------------------------------------------------
 insert into public.board_stats (id, spotlight_kudos_total) values (1, 388);
+
+-- ---------------------------------------------------------------------------
+-- rule_sections (F007 Thể lệ) — the three ordered prose sections.
+--
+-- Every string is transcribed verbatim from
+-- plans/260909-0838-the-le-rules-panel/clarifications.md § "Resolved from
+-- source data", the same transcription e2e/fixtures/the-le-constants.ts
+-- asserts against. MoMorph rule: "Use Figma design content as mock data
+-- source. Do NOT invent data." — nothing here is composed or paraphrased.
+--
+-- closing_body is null on sections 1 and 3: only section 2 has a line that
+-- renders after its list.
+-- ---------------------------------------------------------------------------
+insert into public.rule_sections (position, heading, body, closing_body) values
+  (1, 'NGƯỜI NHẬN KUDOS: HUY HIỆU HERO CHO NHỮNG ẢNH HƯỞNG TÍCH CỰC',
+   'Dựa trên số lượng đồng đội gửi trao Kudos, bạn sẽ sở hữu Huy hiệu Hero tương ứng, được hiển thị trực tiếp cạnh tên profile',
+   null),
+  (2, 'NGƯỜI GỬI KUDOS: SƯU TẬP TRỌN BỘ 6 ICON, NHẬN NGAY PHẦN QUÀ BÍ ẨN',
+   'Mỗi lời Kudos bạn gửi sẽ được đăng tải trên hệ thống và nhận về những lượt ❤️ từ cộng đồng Sunner. Cứ mỗi 5 lượt ❤️, bạn sẽ được mở 1 Secret Box, với cơ hội nhận về một trong 6 icon độc quyền của SAA.',
+   'Những Sunner thu thập trọn bộ 6 icon sẽ nhận về một phần quà bí ẩn từ SAA 2025.'),
+  (3, 'KUDOS QUỐC DÂN',
+   '5 Kudos nhận về nhiều ❤️ nhất toàn Sun* sẽ chính thức trở thành Kudos Quốc Dân và được trao phần quà đặc biệt từ SAA 2025: Root Further.',
+   null);
+
+-- ---------------------------------------------------------------------------
+-- rule_items (F007 Thể lệ) — four Hero tiers, then six collectible icons.
+--
+-- Same source, same rule. THREE VALUES BELOW LOOK LIKE TYPOS AND ARE NOT.
+-- Do not "fix" them — correcting a typo in source copy is inventing data:
+--   1. hero_tier 3's label uses an EN DASH: `Có 10–20 người…`. Tiers 1 and
+--      2 use plain hyphens; tier 3 does not. That is the frame's text node.
+--   2. hero_tier 1 and 4 descriptions carry en dashes (`bắt đầu – những`,
+--      `huyền thoại – người`).
+--   3. collectible_icon 6's label is `ROOT FURTHER` — spelled normally.
+--      An earlier transcription shipped `ROOT FUTHER`, justified as "the text
+--      node reads FUTHER". That read the wrong field: on node
+--      I3204:6088;737:20392, `itemName` (the Figma LAYER name) is
+--      "ROOT FUTHER" while `character` (the rendered TEXT) is "ROOT FURTHER".
+--      The frame render agrees with `character`. Re-verified via MoMorph
+--      get_node during phase 08 visual validation. The file name
+--      icon-root-further.png matches, as it always did.
+--
+-- description is null on all six icons: the frame gives icons a caption and
+-- artwork only (technical-spec § 4.2 "Polymorphic Behavior").
+-- ---------------------------------------------------------------------------
+insert into public.rule_items (kind, position, label, description, image_path) values
+  ('hero_tier', 1, 'Có 1-4 người gửi Kudos cho bạn',
+   'Hành trình lan tỏa điều tốt đẹp bắt đầu – những lời cảm ơn và ghi nhận đầu tiên đã tìm đến bạn.',
+   '/images/rules/hero-badge-new-hero.png'),
+  ('hero_tier', 2, 'Có 5-9 người gửi Kudos cho bạn',
+   'Hình ảnh bạn đang lớn dần trong trái tim đồng đội bằng sự tử tế và cống hiến của mình.',
+   '/images/rules/hero-badge-rising-hero.png'),
+  ('hero_tier', 3, 'Có 10–20 người gửi Kudos cho bạn',
+   'Bạn đã trở thành biểu tượng được tin tưởng và yêu quý, người luôn sẵn sàng hỗ trợ và được nhiều đồng đội nhớ đến.',
+   '/images/rules/hero-badge-super-hero.png'),
+  ('hero_tier', 4, 'Có hơn 20 người gửi Kudos cho bạn',
+   'Bạn đã trở thành huyền thoại – người để lại dấu ấn khó quên trong tập thể bằng trái tim và hành động của mình.',
+   '/images/rules/hero-badge-legend-hero.png'),
+  ('collectible_icon', 1, 'REVIVAL', null, '/images/rules/icon-revival.png'),
+  ('collectible_icon', 2, 'TOUCH OF LIGHT', null, '/images/rules/icon-touch-of-light.png'),
+  ('collectible_icon', 3, 'STAY GOLD', null, '/images/rules/icon-stay-gold.png'),
+  ('collectible_icon', 4, 'FLOW TO HORIZON', null, '/images/rules/icon-flow-to-horizon.png'),
+  ('collectible_icon', 5, 'BEYOND THE BOUNDARY', null, '/images/rules/icon-beyond-the-boundary.png'),
+  ('collectible_icon', 6, 'ROOT FURTHER', null, '/images/rules/icon-root-further.png');

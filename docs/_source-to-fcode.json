@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T03:19:52Z",
+  "generated_at": "2026-09-09T07:28:19Z",
   "index": {
     "app/_actions/auth.ts": [
       "F001"
@@ -28,6 +28,9 @@
     "app/awards-information/page.tsx": [
       "F003"
     ],
+    "app/kudos/_actions/toggle-kudos-like.ts": [
+      "F006"
+    ],
     "app/login/_components/google-sign-in-button.tsx": [
       "F001"
     ],
@@ -39,6 +42,15 @@
     ],
     "app/page.tsx": [
       "F002"
+    ],
+    "app/standards/_components/rules-panel-dismiss.tsx": [
+      "F007"
+    ],
+    "app/standards/_components/rules-panel.tsx": [
+      "F007"
+    ],
+    "app/standards/page.tsx": [
+      "F007"
     ],
     "app/todo/page.tsx": [
       "F001"

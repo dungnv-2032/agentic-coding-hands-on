@@ -1,0 +1,67 @@
+
+Running 191 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788930170290-264992-8h7pq7@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✘    1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (30.0s)
+Authenticated route warmup encountered an issue: page.goto: net::ERR_ABORTED at http://127.0.0.1:3000/todo
+Call log:
+  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"
+
+    at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/auth.setup.ts:120:16 {
+  log: [
+    '  - navigating to "http://127.0.0.1:3000/todo", waiting until "networkidle"'
+  ],
+  name: 'Error'
+}
+✓ Homepage session created and saved to e2e/.auth/homepage-user.json
+  Test user email: e2e-1788930208521-266115-6inydc@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓    2 [homepage-auth-setup] › e2e/homepage-auth.setup.ts:24:6 › homepage: create independent session (215ms)
+✓ Kudos session created and saved to e2e/.auth/kudos-user.json
+  Test user email: e2e-1788930212270-266200-b8zc2b@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓    3 [kudos-auth-setup] › e2e/kudos-auth.setup.ts:31:6 › kudos: create independent session (218ms)
+✓ Profile session created and saved to e2e/.auth/profile-user.json
+  Test user email: e2e-1788930216286-266314-y0zqve@example.com
+  Auth token cookie: sb-127-auth-token
+  ✓    4 [profile-auth-setup] › e2e/profile-auth.setup.ts:25:6 › profile: create independent session (220ms)
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/ca9f93a4-cd3a-4bfe-8b03-1b2aadaae9ca/1788929144420-61b4a466-7d66-46c7-9d73-20a67c579fe7.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+  ✘    5 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:58:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-10 — heart toggle flips aria-pressed and updates count by 1 (20.6s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] ⨯ upstream image http://127.0.0.1:54321/storage/v1/object/public/kudos-attachments/ca9f93a4-cd3a-4bfe-8b03-1b2aadaae9ca/1788929144420-61b4a466-7d66-46c7-9d73-20a67c579fe7.jpg hostname resolved to private IP ["127.0.0.1"] If this is expected and you understand SSRF risk, use images.dangerouslyAllowLocalIP = true to continue.
+[WebServer] [browser] Image with src "http://127.0.0.1:3000/images/home/kudos-logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[WebServer] [browser] Image with src "/images/kudos/kv-background.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+  ✘    6 [kudos-authed] › e2e/kudos-live-board-authed.spec.ts:100:7 › Kudos Live Board screen — /kudos (kudos-authed) › K-25 — heart persists across page reload (24.5s)
+[WebServer] ⨯ Error: aborted
+[WebServer]     at ignore-listed frames {
+[WebServer]   code: 'ECONNRESET',
+[WebServer]   digest: '3830109604'
+[WebServer] }
+  ✓    7 [kudos-authed] › e2e/viet-kudo.spec.ts:178:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-0 — authenticated user navigates to /kudos/new and form renders (6.1s)
+  ✓    8 [kudos-authed] › e2e/viet-kudo.spec.ts:189:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-2 — compose form landmark present with data-testid (21.7s)
+  ✓    9 [kudos-authed] › e2e/viet-kudo.spec.ts:197:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-3 — fields render in correct order: recipient → title → body → hashtags → images → anonymous (23.1s)
+  ✓   10 [kudos-authed] › e2e/viet-kudo.spec.ts:232:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-4 — recipient input has placeholder 'Tìm kiếm' (25.3s)
+  ✓   11 [kudos-authed] › e2e/viet-kudo.spec.ts:243:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-5 — body editor has correct placeholder (22.5s)
+  ✓   12 [kudos-authed] › e2e/viet-kudo.spec.ts:252:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-6 — anonymous checkbox unchecked by default (21.9s)
+  ✓   13 [kudos-authed] › e2e/viet-kudo.spec.ts:258:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-7 — recipient field shows error on empty submit (22.6s)
+  ✓   14 [kudos-authed] › e2e/viet-kudo.spec.ts:280:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-8 — recipient autocomplete filters by query (21.1s)
+  ✓   15 [kudos-authed] › e2e/viet-kudo.spec.ts:295:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-9 — recipient autocomplete shows empty state when no matches (26.7s)
+  ✓   16 [kudos-authed] › e2e/viet-kudo.spec.ts:312:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-10 — recipient autocomplete trims leading/trailing whitespace (29.0s)
+  ✓   17 [kudos-authed] › e2e/viet-kudo.spec.ts:329:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-11 — body field error on empty submit (23.3s)
+  ✓   18 [kudos-authed] › e2e/viet-kudo.spec.ts:353:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-12 — typing @ in body opens mention menu (25.5s)
+  ✘   19 [kudos-authed] › e2e/viet-kudo.spec.ts:368:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-13 — selecting mention inserts colleague name into body (30.1s)
+  ✓   20 [kudos-authed] › e2e/viet-kudo.spec.ts:394:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-14 — hashtag error when empty on submit (22.7s)
+  ✓   21 [kudos-authed] › e2e/viet-kudo.spec.ts:415:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-15 — add one hashtag successfully (25.2s)
+  ✓   22 [kudos-authed] › e2e/viet-kudo.spec.ts:431:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-16 — add 5 hashtags successfully (23.4s)
+  ✓   23 [kudos-authed] › e2e/viet-kudo.spec.ts:456:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-17 — attempting 6th hashtag shows error and is not added (25.2s)
+  ✓   24 [kudos-authed] › e2e/viet-kudo.spec.ts:493:7 › Viết Kudo screen — /kudos/new (kudos-authed) › ID-18 — upload 3 images and button remains visible (27.8s)

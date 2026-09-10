@@ -1,0 +1,267 @@
+
+Running 12 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788923537597-75635-oojvzl@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (5.3s)
+  ✘   2 [anon] › e2e/the-le.spec.ts:56:7 › Thể lệ panel (/standards) — anon › GUI_001 — FR-201: panel is a labelled dialog whose <h1> reads Thể lệ (6.0s)
+  ✘   3 [anon] › e2e/the-le.spec.ts:69:7 › Thể lệ panel (/standards) — anon › GUI_002 — FR-202/BR-001: three prose sections render in position order (5.5s)
+  ✘   4 [anon] › e2e/the-le.spec.ts:89:7 › Thể lệ panel (/standards) — anon › GUI_005 — FR-203/BR-001: four Hero tiers render in position order, each with artwork (5.5s)
+  ✘   5 [anon] › e2e/the-le.spec.ts:106:7 › Thể lệ panel (/standards) — anon › GUI_006 — FR-204/BR-001: six collectible icons render in position order, each with artwork (5.6s)
+  ✘   6 [anon] › e2e/the-le.spec.ts:121:7 › Thể lệ panel (/standards) — anon › FUN_001 — FR-403: the content column scrolls independently when content overflows (5.4s)
+  ✘   7 [anon] › e2e/the-le.spec.ts:152:7 › Thể lệ panel (/standards) — anon › FUN_002 — FR-403: no scroll distance when the panel is taller than its content (5.4s)
+  ✘   8 [anon] › e2e/the-le.spec.ts:192:7 › Thể lệ panel (/standards) — anon › FUN_003 — FR-401: Đóng returns to the page the visitor came from (5.9s)
+  ✘   9 [anon] › e2e/the-le.spec.ts:213:7 › Thể lệ panel (/standards) — anon › FUN_003b — BR-004: on a deep link with no history, Đóng falls back to / (5.5s)
+  ✘  10 [anon] › e2e/the-le.spec.ts:227:7 › Thể lệ panel (/standards) — anon › FUN_004 — FR-402/BR-005: Viết KUDOS is an anchor pointing at the compose route (5.5s)
+  -  11 [anon] › e2e/the-le.spec.ts:250:8 › Thể lệ panel (/standards) — anon › GUI_003 — TC_THELE_GUI_003: disabled footer button is dimmed (DEC-002: no disabled state exists on this screen)
+  -  12 [anon] › e2e/the-le.spec.ts:254:8 › Thể lệ panel (/standards) — anon › FUN_005 — TC_THELE_FUN_005: disabled footer button rejects clicks (DEC-002: no disabled state exists on this screen)
+
+
+  1) [anon] › e2e/the-le.spec.ts:56:7 › Thể lệ panel (/standards) — anon › GUI_001 — FR-201: panel is a labelled dialog whose <h1> reads Thể lệ 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  getByRole('heading', { level: 1 })
+    Expected: "Thể lệ"
+    Received: "Coming soon"
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveText" with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        14 × locator resolved to <h1 class="text-2xl font-bold text-white">Coming soon</h1>
+           - unexpected value "Coming soon"
+
+
+      59 |     await page.goto(ROUTE);
+      60 |
+    > 61 |     await expect(page.getByRole("heading", { level: 1 })).toHaveText(PANEL_TITLE);
+         |                                                           ^
+      62 |
+      63 |     const panel = page.getByTestId("rules-panel");
+      64 |     await expect(panel).toBeVisible();
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:61:59
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-1be44-ialog-whose-h1-reads-Thể-lệ-anon/error-context.md
+
+  2) [anon] › e2e/the-le.spec.ts:69:7 › Thể lệ panel (/standards) — anon › GUI_002 — FR-202/BR-001: three prose sections render in position order 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByTestId('rules-section')
+    Expected: 3
+    Received: 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByTestId('rules-section')
+        14 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      73 |
+      74 |     const sections = page.getByTestId("rules-section");
+    > 75 |     await expect(sections).toHaveCount(SECTION_COUNT);
+         |                            ^
+      76 |
+      77 |     // Comparing the i-th rendered section against the i-th designed heading is
+      78 |     // what proves `order by position` (BR-001) — a set-membership check would
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:75:28
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-b016a-ns-render-in-position-order-anon/error-context.md
+
+  3) [anon] › e2e/the-le.spec.ts:89:7 › Thể lệ panel (/standards) — anon › GUI_005 — FR-203/BR-001: four Hero tiers render in position order, each with artwork 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByTestId('rules-hero-tier')
+    Expected: 4
+    Received: 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByTestId('rules-hero-tier')
+        14 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      93 |
+      94 |     const tiers = page.getByTestId("rules-hero-tier");
+    > 95 |     await expect(tiers).toHaveCount(HERO_TIER_COUNT);
+         |                         ^
+      96 |
+      97 |     for (let i = 0; i < HERO_TIER_COUNT; i++) {
+      98 |       const tier = tiers.nth(i);
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:95:25
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-046da-ion-order-each-with-artwork-anon/error-context.md
+
+  4) [anon] › e2e/the-le.spec.ts:106:7 › Thể lệ panel (/standards) — anon › GUI_006 — FR-204/BR-001: six collectible icons render in position order, each with artwork 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  getByTestId('rules-collectible-icon')
+    Expected: 6
+    Received: 0
+    Timeout:  5000ms
+
+    Call log:
+      - Expect "toHaveCount" with timeout 5000ms
+      - waiting for getByTestId('rules-collectible-icon')
+        14 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      110 |
+      111 |     const icons = page.getByTestId("rules-collectible-icon");
+    > 112 |     await expect(icons).toHaveCount(COLLECTIBLE_ICON_COUNT);
+          |                         ^
+      113 |
+      114 |     for (let i = 0; i < COLLECTIBLE_ICON_COUNT; i++) {
+      115 |       const icon = icons.nth(i);
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:112:25
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-23027-ion-order-each-with-artwork-anon/error-context.md
+
+  5) [anon] › e2e/the-le.spec.ts:121:7 › Thể lệ panel (/standards) — anon › FUN_001 — FR-403: the content column scrolls independently when content overflows 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('rules-panel-content')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('rules-panel-content')
+
+
+      125 |
+      126 |     const content = page.getByTestId("rules-panel-content");
+    > 127 |     await expect(content).toBeVisible();
+          |                           ^
+      128 |
+      129 |     const metrics = await content.evaluate((el) => ({
+      130 |       scrollHeight: el.scrollHeight,
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:127:27
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-670aa-ntly-when-content-overflows-anon/error-context.md
+
+  6) [anon] › e2e/the-le.spec.ts:152:7 › Thể lệ panel (/standards) — anon › FUN_002 — FR-403: no scroll distance when the panel is taller than its content 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('rules-panel-content')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('rules-panel-content')
+
+
+      168 |
+      169 |       const content = page.getByTestId("rules-panel-content");
+    > 170 |       await expect(content).toBeVisible();
+          |                             ^
+      171 |
+      172 |       metrics = await content.evaluate((el) => ({
+      173 |         scrollHeight: el.scrollHeight,
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:170:29
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-534ce--is-taller-than-its-content-anon/error-context.md
+
+  7) [anon] › e2e/the-le.spec.ts:192:7 › Thể lệ panel (/standards) — anon › FUN_003 — FR-401: Đóng returns to the page the visitor came from 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('rules-close-button')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('rules-close-button')
+
+
+      204 |
+      205 |     const closeButton = page.getByTestId("rules-close-button");
+    > 206 |     await expect(closeButton).toBeVisible();
+          |                               ^
+      207 |     await expect(closeButton).toContainText(CLOSE_LABEL);
+      208 |     await closeButton.click();
+      209 |
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:206:31
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-f159e--page-the-visitor-came-from-anon/error-context.md
+
+  8) [anon] › e2e/the-le.spec.ts:213:7 › Thể lệ panel (/standards) — anon › FUN_003b — BR-004: on a deep link with no history, Đóng falls back to / 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('rules-close-button')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('rules-close-button')
+
+
+      219 |
+      220 |     const closeButton = page.getByTestId("rules-close-button");
+    > 221 |     await expect(closeButton).toBeVisible();
+          |                               ^
+      222 |     await closeButton.click();
+      223 |
+      224 |     await expect(page).toHaveURL("http://127.0.0.1:3000/");
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:221:31
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-28cea-history-Đóng-falls-back-to--anon/error-context.md
+
+  9) [anon] › e2e/the-le.spec.ts:227:7 › Thể lệ panel (/standards) — anon › FUN_004 — FR-402/BR-005: Viết KUDOS is an anchor pointing at the compose route 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('rules-write-kudos-link')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByTestId('rules-write-kudos-link')
+
+
+      231 |
+      232 |     const link = page.getByTestId("rules-write-kudos-link");
+    > 233 |     await expect(link).toBeVisible();
+          |                        ^
+      234 |     await expect(link).toContainText(WRITE_KUDOS_LABEL);
+      235 |
+      236 |     // Asserted by ATTRIBUTE, deliberately not by navigating: under `anon` a
+        at /mnt/c/Users/nguyen.van.dungc/Desktop/project/my-app/e2e/the-le.spec.ts:233:24
+
+    Error Context: test-results/the-le-Thể-lệ-panel-standa-5d7ab-inting-at-the-compose-route-anon/error-context.md
+
+  9 failed
+    [anon] › e2e/the-le.spec.ts:56:7 › Thể lệ panel (/standards) — anon › GUI_001 — FR-201: panel is a labelled dialog whose <h1> reads Thể lệ 
+    [anon] › e2e/the-le.spec.ts:69:7 › Thể lệ panel (/standards) — anon › GUI_002 — FR-202/BR-001: three prose sections render in position order 
+    [anon] › e2e/the-le.spec.ts:89:7 › Thể lệ panel (/standards) — anon › GUI_005 — FR-203/BR-001: four Hero tiers render in position order, each with artwork 
+    [anon] › e2e/the-le.spec.ts:106:7 › Thể lệ panel (/standards) — anon › GUI_006 — FR-204/BR-001: six collectible icons render in position order, each with artwork 
+    [anon] › e2e/the-le.spec.ts:121:7 › Thể lệ panel (/standards) — anon › FUN_001 — FR-403: the content column scrolls independently when content overflows 
+    [anon] › e2e/the-le.spec.ts:152:7 › Thể lệ panel (/standards) — anon › FUN_002 — FR-403: no scroll distance when the panel is taller than its content 
+    [anon] › e2e/the-le.spec.ts:192:7 › Thể lệ panel (/standards) — anon › FUN_003 — FR-401: Đóng returns to the page the visitor came from 
+    [anon] › e2e/the-le.spec.ts:213:7 › Thể lệ panel (/standards) — anon › FUN_003b — BR-004: on a deep link with no history, Đóng falls back to / 
+    [anon] › e2e/the-le.spec.ts:227:7 › Thể lệ panel (/standards) — anon › FUN_004 — FR-402/BR-005: Viết KUDOS is an anchor pointing at the compose route 
+  2 skipped
+  1 passed (2.8m)

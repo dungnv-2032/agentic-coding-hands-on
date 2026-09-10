@@ -1,0 +1,13 @@
+{
+  "mode": "single",
+  "smell_flag": "none",
+  "intents": [
+    {
+      "actor": "Sunner (visitor, signed in or anonymous)",
+      "action_domain": "read the SAA 2025 Kudos programme rules",
+      "outcome": "understands how Hero badges are earned, what the 6 collectible icons are and how Kudos Quốc Dân is awarded, and can leave for the compose form"
+    }
+  ],
+  "justification": "One MoMorph frame, one route (/standards), one user-facing outcome: read the programme rules. The Supabase tables and the seed are the mechanism behind that single outcome, not separate intents; the Viet KUDOS button is navigation into the already-shipped F005 compose feature, not a new intent. No conjunction smell-flag matched the task text.",
+  "emitted_at": "2026-09-09"
+}

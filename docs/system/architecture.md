@@ -7,7 +7,7 @@ lang: vi
 
 # Architecture
 
-**Project**: my-app (SAA 2025) — mô tả tới F006 (Profile bản thân).
+**Project**: my-app (SAA 2025) — mô tả tới F007 (Thể lệ).
 
 ## System Architecture
 
@@ -44,6 +44,22 @@ ranh giới đọc thật đầu tiên của repo, khác hẳn "mọi bảng đ�
 Route `/profile` cũng là route guarded thứ ba (sau `/todo`, `/kudos/new`) — vẫn cùng một điều kiện
 `isGuarded` trong `proxy.ts`, không phải cơ chế mới.
 
+**Thay đổi của vòng F007 (Thể lệ):** cho tới F006, mọi thứ nằm trong Postgres đều là **dữ liệu giao
+dịch** — người, Kudos, tim, hashtag, sự kiện ticker. Nội dung biên tập thì hardcode trong `lib/`:
+`/awards-information` đọc `lib/awards.ts` và `lib/award-system.ts`, hai file TypeScript. F007 là lần
+đầu **nội dung biên tập được đưa vào database**: `public.rule_sections` (ba mục văn xuôi có thứ tự) và
+`public.rule_items` (bốn bậc huy hiệu Hero + sáu icon sưu tập, phân biệt bằng cột `kind`).
+
+Hệ quả kiến trúc, nói thẳng vì nó tạo tiền lệ: repo giờ có **hai** chỗ hợp lệ để nội dung màn hình
+sống — `lib/*.ts` (F003) và bảng Postgres (F007) — và không có luật nào trong repo phân xử chỗ nào
+đúng cho màn tiếp theo. F007 chọn database vì commission yêu cầu tường minh ("use Supabase local
+project"), không vì một nguyên tắc đã được thống nhất. Ai đóng khoảng trống này nên đóng bằng một
+quyết định được ghi lại, không bằng cách bắt chước màn gần nhất.
+
+Điều F007 **không** mang vào, ghi lại để không phải tìm: không Server Action, không thao tác ghi,
+không Storage bucket, không route mới. Ảnh huy hiệu và icon nằm trên đĩa dưới `public/images/rules/`,
+dòng database chỉ giữ đường dẫn (`image_path`) — cùng cách mọi màn khác đối xử với asset Figma của nó.
+
 ```mermaid
 graph TB
     subgraph Browser
@@ -52,19 +68,19 @@ graph TB
     subgraph "Next.js App Router (my-app)"
         PX["proxy.ts — session refresh + route guard"]
         PC["app/_page-context.ts — điểm đọc duy nhất: locale + dictionary + isAuthenticated + isAdmin"]
-        SC["Server Components — app/page.tsx, /awards-information, /kudos, /login, /todo, /profile, placeholder pages"]
+        SC["Server Components — app/page.tsx, /awards-information, /kudos, /kudos/new, /login, /todo, /profile, /standards, placeholder pages"]
         SA["Server Actions — signOut(), setLocale(), signInWithGoogle(), toggleKudosLike()"]
         CB["app/auth/callback/route.ts — Route Handler GET (OAuth callback)"]
         CC["Client Components — home-header, language-selector, account-menu, countdown-timer, kudos filters/carousel/heart/spotlight"]
         DICT["lib/i18n — dictionaries tĩnh (vi/en), không dùng thư viện i18n nào"]
-        KQ["lib/kudos — query layer + logic thuần (badge, filter, top-N)"]
+        KQ["lib/kudos, lib/profile, lib/rules — query layer + logic thuần (badge, filter, top-N, view-model)"]
         DT["lib/supabase/database.types.ts — type sinh từ schema (supabase gen types)"]
     end
     subgraph Supabase
         SSR["@supabase/ssr — createServerClient / createBrowserClient"]
         AUTH["GoTrue Auth — auth.users, session, refresh token"]
-        PG["Postgres — public schema: sunners, kudos, kudos_likes, hashtags, departments, gift_awards, spotlight_events + view kudos_readable"]
-        RLS["RLS + grants — select cho anon+authenticated, TRỪ kudos (đã revoke — đọc qua view kudos_readable); insert/delete kudos_likes chỉ auth.uid()"]
+        PG["Postgres — public schema: sunners, kudos, kudos_likes, kudos_hashtags, kudos_attachments, hashtags, departments, gift_awards, board_stats, spotlight_ticker_events, rule_sections, rule_items + view kudos_readable"]
+        RLS["RLS + grants — select cho anon+authenticated, TRỪ kudos (đã revoke — đọc qua view kudos_readable); insert/delete kudos_likes chỉ auth.uid(); rule_sections/rule_items chỉ có policy select, không policy ghi"]
         GOOGLE["Google OAuth (qua GoTrue)"]
     end
 
@@ -226,6 +242,19 @@ và view công khai (mọi read-path của app đi qua đây). Một tính năng
 `kudos` mới PHẢI trỏ vào `kudos_readable`, không phải `kudos` — trỏ thẳng vào bảng gốc sẽ vỡ ngay
 vì quyền đã bị revoke.
 
+### Read path của nội dung biên tập (`lib/rules/`) — mới ở F007
+
+`lib/rules/` theo đúng khuôn `lib/kudos/` và `lib/profile/` đã dựng: `queries.ts` chỉ chứa read có
+kiểu (client luôn là tham số, không bao giờ tạo bên trong), `rules-data.ts` là orchestrator tạo một
+client mỗi request rồi bắn hai read độc lập qua một `Promise.all`, `view-model.ts` giữ shape đóng băng
+mà component tiêu thụ. Dòng database không chạm tới component — cùng ranh giới `board-data.ts` và
+`profile-data.ts` đã đặt ra.
+
+Mọi query của feature này mang `order by position` tường minh. Đây là idiom sẵn có
+(`hashtags.position`, `departments.filter_position`, `kudos_hashtags.position`), không phải quy ước
+mới. Việc tách `rule_items.kind` thành `heroTiers` / `collectibleIcons` xảy ra đúng một lần, trong
+`rules-data.ts`; không component nào tự lọc lại.
+
 ### Hai chiến lược phân trang cùng tồn tại (ghi nhận, chưa hợp nhất)
 
 F004's `all-kudos-feed.tsx` đọc hết bảng `kudos` một lần rồi cắt phía client theo `FEED_PAGE_SIZE`
@@ -322,6 +351,12 @@ stack** của Supabase CLI, không phải hạ tầng production — không dùn
 topology.
 
 Một điểm mới cần ghi lại: từ nay việc triển khai **có** bước schema. `supabase/migrations/` phải
-được apply vào database đích trước khi bản build đọc được gì, và `supabase/seed.sql` là dữ liệu
-dev/test, **không** phải dữ liệu production. Repo hiện chưa có nơi nào mô tả bước đó cho môi
-trường thật — vẫn là khoảng trống, không suy diễn thêm ở đây.
+được apply vào database đích trước khi bản build đọc được gì.
+
+**Đổi ở F007:** câu "`supabase/seed.sql` là dữ liệu dev/test, **không** phải dữ liệu production"
+**không còn đúng trọn vẹn**. File này từ nay chứa cả **nội dung sản phẩm** — chữ thể lệ hiển thị cho
+người dùng, ở `seed.sql:347-397` (`rule_sections` + `rule_items`). Các dòng đó cần có mặt ở mọi môi
+trường thì `/standards` mới có gì để hiển thị; một môi trường chạy migration mà không chạy seed sẽ
+render panel rỗng chứ không lỗi. Repo vẫn chưa có nơi nào mô tả cách nội dung đó tới được môi trường
+thật — khoảng trống đã ghi nhận, và F007 làm nó rộng thêm chứ không thu hẹp. Không suy diễn thêm ở
+đây.

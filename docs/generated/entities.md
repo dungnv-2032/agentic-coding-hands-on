@@ -10,6 +10,26 @@ authored_by: rebuild-spec (Core pass, generated layer)
 
 ## The honest answer: this app owns no database schema
 
+> **SUPERSEDED — this section stopped being true on 2026-09-06 (F004).** Everything under this
+> heading describes the repository as it stood at the Core pass of 2026-09-05, and is retained
+> only so the change is visible rather than silently rewritten. Measured on 2026-09-09:
+> `supabase/migrations/` holds **four** migrations (`20260906140914_kudos_live_board.sql`,
+> `20260907025909_viet_kudo_write_path.sql`, `20260908100000_profile_reader_view.sql`,
+> `20260909093000_the_le_rules_content.sql`), `supabase/seed.sql` exists and now carries product
+> content as well as dev data, and the app owns **12 base tables** in schema `public` —
+> `board_stats`, `departments`, `gift_awards`, `hashtags`, `kudos`, `kudos_attachments`,
+> `kudos_hashtags`, `kudos_likes`, `rule_items`, `rule_sections`, `spotlight_ticker_events`,
+> `sunners` — plus one view, `kudos_readable` (list read off the running database, not off the
+> migrations). Do not treat the bullets below as current state.
+>
+> The MODEL001–MODEL004 entries further down remain accurate as far as they go — they describe
+> `auth.users` and three in-memory TypeScript contracts, none of which F004–F007 changed. What is
+> missing is a MODEL entry per application-owned table. Writing those is a regeneration, not a row
+> edit: run `/tkm:rebuild-spec --artifact entities`. Until then the authoritative schema
+> descriptions are the per-feature specs — `docs/features/F004_KudosLiveBoard/technical-spec.md`
+> § 4.2, `F005_VietKudo` § 4.2, `F006_ProfileBanThan` § 4.2 and `F007_TheLe` § 4.2 — plus the
+> migrations themselves.
+
 Confirmed by direct inspection, not inferred:
 
 - `supabase/migrations/` **does not exist** (`ls` → no such directory).

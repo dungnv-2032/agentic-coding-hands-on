@@ -79,7 +79,7 @@ export default defineConfig({
     {
       name: "anon",
       testMatch:
-        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|kudos-live-board(?!-authed))\.spec\.ts/,
+        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|the-le|kudos-live-board(?!-authed))\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },

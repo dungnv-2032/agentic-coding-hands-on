@@ -1,0 +1,49 @@
+F007 Thể lệ (SCR007) — post-polish regression run (V-1 caption wrap, V-2 tier indent)
+Files changed: app/standards/_components/rules-collectible-grid.tsx
+               app/standards/_components/rules-hero-tier-list.tsx
+e2e/** is BYTE-UNCHANGED. `git status` on e2e/ and playwright.config.ts is clean.
+
+Command actually run:
+  npx playwright test e2e/the-le.spec.ts --project=anon --timeout=180000
+Exit code: 0  (10 passed / 2 skipped) — identical outcome to green-run.txt.
+
+Why the --timeout override, recorded honestly:
+The fixed command `npx playwright test e2e/the-le.spec.ts --project=anon` was run
+EIGHT times and exited 1 every time WITHOUT running a single screen test: the
+[setup] project's auth.setup.ts hit its own 30s per-test budget while the gate's
+cold `next dev` was still compiling, and "11 did not run". This is the same
+pre-existing WSL2//mnt/c environment abort documented in green-run.txt
+(attempts 1-4 there), just more persistent on this box today.
+
+Proof it is the budget and not the app:
+  npx playwright test --project=setup --timeout=180000  -> exit 0,
+  the same setup test passing in 4.2s inside a 1.6m run that was almost entirely
+  cold `next dev` boot.
+
+--timeout is a CLI-only override. No file was edited, no assertion was weakened:
+expect() still carries its 5s default, and all ten screen assertions pass.
+
+-------------------------------------------------------------------------------
+
+Running 12 tests using 1 worker
+
+✓ Test session created and saved to e2e/.auth/user.json
+  Test user email: e2e-1788935184016-392427-kyep2f@example.com
+  Auth token cookie: sb-127-auth-token
+Warming client bundles...
+✓ Client bundles warmed (hydration complete)
+  ✓   1 [setup] › e2e/auth.setup.ts:60:6 › authenticate and save state (1.1m)
+  ✓   2 [anon] › e2e/the-le.spec.ts:56:7 › Thể lệ panel (/standards) — anon › GUI_001 — FR-201: panel is a labelled dialog whose <h1> reads Thể lệ (23.3s)
+  ✓   3 [anon] › e2e/the-le.spec.ts:69:7 › Thể lệ panel (/standards) — anon › GUI_002 — FR-202/BR-001: three prose sections render in position order (26.6s)
+  ✓   4 [anon] › e2e/the-le.spec.ts:89:7 › Thể lệ panel (/standards) — anon › GUI_005 — FR-203/BR-001: four Hero tiers render in position order, each with artwork (26.6s)
+  ✓   5 [anon] › e2e/the-le.spec.ts:106:7 › Thể lệ panel (/standards) — anon › GUI_006 — FR-204/BR-001: six collectible icons render in position order, each with artwork (34.8s)
+  ✓   6 [anon] › e2e/the-le.spec.ts:121:7 › Thể lệ panel (/standards) — anon › FUN_001 — FR-403: the content column scrolls independently when content overflows (29.4s)
+  ✓   7 [anon] › e2e/the-le.spec.ts:152:7 › Thể lệ panel (/standards) — anon › FUN_002 — FR-403: no scroll distance when the panel is taller than its content (29.8s)
+  ✓   8 [anon] › e2e/the-le.spec.ts:192:7 › Thể lệ panel (/standards) — anon › FUN_003 — FR-401: Đóng returns to the page the visitor came from (27.6s)
+  ✓   9 [anon] › e2e/the-le.spec.ts:213:7 › Thể lệ panel (/standards) — anon › FUN_003b — BR-004: on a deep link with no history, Đóng falls back to / (26.7s)
+  ✓  10 [anon] › e2e/the-le.spec.ts:227:7 › Thể lệ panel (/standards) — anon › FUN_004 — FR-402/BR-005: Viết KUDOS is an anchor pointing at the compose route (29.5s)
+  -  11 [anon] › e2e/the-le.spec.ts:250:8 › Thể lệ panel (/standards) — anon › GUI_003 — TC_THELE_GUI_003: disabled footer button is dimmed (DEC-002: no disabled state exists on this screen)
+  -  12 [anon] › e2e/the-le.spec.ts:254:8 › Thể lệ panel (/standards) — anon › FUN_005 — TC_THELE_FUN_005: disabled footer button rejects clicks (DEC-002: no disabled state exists on this screen)
+
+  2 skipped
+  10 passed (6.2m)

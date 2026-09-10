@@ -38,6 +38,13 @@
 ## SCR006_ProfileBanThan
 
 **Feature:** F006 — Profile ban than
-**Route:** /profile
-**Description:** Live board Sun* Kudos công khai: highlight, bộ lọc, spotlight, feed và sidebar.
+**Route:** /profile (và /profile?id={sunnerId})
+**Description:** Hồ sơ Sunner — hero nhận diện (avatar, tên, phòng ban, huy hiệu Hero), hàng 6 ô icon khoá, card thống kê cá nhân hoặc thanh viết Kudo, và feed Kudos đã nhận/đã gửi phân trang keyset.
 **States:** loading, empty, error, self, other, sparse
+
+## SCR007_TheLe
+
+**Feature:** F007 — The Le
+**Route:** /standards
+**Description:** Drawer Thể lệ 553px bám mép phải trên shell chuẩn — ba mục văn xuôi, 4 bậc huy hiệu Hero, lưới 6 icon sưu tập, chân drawer hai nút Đóng / Viết KUDOS. Nội dung đọc từ `rule_sections`/`rule_items` mỗi request.
+**States:** default, empty, scrolling, no-scroll

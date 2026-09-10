@@ -1,0 +1,62 @@
+[
+  {
+    "command": "docker exec -i supabase_db_my-app psql -U postgres -d postgres -c \"select count(*) from public.rule_sections;\" -c \"select kind, count(*) from public.rule_items group by kind order by kind;\"",
+    "exitCode": 0,
+    "summary": "Precondition gate passed: rule_sections=3, rule_items collectible_icon=6 / hero_tier=4 — exactly the phase-03 seed. Supabase stack healthy (11 containers up)."
+  },
+  {
+    "command": "npx playwright test e2e/the-le.spec.ts --project=anon",
+    "exitCode": 1,
+    "summary": "Attempts 1-4 (11:01, 11:05, 11:11, 11:17). NOT a screen result: the [setup] project's auth.setup.ts hit its own 30s test timeout while the gate's cold `next dev` compiled /login and /todo, so all 11 screen tests reported 'did not run'. Recorded as an environment abort, not counted as a test outcome."
+  },
+  {
+    "command": "npx playwright test --project=setup --timeout=180000",
+    "exitCode": 0,
+    "summary": "Diagnosis of the abort above. The identical setup test passes in 3.9s when the 30s per-test budget is lifted — proving the abort is a cold-compile timing fault in the harness, not a broken app or a broken session fixture."
+  },
+  {
+    "command": "npx playwright test e2e/the-le.spec.ts --project=anon",
+    "exitCode": 0,
+    "summary": "VALID GREEN, reproduced twice back-to-back (11:19 and 11:20). 10 passed / 2 skipped. Same command, same spec file, same assertions as the phase-02 RED (all 11 RED-era assertion lines verified still present verbatim in e2e/the-le.spec.ts). Both DEC-002 test.skip entries still print with their reasons. Full output in evidence/green-run.txt."
+  },
+  {
+    "command": "npm run test:e2e",
+    "exitCode": 1,
+    "summary": "Full-suite regression, 6 workers, 29.5m: 70 passed, 26 failed, 1 skipped, 94 did not run. Every failure carries a 30s/35s timeout signature, headed by [setup] auth.setup.ts — whose failure is why 94 tests (the whole anon project, including the-le) never ran. No assertion-content failure anywhere in the log."
+  },
+  {
+    "command": "npx playwright test --workers=1",
+    "exitCode": 144,
+    "summary": "Serial re-run started to separate contention from regression, then TERMINATED BY THE TESTER after 29 tests when every passing test was taking 20-30s (80+ min projected). No verdict claimed from it. Partial log kept at evidence/full-suite-run-serial.txt; it reproduced the same [setup] 30s abort and the same K-10/K-25 failures."
+  },
+  {
+    "command": "npx playwright test --project=anon",
+    "exitCode": 1,
+    "summary": "Attempted 4 times (12:10 cold, 12:16 after warming the compile cache under the gate env, 12:21 with --workers=1, 12:47 after a graceful dev-server stop). All four aborted identically in [setup] at 30s with 91 tests 'did not run'. Whole-project invocations never cleared the setup gate on this box after 11:24."
+  },
+  {
+    "command": "for s in smoke login-screen route-guard callback-security homepage award-system profile-anon kudos-live-board the-le; do npx playwright test e2e/$s.spec.ts --project=anon; done",
+    "exitCode": 1,
+    "summary": "DECISIVE CLASSIFICATION RUN. All nine anon specs — including e2e/smoke.spec.ts, which predates F007 by weeks and touches nothing this feature changed — fail identically on the same [setup] auth.setup.ts 30s timeout. A failure that reproduces on smoke.spec.ts cannot be an F007 regression."
+  },
+  {
+    "command": "npx playwright test --project=setup",
+    "exitCode": 0,
+    "summary": "Run in isolation immediately after the whole-project failures: the same setup test passes in 5.0s. Confirms the app, the Supabase session fixture and the browser are all healthy; only the cold-compile-inside-30s race is failing."
+  },
+  {
+    "command": "node scratchpad/probe-todo.cjs (instrumented navigation to /todo with the captured auth cookies, against a warm dev server)",
+    "exitCode": 0,
+    "summary": "The exact navigation that times out inside the gate completes in 1.38-1.60s, HTTP 200, networkidle reached, no redirect loop. Run twice, ~80 minutes apart, with the same result."
+  },
+  {
+    "command": "docker exec -i supabase_db_my-app psql -U postgres -d postgres -c \"set role anon; insert into public.rule_items ...\" / \"set role anon; update public.rule_sections set heading='x';\"",
+    "exitCode": 0,
+    "summary": "FR-601 re-verified by measurement, not belief: anon INSERT is rejected with 'new row violates row-level security policy for table rule_items', anon UPDATE affects 0 rows, anon SELECT returns the 3 seeded sections. Read-only for anon, as required. (The command's exit code is 0 because psql ran successfully; the RLS rejection is the expected result inside it.)"
+  },
+  {
+    "command": "node scratchpad/visual-capture.cjs && node scratchpad/rest-capture.cjs",
+    "exitCode": 0,
+    "summary": "Visual validation capture at 1440x1796 anon: panel screenshot, rest+hover crops for both footer controls, icon-grid and footer strips, 390px responsive capture, plus DOM geometry/computed-style measurements. Playwright MCP is unusable in this repo (no system Chromium), so capture runs through the project's own Playwright with the vendored .playwright-libs on LD_LIBRARY_PATH."
+  }
+]

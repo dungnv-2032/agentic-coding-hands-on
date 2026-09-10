@@ -4,6 +4,7 @@ import { viHome } from "./vi-home";
 import { viKudos } from "./vi-kudos";
 import { viKudosCompose } from "./vi-kudos-compose";
 import { viProfile } from "./vi-profile";
+import { viRules } from "./vi-rules";
 
 export type { Dictionary };
 
@@ -53,4 +54,5 @@ export const vi: Dictionary = {
   kudos: viKudos,
   profile: viProfile,
   kudosCompose: viKudosCompose,
+  rules: viRules,
 };
