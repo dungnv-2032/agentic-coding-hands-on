@@ -577,20 +577,20 @@ test.describe("Kudos Live Board screen — /kudos (anon)", () => {
     await expect(leaderboard.getByText(GIFT_LEADERBOARD_HEADING)).toBeVisible();
   });
 
-  // K-21 — placeholder routes /kudos/secret-box and /kudos/[id] render ComingSoon
+  // K-21 — /kudos/secret-box renders the Secret Box screen; /kudos/[id] still renders ComingSoon
   // Note: /kudos/new is guarded as of phase-02 (requires authentication). Guard coverage moved to ID-1 (anon) and ID-0 (authed).
-  test("K-21 — placeholder routes /kudos/secret-box and /kudos/[id] render ComingSoon", async ({
+  test("K-21 — /kudos/secret-box renders the Secret Box screen; /kudos/[id] remains ComingSoon", async ({
     page,
   }) => {
-    // Test /kudos/secret-box (public placeholder)
+    // Test /kudos/secret-box (now renders the actual Secret Box screen)
     let response = await page.goto("/kudos/secret-box");
     expect(response?.status()).toBe(200);
     expect(page.url()).toContain("/kudos/secret-box");
-    // Assert ComingSoon is rendered (main with flex children)
+    // Assert screen is rendered (main with flex children)
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("main h1")).toBeVisible();
 
-    // Test /kudos/[id] (e.g., /kudos/123 — public placeholder)
+    // Test /kudos/[id] (e.g., /kudos/123 — still a placeholder)
     response = await page.goto("/kudos/123");
     expect(response?.status()).toBe(200);
     expect(page.url()).toContain("/kudos/123");

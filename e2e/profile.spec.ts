@@ -412,9 +412,10 @@ test.describe("Profile screen — /profile (profile-authed)", () => {
     }
   });
 
-  test("TC_WEB_PROFILE_GUI_005 — Secret Box rows show 0, button is disabled", async ({
+  test("TC_WEB_PROFILE_GUI_005 — Secret Box button enabled on own profile, stats show 0", async ({
     page,
   }) => {
+    // Self face: button is enabled link to /kudos/secret-box
     await page.goto(ROUTE);
 
     const stats = statCard(page);
@@ -428,25 +429,22 @@ test.describe("Profile screen — /profile (profile-authed)", () => {
     const lastRow = rows.nth(4); // 5th row (Secret Box unopened)
     await expect(lastRow).toContainText("0");
 
-    // Button is rendered but disabled
+    // Button is rendered as an enabled link
     const button = secretBoxButton(page);
     await expect(button).toBeVisible();
-    await expect(button).toBeDisabled();
+    await expect(button).toBeEnabled();
     await expect(button).toContainText(SECRET_BOX_BUTTON_LABEL);
 
-    // Clicking the disabled button does nothing.
-    // `force: true` is required, not a concession: `toBeDisabled()` above and
-    // `click()`'s enabled-actionability check route through the SAME predicate
-    // (elementState -> getAriaDisabled = isNativelyDisabled || aria-disabled),
-    // so a bare click() on anything that satisfies the assertion can only time
-    // out. The spec requires the button be disabled, so the click is forced and
-    // the *effect* is asserted instead.
-    const urlBeforeClick = page.url();
-    await button.click({ force: true });
-    // No navigation, and the button is still disabled after being clicked.
-    expect(page.url()).toBe(urlBeforeClick);
-    expect(page.url()).toContain(ROUTE);
-    await expect(button).toBeDisabled();
+    // Button links to /kudos/secret-box
+    const href = await button.getAttribute("href");
+    expect(href).toBe("/kudos/secret-box");
+
+    // Other profile face: no button (stats card absent per TC_WEB_PROFILE_FUN_006)
+    await page.goto(`${ROUTE}?id=${FRAME_RECEIVER_ID}`);
+    const otherStats = statCard(page);
+    await expect(otherStats).not.toBeVisible(); // Card absent on other profile
+    const otherButton = secretBoxButton(page);
+    await expect(otherButton).not.toBeVisible(); // Button also absent
   });
 
   test("TC_WEB_PROFILE_FUN_006 — another's profile shows write-Kudo bar, no stats", async ({

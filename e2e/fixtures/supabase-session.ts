@@ -104,12 +104,16 @@ export async function createTestSession() {
 
   await client.auth.setSession(expiredSession);
 
-  // Return all captured cookies and the user email for the setup project
+  // Return all captured cookies, user email, and userId for the setup project.
+  // `userId` comes from the verified `getUser()` result, not from `signUp`'s
+  // `data.user`: the guard above narrows `user.user` to non-null, whereas
+  // `signUp` types its `user` as nullable and only `data.session` was checked.
   return {
     cookies: Array.from(cookieJar.entries()).map(([name, value]) => ({
       name,
       value,
     })),
     email,
+    userId: user.user.id,
   };
 }

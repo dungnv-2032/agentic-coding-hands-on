@@ -306,6 +306,65 @@ export type Database = {
         }
         Relationships: []
       }
+      secret_box_badge_odds: {
+        Row: {
+          rule_item_id: number
+          weight: number
+        }
+        Insert: {
+          rule_item_id: number
+          weight: number
+        }
+        Update: {
+          rule_item_id?: number
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "secret_box_badge_odds_rule_item_id_fkey"
+            columns: ["rule_item_id"]
+            isOneToOne: true
+            referencedRelation: "rule_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      secret_box_openings: {
+        Row: {
+          id: number
+          opened_at: string
+          rule_item_id: number
+          sunner_id: number
+        }
+        Insert: {
+          id?: never
+          opened_at?: string
+          rule_item_id: number
+          sunner_id: number
+        }
+        Update: {
+          id?: never
+          opened_at?: string
+          rule_item_id?: number
+          sunner_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "secret_box_openings_rule_item_id_fkey"
+            columns: ["rule_item_id"]
+            isOneToOne: false
+            referencedRelation: "rule_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "secret_box_openings_sunner_id_fkey"
+            columns: ["sunner_id"]
+            isOneToOne: false
+            referencedRelation: "sunners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spotlight_ticker_events: {
         Row: {
           id: number
@@ -435,6 +494,16 @@ export type Database = {
         Returns: number
       }
       is_kudos_sender: { Args: { p_kudos_id: number }; Returns: boolean }
+      open_secret_box: {
+        Args: never
+        Returns: {
+          image_path: string
+          label: string
+          opened_count: number
+          rule_item_id: number
+          unopened_count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { IconGift } from "@/app/kudos/_components/kudos-icons";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { formatHeartCount } from "@/lib/kudos/derive";
@@ -67,21 +69,25 @@ export function ProfileStatsCard({
           <StatRow label={copy.secretBoxUnopened} value={stats.secretBoxUnopened} />
 
           {/* mm:362:5082 — 600×60, 8px radius, `#FFEA9E` on `#00101A` text,
-              8px gap. A `<button disabled>`, deliberately NOT the sidebar's
-              `<a href="/kudos/secret-box">`: the Secret Box is a deferred
-              commission, so the control is rendered and inert (no dialog, no
-              navigation, no error) rather than linking somewhere unbuilt. */}
-          <button
-            type="button"
-            disabled
+              8px gap. F009 shipped the Secret Box screen, so this is now a
+              real `<Link>`, the sidebar's exact idiom
+              (`kudos-sidebar.tsx`'s `secret-box-button`). It only ever
+              renders on the viewer's OWN profile: `ProfileStatsCard` itself
+              is only mounted when `getProfileData()` returns `stats !==
+              null`, which is true iff `isSelf` (profile-data.ts's single
+              self/other branch) — `app/profile/page.tsx` renders
+              `WriteKudoBar` instead on anyone else's profile, so this
+              component never needs its own self/other check. */}
+          <Link
+            href="/kudos/secret-box"
             data-testid="profile-secret-box-button"
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FFEA9E] px-4 py-4 text-[#00101A] disabled:cursor-not-allowed"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FFEA9E] px-4 py-4 text-[#00101A] transition-opacity hover:opacity-90"
           >
             <span className="text-[22px] leading-7 font-bold">{copy.secretBoxButton}</span>
             {/* mm:I362:5082;186:1766 (24×24 gift glyph, `aria-hidden` so the
                 accessible name stays exactly "Mở Secret Box"). */}
             <IconGift aria-hidden className="h-6 w-6 shrink-0" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>

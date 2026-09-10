@@ -54,7 +54,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 
 ### Thống kê / Viết Kudo (3xx)
 
-- **FR-203** Trên hồ sơ của chính mình: card thống kê (`mm:362:5073`) hiện 5 hàng (Kudos nhận, Kudos gửi, tim nhận, Secret Box đã mở, Secret Box chưa mở) rồi nút "Mở Secret Box" (`mm:362:5082`) luôn `disabled`.
+- **FR-203** Trên hồ sơ của chính mình: card thống kê (`mm:362:5073`) hiện 5 hàng (Kudos nhận, Kudos gửi, tim nhận, Secret Box đã mở, Secret Box chưa mở) rồi nút "Mở Secret Box" (`mm:362:5082`) luôn `disabled`. *Từ 2026-09-10, F009_OpenSecretBox mở khoá nút này thành một liên kết thật sang `/kudos/secret-box` — vẫn chỉ trên hồ sơ của chính mình; xem `docs/features/F009_OpenSecretBox/functional-spec.md`.*
 - **FR-204** Trên hồ sơ người khác: TOÀN BỘ card thống kê được thay bằng một thanh viết Kudo nêu tên người đang xem (`Gửi lời cảm ơn và ghi nhận đến {name}`), dẫn tới `/kudos/new?receiverId={id}` (đã điền sẵn người nhận, trường vẫn sửa được, không tự mở danh sách gợi ý). Không hàng chỉ số, không nút Secret Box nào xuất hiện trên mặt này.
 
 ### Mục KUDOS (4xx)
@@ -82,7 +82,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 - Một session đã đăng nhập nhưng chưa có dòng `sunners` (chưa từng viết Kudos) render hồ sơ tự-xem "rỗng": tên/avatar suy từ JWT theo đúng chuỗi fallback `create_kudos()` đã dùng (`full_name`→`name`→email local-part; `avatar_url`→`picture`→ảnh mẫu), 0 cho mọi chỉ số, feed rỗng, 6 ô huy hiệu xám, không huy hiệu Hero. Không 404, không tạo dòng `sunners` mới (`GET` không được phép ghi). (BR-001)
 - Huy hiệu Hero dùng nguyên `badgeTierFor()` đã ship (`lib/kudos/derive.ts`), khoá theo TỔNG Kudos đã nhận ở ngưỡng 10/20/50 — không phải số người gửi khác nhau như một ghi chú trong CSV thiết kế đề xuất; một hàm, một luật, để bảng tin và hồ sơ không bao giờ hiện hai huy hiệu khác nhau cho cùng một người. (BR-002)
 - Năm chỉ số suy ra bằng đúng idiom F004 đã ship: nhận = `sunners.kudos_received_baseline + count(kudos nhận được)`; gửi = `count(kudos đã gửi)` (không có cột baseline cho gửi); tim nhận = `sum(heart_baseline + count(kudos_likes))` trên các Kudos đã nhận. (BR-003)
-- Hai hàng Secret Box đọc thẳng `secret_box_opened_count`/`secret_box_unopened_count` (không hardcode 0) — một session rỗng đọc đúng 0/0 mà không cần số hardcode nào; nút "Mở Secret Box" luôn `disabled`, bấm vào không làm gì (không dialog, không điều hướng, không lỗi). (BR-004)
+- Hai hàng Secret Box đọc thẳng `secret_box_opened_count`/`secret_box_unopened_count` (không hardcode 0) — một session rỗng đọc đúng 0/0 mà không cần số hardcode nào; nút "Mở Secret Box" luôn `disabled`, bấm vào không làm gì (không dialog, không điều hướng, không lỗi). (BR-004) *Từ 2026-09-10 (F009), nút này là một liên kết thật trên hồ sơ của chính mình — hành vi `disabled` mô tả ở đây chỉ còn đúng cho phạm vi F006 tại thời điểm ship.*
 - Thẻ Kudos trong feed hồ sơ hiển thị y hệt thẻ trên bảng tin — cùng che tên người gửi ẩn danh trên danh sách Đã nhận, cùng hành vi tim/hashtag/Copy Link — vì dùng chung một mapper. (BR-005)
 - Dropdown chiều mặc định active **Đã nhận**, không phải trạng thái `Đã gửi (5)` mà frame chụp lại — frame chỉ ghi một khoảnh khắc, test case mới là nguồn hành vi mặc định. (DEC-001)
 - Chọn lại đúng option đang active trong dropdown chiều đóng menu và giữ nguyên danh sách hiện tại — không có trạng thái "chưa lọc" nào để rơi về. (DEC-002)
@@ -131,7 +131,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 **Business value:** Một Sunner tự soi lại đóng góp của mình, và việc gửi lời cảm ơn cho một đồng nghiệp cụ thể chỉ mất một cú bấm thay vì tự gõ tên trong ô tìm kiếm.
 
 **Acceptance Criteria:**
-- [ ] Hồ sơ của mình hiện đúng 5 chỉ số thật (không hardcode) và nút "Mở Secret Box" luôn `disabled`, bấm vào không làm gì.
+- [ ] Hồ sơ của mình hiện đúng 5 chỉ số thật (không hardcode) và nút "Mở Secret Box" luôn `disabled`, bấm vào không làm gì. *(Từ 2026-09-10, F009 mở khoá nút này — xem ghi chú tại FR-203.)*
 - [ ] Hồ sơ người khác không hiện chỉ số hay nút Secret Box nào — thay bằng thanh viết Kudo nêu đúng tên họ.
 - [ ] Bấm thanh viết Kudo đưa sang `/kudos/new?receiverId={id}` với người nhận đã điền sẵn và vẫn sửa được.
 

@@ -117,7 +117,7 @@ Bấm hashtag: điều hướng tới `/kudos?hashtag=<tag>` qua `Link`, tái d�
 | `ProfilePage` (planned) | Server Component route — resolve `?id=`, gọi `getProfileData`, render hero/huy hiệu/nhánh thống kê-viết-Kudo, truyền trang 1 KUDOS xuống | A1 | `app/profile/page.tsx` (thay nội dung `ComingSoon` hiện có) |
 | `ProfileHero` (planned) | Keyvisual + avatar + tên + phòng ban + huy hiệu Hero + tiêu đề huy hiệu | A1 | `app/profile/_components/profile-hero.tsx` |
 | `ProfileBadgeRow` (planned) | 6 ô vòng tròn xám cố định `#323231`, con trực tiếp của `ProfileHero` (AMEND-2 — không phải section riêng) | A1 | `app/profile/_components/profile-badge-row.tsx` |
-| `ProfileStatsCard` (planned) | 5 hàng chỉ số + nút "Mở Secret Box" `disabled` — chỉ render khi `stats !== null` | A1 | `app/profile/_components/profile-stats-card.tsx` |
+| `ProfileStatsCard` (planned) | 5 hàng chỉ số + nút "Mở Secret Box" `disabled` — chỉ render khi `stats !== null`. *Từ 2026-09-10 (F009), nút này là `<Link href="/kudos/secret-box">` thật, không còn `disabled`.* | A1 | `app/profile/_components/profile-stats-card.tsx` |
 | `WriteKudoBar` (planned) | Thanh viết Kudo nêu tên, link `/kudos/new?receiverId=` — chỉ render khi `stats === null` | A1 | `app/profile/_components/write-kudo-bar.tsx` |
 | `KudosDirectionSection` (planned, Client Component) | Dropdown chiều + feed + cuộn vô hạn, state cục bộ, gọi A2 | A1 (con), A2 | `app/profile/_components/kudos-direction-section.tsx` |
 | `KudosCard` (existing, F004 — tái dùng nguyên vẹn) | Thẻ Kudos, che tên ẩn danh, tim/hashtag/Copy Link | A2, A3 | `app/kudos/_components/kudos-card.tsx` (KHÔNG sửa) |

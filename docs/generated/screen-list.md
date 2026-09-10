@@ -48,3 +48,10 @@
 **Route:** /standards
 **Description:** Drawer Thể lệ 553px bám mép phải trên shell chuẩn — ba mục văn xuôi, 4 bậc huy hiệu Hero, lưới 6 icon sưu tập, chân drawer hai nút Đóng / Viết KUDOS. Nội dung đọc từ `rule_sections`/`rule_items` mỗi request.
 **States:** default, empty, scrolling, no-scroll
+
+## SCR009_OpenSecretBox
+
+**Feature:** F009 — Open Secret Box
+**Route:** /kudos/secret-box
+**Description:** Thẻ đơn không shell — tiêu đề, dòng hướng dẫn, khung hộp quà bấm được, đếm số hộp chưa mở. Bấm hộp gọi `open_secret_box()` (Postgres, `security definer`), rút một huy hiệu ngẫu nhiên theo tỷ lệ trọng số, trừ một hộp chưa mở. Trước F009 route này là `ComingSoon`.
+**States:** entitled, sparse, anon, opened, pending, error

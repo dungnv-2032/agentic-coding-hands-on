@@ -47,9 +47,9 @@ export default defineConfig({
     // Setup project — runs auth.setup.ts once before tests
     {
       name: "setup",
-      // Excludes the per-suite setups (homepage-auth.setup.ts, kudos-auth.setup.ts, profile-auth.setup.ts)
+      // Excludes the per-suite setups (homepage-auth.setup.ts, kudos-auth.setup.ts, profile-auth.setup.ts, secret-box-auth.setup.ts)
       // so each runs only in its OWN setup project, not twice.
-      testMatch: /^((?!homepage)(?!kudos)(?!profile).)*auth\.setup\.ts$/,
+      testMatch: /^((?!homepage)(?!kudos)(?!profile)(?!secret-box).)*auth\.setup\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
     // Homepage auth setup — creates independent session for homepage-authed tests
@@ -74,12 +74,20 @@ export default defineConfig({
       testMatch: /profile-auth\.setup\.ts$/,
       use: { ...devices["Desktop Chrome"] },
     },
+    // Secret Box auth setup — creates independent session for secret-box-authed tests
+    // for the same reason kudos, homepage, and profile have one: authenticated.spec.ts's C9
+    // signs out globally and revokes any session it shares.
+    {
+      name: "secret-box-auth-setup",
+      testMatch: /secret-box-auth\.setup\.ts$/,
+      use: { ...devices["Desktop Chrome"] },
+    },
     // Unauthenticated tests (login screen, error paths, open-redirect, callback security, homepage)
-    // NOTE: kudos-live-board.spec.ts only (not -authed variant), profile-anon.spec.ts for route guards
+    // NOTE: kudos-live-board.spec.ts only (not -authed variant), profile-anon.spec.ts for route guards, secret-box-anon.spec.ts for anon face
     {
       name: "anon",
       testMatch:
-        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|the-le|floating-action-button|kudos-live-board(?!-authed))\.spec\.ts/,
+        /(?:smoke|login-screen|route-guard|callback-security|homepage|award-system|profile-anon|the-le|floating-action-button|kudos-live-board(?!-authed)|secret-box-anon|secret-box-anon-capture)\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },
@@ -137,6 +145,19 @@ export default defineConfig({
       },
       dependencies: ["profile-auth-setup"],
     },
+    // Secret Box authenticated tests — independent session, isolated from C9 sign-out
+    {
+      name: "secret-box-authed",
+      testMatch: /secret-box\.spec\.ts/,
+      // 15s instead of the 5s default, scoped to THIS project only. The opens
+      // are server-authoritative Postgres round trips and under contention can exceed 5s.
+      expect: { timeout: 15_000 },
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/secret-box-user.json",
+      },
+      dependencies: ["secret-box-auth-setup"],
+    },
     // Visual capture project — runs on demand only, not in default suite
     {
       name: "visual-capture",
@@ -149,6 +170,17 @@ export default defineConfig({
       name: "fab-visual-capture",
       testMatch: /capture-fab-visual\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
+    },
+    // Secret Box visual capture project — runs on demand only
+    // SKIP by default to prevent interference with main tests
+    {
+      name: "secret-box-visual-capture",
+      testMatch: /capture-secret-box-visual\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/secret-box-user.json",
+      },
+      dependencies: ["secret-box-auth-setup"],
     },
   ],
   webServer: {

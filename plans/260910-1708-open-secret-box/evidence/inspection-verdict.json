@@ -1,0 +1,80 @@
+{
+  "score": 9.6,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "FR-001 route /kudos/secret-box returns 200 for everyone including anonymous visitors — proved by: e2e SB-A1 — anon GET /kudos/secret-box returned 200 with main and main h1; shipped K-21 still green",
+    "FR-101 title KHÁM PHÁ SECRET BOX CỦA BẠN is the page's only h1 and sits inside main — proved by: e2e SB-A1/SB-01 assert the exact title string on the page's only h1 inside <main>",
+    "FR-102 instruction line renders only when the unopened count is above zero — proved by: e2e SB-01 (count 5, instruction shown) and SB-06 (count 0, instruction absent)",
+    "FR-104 counter renders the label and a two-digit zero-padded count — proved by: e2e SB-01 asserts '05'; SB-A2 asserts '00'; formatBoxCount is the single padding rule",
+    "FR-105 anonymous face shows 00 with the box inert and a sign-in link — proved by: e2e SB-A2 asserts 00, opener disabled and the sign-in link present",
+    "FR-201 opening a box awards exactly one badge, decrements unopened and increments opened — proved by: e2e SB-03 plus live RPC runs: counters moved 2->1->0 and two openings rows were written",
+    "FR-202 the box is disabled at zero boxes, with no session, or with no sunners row — proved by: e2e SB-06 (zero boxes) and SB-A2 (no session); page.tsx derives canOpen once",
+    "FR-203 a second click while a request is in flight is refused — proved by: e2e SB-04, strengthened to actually issue a forced second click and assert one decrement and one openings row",
+    "FR-301 the close control returns to the previous page, falling back to /kudos — proved by: e2e SB-09 close-button navigation",
+    "FR-601 the draw and the decrement happen only on the server with no client input — proved by: e2e SB-08 — authenticated PATCH of own counters rejected, unexpected RPC argument rejected; function takes no parameters",
+    "FR-602 all changes of one open are a single transaction — proved by: reviewer fired 10 parallel calls against a 5-box account: exactly 5 successes, 5 P0002, final count 0, exactly 5 openings rows",
+    "BR-003 draw weights are Stay Gold 30 Flow to Horizon 25 Touch of Light 20 Beyond the Boundary 10 Revival 10 Root Further 5 — proved by: phase 03 measured 2000 draws: 30.5 / 24.7 / 21.1 / 9.7 / 8.7 / 5.4 percent",
+    "BR-004 the server refuses an open when no boxes remain — proved by: zero-box call raised P0002 and rolled back the whole call, provisioning included"
+  ],
+  "regressionChecked": [
+    "Full Playwright suite: 212 passed, 3 skipped, exit 0",
+    "Kudos Live Board suite 25/25 including the adapted K-21, whose three assertions were left unchanged",
+    "Profile suite 27/27 including TC_WEB_PROFILE_GUI_005, re-aimed from 'disabled' to 'enabled link on own profile, control absent on another's'",
+    "The Le suite 10/10 (2 skipped) — shares the close-icon asset this screen reuses",
+    "Setup projects each ran exactly once; the (?!secret-box) guard prevents the new setup double-running",
+    "npm run typecheck and npm run lint clean tree-wide"
+  ],
+  "contractStatus": "HELD",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "test-integrity",
+      "location": "e2e/secret-box.spec.ts:146",
+      "summary": "SB-04 claimed to test the double-click race but never issued a second click — it only read button state 100ms after one click, so the in-flight guard could have been deleted with the test still green. Fixed: a forced second click is now issued and the effect (one decrement, one openings row) asserted.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "low",
+      "category": "lint",
+      "location": "e2e/secret-box-anon.spec.ts:57",
+      "summary": "Unused `page` fixture parameter on SB-A3, a new warning rather than a pre-existing one. Fixed by dropping the parameter.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "high",
+      "category": "visual-correctness",
+      "location": "app/kudos/secret-box/_components/secret-box-opener.tsx:84",
+      "summary": "The glow overlay for node 1466:7685 rendered as an opaque dark rectangle that overflowed the 557px slot and occluded the box, the lower hairline and the counter — box-glow.png is a dark-backed asset, and in Figma the node composites against siblings where a DOM layer merely covers them. Found by inspecting the captured render, not by the DOM measurement pass, which reported 35/35. Removed; box-unopened.png already contains the composed glow.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "design-fidelity",
+      "location": "app/kudos/secret-box/_components/secret-box-panel.tsx:63",
+      "summary": "A content-driven card measured 804.11px against the frame's declared 822.587px, an 18.48px miss, because the design is a fixed-height modal with centered content. Fixed with min-h plus justify-center rather than by loosening the SB-A4 tolerance.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "low",
+      "category": "design-fidelity",
+      "location": "app/kudos/secret-box/_components/secret-box-panel.tsx:127",
+      "summary": "The counter label wrapped onto two lines: the node declares a 174px row while its own children span 180px, which Figma permits and CSS flex does not. Fixed by sizing the row to content with whitespace-nowrap.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "correctness",
+      "location": "e2e/fixtures/secret-box-grant.ts:204",
+      "summary": "readCounters filtered secret_box_openings on an auth_user_id column that does not exist on that table (it references sunners.id) — a runtime bug surfaced as a type error once the client was given its Database generic. Fixed by resolving the sunner first and filtering on sunner_id.",
+      "disposition": "Accept"
+    }
+  ],
+  "riskGate": {
+    "signoffRequired": true,
+    "humanSignedOff": true
+  }
+}

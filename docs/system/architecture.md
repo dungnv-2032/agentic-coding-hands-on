@@ -7,7 +7,7 @@ lang: vi
 
 # Architecture
 
-**Project**: my-app (SAA 2025) — mô tả tới F007 (Thể lệ).
+**Project**: my-app (SAA 2025) — mô tả tới F009 (Open Secret Box).
 
 ## System Architecture
 
@@ -136,7 +136,10 @@ duy nhất (thả tim) đi qua Server Action. Không có `/api/kudos`.
 `updateSession()`, nhưng danh sách guard không còn là hai route: `/kudos/new` được thêm vào cùng
 `/todo`. Đây là guard đầu tiên kể từ F001. Lý do đơn giản — viết một lời cảm ơn cần có danh tính,
 nên ở đây thật sự có thứ cần bảo vệ, khác với bảng đọc công khai. Bề mặt đọc của Kudos (`/kudos`,
-`/kudos/[id]`, `/kudos/secret-box`) **không đổi**, vẫn công khai có chủ đích.
+`/kudos/[id]`, `/kudos/secret-box`) **không đổi**, vẫn công khai có chủ đích. **F009 không thêm
+route guard** cho `/kudos/secret-box` dù màn đó giờ có một hành động ghi thật (mở hộp) —
+ranh giới nằm ở tầng database (`EXECUTE` trên `open_secret_box()` không cấp cho `anon`, xem dưới),
+không ở `proxy.ts`.
 
 **Vòng F006 thêm route guarded thứ ba:** `/profile`, cùng điều kiện `isGuarded`, cộng thêm việc
 page tự re-check session lần nữa (defense in depth).
@@ -254,6 +257,25 @@ Mọi query của feature này mang `order by position` tường minh. Đây là
 (`hashtags.position`, `departments.filter_position`, `kudos_hashtags.position`), không phải quy ước
 mới. Việc tách `rule_items.kind` thành `heroTiers` / `collectibleIcons` xảy ra đúng một lần, trong
 `rules-data.ts`; không component nào tự lọc lại.
+
+### Đường ghi qua `security definer` (`open_secret_box()`) — mới ở F009
+
+Mọi hàm ghi trước đó (`create_kudos()`) chạy `security invoker`: RLS vẫn áp lên người gọi, hàm chỉ
+gộp nhiều bảng vào một transaction. `open_secret_box()` là hàm `security definer` **đầu tiên** của
+repo — chạy với quyền chủ hàm, bỏ qua RLS theo đúng thiết kế, vì việc trừ một hộp phải `UPDATE
+public.sunners`, và bảng đó cố tình không có policy `UPDATE` nào (mở một policy như vậy sẽ cho
+phép bất kỳ phiên nào tự viết lại số hộp của mình qua PostgREST). Ba biện pháp thay RLS làm việc
+chặn: `search_path` ghim cứng, hàm không nhận tham số danh tính nào, và `execute` bị revoke khỏi
+`anon`/`public`, chỉ cấp cho `authenticated`. Chi tiết đầy đủ:
+`docs/features/F009_OpenSecretBox/technical-spec.md § 1, § 4` và
+`docs/system/permissions.md` § "Ranh giới mới của vòng F009".
+
+**Hệ quả kiến trúc:** từ nay có hai kiểu hàm ghi trong repo, và một tính năng sau này PHẢI chọn rõ
+kiểu nào trước khi viết migration — `security invoker` khi RLS đã đủ diễn đạt ranh giới (đa số
+trường hợp), `security definer` chỉ khi ranh giới cần một cột/bảng mà RLS không thể mở an toàn
+(như `sunners.secret_box_*`). Chọn `security definer` mà không ghim `search_path`, không revoke
+`execute` khỏi `anon`, hoặc để hàm nhận tham số danh tính là ba cách cụ thể làm hỏng chính biện
+pháp mà F009 dựng lên.
 
 ### Hai chiến lược phân trang cùng tồn tại (ghi nhận, chưa hợp nhất)
 
