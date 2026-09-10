@@ -1,0 +1,46 @@
+{
+  "commands": [
+    {
+      "command": "npx playwright test e2e/secret-box.spec.ts --project=secret-box-authed",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "10 passed (1.6m) — SB-01..SB-09 plus setup, run after the strengthened SB-04 double-click case",
+      "ts": "2026-09-10T12:30:00Z"
+    },
+    {
+      "command": "npx playwright test e2e/secret-box-anon.spec.ts --project=anon",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "5 passed (57.2s) — SB-A1..SB-A4 plus setup, including the 1440x1024 geometry contract",
+      "ts": "2026-09-10T12:12:00Z"
+    },
+    {
+      "command": "npx playwright test",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "212 passed, 3 skipped — full-suite regression sweep, no previously-green test newly red",
+      "ts": "2026-09-10T12:05:00Z"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "tsc --noEmit clean across the tree",
+      "ts": "2026-09-10T12:31:00Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors; 30 warnings, all pre-existing in older e2e files untouched by this change",
+      "ts": "2026-09-10T12:31:00Z"
+    },
+    {
+      "command": "RUN_CAPTURE_TESTS=1 npx playwright test e2e/capture-secret-box-visual.spec.ts --project=secret-box-visual-capture",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "4 passed — visual evidence recaptured at 1440x1024 and 390x844 after the glow removal and counter-wrap fix",
+      "ts": "2026-09-10T12:20:00Z"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "task": "F009 Open Secret Box (chưa mở) — replace the /kudos/secret-box ComingSoon placeholder with MoMorph screen J3-4YFIpMM, backed by one server-side weighted badge draw that decrements the caller's unopened-box counter and records the opening.",
+  "mode": "takumi auto, e2e-red-first",
+  "acceptanceCriteria": [
+    "FR-001 route /kudos/secret-box returns 200 for everyone including anonymous visitors",
+    "FR-101 title KHÁM PHÁ SECRET BOX CỦA BẠN is the page's only h1 and sits inside main",
+    "FR-102 instruction line renders only when the unopened count is above zero",
+    "FR-104 counter renders the label and a two-digit zero-padded count",
+    "FR-105 anonymous face shows 00 with the box inert and a sign-in link",
+    "FR-201 opening a box awards exactly one badge, decrements unopened and increments opened",
+    "FR-202 the box is disabled at zero boxes, with no session, or with no sunners row",
+    "FR-203 a second click while a request is in flight is refused",
+    "FR-301 the close control returns to the previous page, falling back to /kudos",
+    "FR-601 the draw and the decrement happen only on the server with no client input",
+    "FR-602 all changes of one open are a single transaction",
+    "BR-003 draw weights are Stay Gold 30 Flow to Horizon 25 Touch of Light 20 Beyond the Boundary 10 Revival 10 Root Further 5",
+    "BR-004 the server refuses an open when no boxes remain"
+  ],
+  "touchpoints": [
+    "app/kudos/secret-box/page.tsx",
+    "app/kudos/secret-box/_components/secret-box-panel.tsx",
+    "app/kudos/secret-box/_components/secret-box-opener.tsx",
+    "app/kudos/secret-box/_components/secret-box-dismiss.tsx",
+    "app/kudos/secret-box/_actions/open-secret-box.ts",
+    "lib/secret-box/contract.ts",
+    "lib/secret-box/queries.ts",
+    "lib/i18n/messages/dictionary.ts",
+    "lib/i18n/messages/vi-secret-box.ts",
+    "lib/i18n/messages/en-secret-box.ts",
+    "app/profile/_components/profile-stats-card.tsx",
+    "supabase/migrations/20260910170000_secret_box_open_path.sql",
+    "supabase/seed.sql",
+    "lib/supabase/database.types.ts"
+  ],
+  "blastRadius": [
+    "Kudos Live Board sidebar — its secret-box-button already linked here (e2e K-21 asserted the placeholder)",
+    "Profile stats card — its Secret Box button changed from disabled to an enabled link (e2e TC_WEB_PROFILE_GUI_005)",
+    "sunners table — two existing counter columns become mutable, but only through the new function",
+    "Playwright config — two new projects plus a setup regex guard against double-running the new setup"
+  ],
+  "contracts": [
+    "proxy.ts leaves /kudos/secret-box public — F004 ratified contract, unchanged",
+    "Dictionary type contract — a key present in one locale and missing in the other is a typecheck error",
+    "lib/secret-box/contract.ts OpenSecretBoxResult — the seam both tracks compile against",
+    "open_secret_box() takes no parameters, so no identity or badge choice is expressible from a client"
+  ]
+}
