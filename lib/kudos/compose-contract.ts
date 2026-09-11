@@ -8,6 +8,11 @@
  * below; phase 12 wires both at `app/kudos/new/page.tsx`. Neither track
  * imports the other. A missing field is escalated to the orchestrator, who
  * amends this once and notifies both tracks — never patched inside a track.
+ *
+ * Amendment (2026-09-11, orchestrator, Addlink Box frame `OyDLDuSGEa`):
+ * `BodyEditorProps` gained `linkDialogInitialText` and widened `onConfirmLink`
+ * to `(text, href)` — the dialog now carries its own display-text field
+ * (FR-214/FR-217) instead of only toggling a mark over an existing selection.
  */
 
 // Rich-text document model (technical-spec.md § 4.2, verbatim).
@@ -117,6 +122,7 @@ export interface BodyEditorProps {
   mentionQuery: string | null;
   mentionOptions: readonly ComposeSunnerOption[];
   linkDialogOpen: boolean;
+  linkDialogInitialText: string;
   error?: ComposeFieldErrorCode;
   onTextChange: (text: string) => void;
   onToggleInlineMark: (mark: ToggleableInlineMark) => void;
@@ -124,7 +130,7 @@ export interface BodyEditorProps {
   onMentionQueryChange: (query: string | null) => void;
   onInsertMention: (option: ComposeSunnerOption) => void;
   onOpenLinkDialog: () => void;
-  onConfirmLink: (href: string) => void;
+  onConfirmLink: (text: string, href: string) => void;
   onCloseLinkDialog: () => void;
 }
 

@@ -1,14 +1,12 @@
 /**
- * Rich-text document model for Viết Kudo (F005, phase 01, frozen). Zero
- * runtime deps: no I/O, no React, no `Intl` (client-bundle safe). Closed
- * over six toolbar ops, no nesting. `body-editor` is a controlled
- * `<textarea>`, so marks live OVER plain text with no in-editor WYSIWYG
- * preview; `remapMarks` diffs by common prefix/suffix and drops any mark
- * touching the edited region rather than re-anchoring by guesswork —
- * deliberate, not a bug. `parseKudosDoc` is the untrusted-input boundary
- * for anonymous-visitor content: any surprise returns `null`, never HTML —
- * only data a renderer walks into React elements, so
- * `dangerouslySetInnerHTML` never enters the picture.
+ * Rich-text document model for Viết Kudo (F005, phase 01, frozen; `insertLink` added phase 02 for
+ * the Addlink Box). Zero runtime deps: no I/O, no React, no `Intl` (client-bundle safe). Closed
+ * over the toolbar ops, no nesting. `body-editor` is a controlled `<textarea>`, so marks live OVER
+ * plain text with no in-editor WYSIWYG preview; `remapMarks`/`insertLink` diff by common
+ * prefix/suffix (or explicit range) and drop any mark touching the edited region rather than
+ * re-anchoring by guesswork — deliberate, not a bug. `parseKudosDoc` is the untrusted-input
+ * boundary for anonymous-visitor content: any surprise returns `null`, never HTML — only data a
+ * renderer walks into React elements, so `dangerouslySetInnerHTML` never enters the picture.
  */
 import { ACCEPTED_LINK_SCHEMES, type KudosBlock, type KudosDoc, type KudosRun, type ToggleableBlock, type ToggleableInlineMark } from "./compose-contract";
 export interface TextRange { start: number; end: number }
@@ -88,6 +86,14 @@ export function insertMention(state: RichTextState, at: number, label: string, s
     mark.start >= at ? { ...mark, start: mark.start + delta, end: mark.end + delta } : mark.end > at ? { ...mark, end: mark.end + delta } : mark;
   const mention: InlineMark = { kind: "mention", start: at, end: at + delta, sunnerId, label };
   return { text, inline: [...state.inline.map(shift), mention], blocks: state.blocks.map(shift) };
+}
+/** Splices `text` over `range` and marks it `link`; reuses `remapMarks`' drop-overlapping-marks policy (never re-anchor by guesswork) instead of re-deriving it. Empty `text` is a no-op. */
+export function insertLink(state: RichTextState, range: TextRange, text: string, href: string): RichTextState {
+  if (text.length === 0) return state;
+  const delta = text.length - (range.end - range.start);
+  const remap = <M extends TextRange>(m: M): M | null => (m.end <= range.start ? m : m.start >= range.end ? { ...m, start: m.start + delta, end: m.end + delta } : null);
+  const link: InlineMark = { kind: "link", start: range.start, end: range.start + text.length, href };
+  return { text: state.text.slice(0, range.start) + text + state.text.slice(range.end), inline: [...state.inline.map(remap).filter((m): m is InlineMark => m !== null), link], blocks: state.blocks.map(remap).filter((m): m is BlockMark => m !== null) };
 }
 /** Common-prefix/suffix diff; a mark overlapping the edited region is dropped, never re-anchored by guesswork. */
 export function remapMarks(state: RichTextState, nextText: string): RichTextState {
@@ -173,11 +179,7 @@ function parseRun(raw: unknown): KudosRun | null {
 function parseBlock(raw: unknown): KudosBlock | null {
   if (!isRecord(raw) || typeof raw.type !== "string" || !BLOCK_TYPES.has(raw.type) || !Array.isArray(raw.runs)) return null;
   const runs: KudosRun[] = [];
-  for (const rawRun of raw.runs) {
-    const run = parseRun(rawRun);
-    if (!run) return null;
-    runs.push(run);
-  }
+  for (const rawRun of raw.runs) { const run = parseRun(rawRun); if (!run) return null; runs.push(run); }
   return { type: raw.type as KudosBlock["type"], runs };
 }
 /** Untrusted-input boundary for `kudos.message` (`message_format === 'doc'`); `null` on any structural surprise. */
@@ -185,15 +187,9 @@ export function parseKudosDoc(raw: string): KudosDoc | null {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  } catch { return null; }
   if (!isRecord(parsed) || !Array.isArray(parsed.blocks)) return null;
   const blocks: KudosBlock[] = [];
-  for (const rawBlock of parsed.blocks) {
-    const block = parseBlock(rawBlock);
-    if (!block) return null;
-    blocks.push(block);
-  }
+  for (const rawBlock of parsed.blocks) { const block = parseBlock(rawBlock); if (!block) return null; blocks.push(block); }
   return { blocks };
 }
