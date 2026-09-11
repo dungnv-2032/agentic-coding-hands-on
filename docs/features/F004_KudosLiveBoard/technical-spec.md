@@ -17,7 +17,7 @@ Server Component công khai tại `/kudos` thay thế `ComingSoon` hiện có (`
 | # | Action (handler) | Method · Path | Codes | Writes | Detail |
 |---|---|---|---|---|---|
 | **A0** | *cross-cutting — belongs to no single action* | — | FR-001, FR-002, FR-601 | — | § 4.4 |
-| **A1** | `KudosLiveBoardPage#Page` (planned) | `GET` `/kudos` | FR-101, FR-201, FR-202, FR-203, FR-204, FR-205, FR-206, FR-207, FR-402, FR-403, BR-001, BR-003, BR-004, DEC-001, DEC-002, US001, US002, US003, US005, US006, US007, US008 | — *(read-only)* | § 3.1 |
+| **A1** | `KudosLiveBoardPage#Page` (planned) | `GET` `/kudos` | FR-101, FR-201, FR-202, FR-203, FR-204, FR-205, FR-206, FR-207, FR-208, FR-209, FR-210, FR-211, FR-212, FR-213, FR-402, FR-403, BR-001, BR-003, BR-004, DEC-001, DEC-002, US001, US002, US003, US005, US006, US007, US008 | — *(read-only)* | § 3.1 |
 | **A2** | `toggleKudosLike` (planned, Server Action) | `POST` (server action) `/kudos` | FR-401, FR-602, BR-001, BR-002, BR-003, SM-001, DEC-003, US004 | `kudos_likes` | § 3.2 |
 
 ## 3. Actions
@@ -26,7 +26,7 @@ Server Component công khai tại `/kudos` thay thế `ComingSoon` hiện có (`
 
 #### A1 · Đọc và dựng toàn bộ màn hình Kudos Live Board
 `GET` `/kudos` → `` `KudosLiveBoardPage#Page` `` (planned)
-`FR-101` `FR-201` `FR-202` `FR-203` `FR-204` `FR-205` `FR-206` `FR-207` `FR-402` `FR-403` · `US001` `US002` `US003` `US005` `US006` `US007` `US008`
+`FR-101` `FR-201` `FR-202` `FR-203` `FR-204` `FR-205` `FR-206` `FR-207` `FR-208` `FR-209` `FR-210` `FR-211` `FR-212` `FR-213` `FR-402` `FR-403` · `US001` `US002` `US003` `US005` `US006` `US007` `US008`
 
 **Who** · Sunner đã đăng nhập hoặc khách ẩn danh *(gate A0 — § 4.4, FR-601)*
 **FE** · Server Component đơn dựng hero + `HIGHLIGHT KUDOS` (carousel top-5) + bộ lọc Hashtag/Phòng ban + `SPOTLIGHT BOARD` (word-cloud + ticker + tìm kiếm) + `ALL KUDOS` (feed cuộn vô hạn) + sidebar cá nhân, theo đúng thứ tự trong `clarifications.md` § "Resolved from source data". Bộ lọc, carousel, cuộn vô hạn, tìm kiếm Spotlight và Copy Link (`FR-402`) đều là state/hành vi phía client trên dữ liệu đã fetch một lần — không gọi lại server khi tương tác.
@@ -39,7 +39,7 @@ Server Component công khai tại `/kudos` thay thế `ComingSoon` hiện có (`
 | DEC | subtype | Condition | What the user sees | Source |
 |---|---|---|---|---|
 | **DEC-001** | render | `[...kudos_đã_lọc].sort(hearts desc).slice(0, 5)`, tính lại mỗi khi bộ lọc đổi | Carousel Highlight luôn hiện đúng 5 kudos nhiều tim nhất còn lại sau lọc, quay về slide 1 | TBD |
-| **DEC-002** | interaction | chọn hashtag/phòng ban (AND-combine); chọn lại option đang chọn | Cả Highlight và All Kudos lọc lại đồng thời; chọn lại để bỏ lọc | TBD |
+| **DEC-002** | interaction | chọn hashtag/phòng ban (AND-combine); chọn lại option đang chọn | Cả Highlight và All Kudos lọc lại đồng thời; dropdown đóng ngay khi chọn (FR-210); chọn lại để bỏ lọc | TBD |
 
 **Result** · Không ghi DB — chỉ đọc. Điều hướng: thanh soạn Kudos → `/kudos/new`, "Mở Secret Box" → `/kudos/secret-box`, "Xem chi tiết"/avatar/tên → `/kudos/[id]` hoặc `/profile`, ô tìm Sunner ở hero submit tới `/profile?q=...` — cả bốn route đích đều render `ComingSoon` (route đã có hoặc mới, không thuộc phạm vi bản vẽ này).
 **Source:** TBD (draft)

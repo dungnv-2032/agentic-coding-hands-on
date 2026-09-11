@@ -71,6 +71,7 @@ Màn hình xếp dọc một cột theo thứ tự: header dùng chung (`HomeHea
 | State | Trigger | Visual Behavior | User Action Available | Source |
 |-------|---------|----------------|-----------------------|--------|
 | loading | Server Component đang render lần đầu | Next.js dùng render server-side mặc định, không có skeleton riêng — trang chỉ xuất hiện khi dữ liệu đã sẵn | none | TBD (draft) |
+| open (`filter-menu-hashtag` / `filter-menu-department`) | Bấm nút lọc (component `KudosFilterMenu`, dùng chung cho cả hai) | Option căn giữa, hover đổi con trỏ pointer + nền nhạt; khối Phòng ban cuộn trong hộp cao tối đa 348px (6 dòng), không đẩy layout trang | chọn option (đóng dropdown ngay), hoặc chọn lại option đang chọn để bỏ lọc | `app/kudos/_components/kudos-filter-menu.tsx` |
 | empty (Highlight/All Kudos) | Bộ lọc hiện tại không khớp kudos nào | "Hiện tại chưa có Kudos nào." | bỏ lọc | TBD (draft) |
 | empty (Spotlight) | Tìm kiếm không khớp tên nào | `spotlight-empty` hiện ra, ẩn hết node | xoá từ khoá tìm kiếm | TBD (draft) |
 | empty (Gift leaderboard) | Không có dòng quà tặng nào | "Chưa có dữ liệu" | none | TBD (draft) |

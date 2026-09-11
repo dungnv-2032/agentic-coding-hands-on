@@ -26,7 +26,7 @@ lang: vi
 
 | ID | Capability | What the user can do | User Stories | Requirements | Business Rules | Screens |
 |----|------------|------------------------|-----------------|---------------|-------------------|---------|
-| CAP-01 | Xem & lọc kudos | Xem carousel Highlight và feed All Kudos đầy đủ, lọc theo Hashtag/Phòng ban | US001, US002, US003 | FR-001, FR-002, FR-201, FR-202, FR-203, FR-204, FR-206, FR-601 | DEC-001, DEC-002 | TBD (draft) |
+| CAP-01 | Xem & lọc kudos | Xem carousel Highlight và feed All Kudos đầy đủ, lọc theo Hashtag/Phòng ban | US001, US002, US003 | FR-001, FR-002, FR-201, FR-202, FR-203, FR-204, FR-206, FR-208, FR-209, FR-210, FR-211, FR-212, FR-213, FR-601 | DEC-001, DEC-002 | TBD (draft) |
 | CAP-02 | Tương tác với một kudos | Thả/gỡ tim, copy link chia sẻ, bấm hashtag trên card để lọc | US004, US005 | FR-401, FR-402, FR-403, FR-602 | BR-001, BR-002, BR-003, DEC-003, SM-001 | TBD (draft) |
 | CAP-03 | Khám phá Spotlight board | Xem word-cloud + ticker hoạt động trực tiếp, tìm tên trong board | US006 | FR-205 | — | TBD (draft) |
 | CAP-04 | Xem vị trí ghi nhận cá nhân | Xem 5 số liệu của bản thân và bảng xếp hạng quà tặng | US007 | FR-207 | BR-004 | TBD (draft) |
@@ -56,6 +56,12 @@ None — no unresolved domain confirmations. Bốn câu hỏi còn để ngỏ c
 - **FR-205** SPOTLIGHT BOARD hiển thị word-cloud tên người nhận theo bố cục xác định trước (không random giữa server và client), điều khiển Pan/Zoom và expand toàn màn hình, ticker hoạt động trực tiếp, và ô tìm kiếm (tối đa 100 ký tự) thu hẹp các node hiển thị.
 - **FR-206** ALL KUDOS hiển thị feed đầy đủ với cuộn vô hạn và trạng thái rỗng "Hiện tại chưa có Kudos nào."
 - **FR-207** Sidebar hiển thị 5 số liệu ghi nhận của Sunner đang đăng nhập, link "Mở Secret Box", và bảng xếp hạng "10 SUNNER NHẬN QUÀ MỚI NHẤT"; khách ẩn danh thấy sidebar của Sunner mẫu đã seed.
+- **FR-208** Mỗi option trong dropdown Hashtag/Phòng ban (`filter-menu-hashtag`, `filter-menu-department` — cùng component `KudosFilterMenu`) hiển thị tên **căn giữa**.
+- **FR-209** Hover một option đổi con trỏ thành **pointer** và giữ hiệu ứng highlight nền nhạt.
+- **FR-210** Click một option trong dropdown Phòng ban **đóng dropdown ngay** và áp filter lên cả HIGHLIGHT KUDOS lẫn ALL KUDOS.
+- **FR-211** Option đang chọn giữ highlight bền: mở lại dropdown vẫn thấy `aria-selected="true"` kèm nền sáng + glow chữ.
+- **FR-212** Click lại chính option đang chọn sẽ bỏ lọc, board trở về đầy đủ.
+- **FR-213** Hộp dropdown Phòng ban cao tối đa **348px** (6 dòng 56px + padding trên/dưới hộp), phần dư cuộn trong hộp — không đẩy layout trang.
 
 ### Interaction (4xx)
 
@@ -260,6 +266,8 @@ None — no unresolved domain confirmations. Bốn câu hỏi còn để ngỏ c
 
 - **FR-202** → Carousel luôn hiện đúng 5 kudos nhiều tim nhất hiện có, tính lại ngay sau khi bộ lọc đổi.
 - **FR-203** → Chọn/bỏ chọn một filter option lọc đồng thời cả hai khu vực và luôn đưa carousel về slide 1.
+- **FR-211** → Mở lại dropdown Hashtag/Phòng ban vẫn thấy option đã chọn giữ `aria-selected="true"` và highlight.
+- **FR-213** → Hộp dropdown Phòng ban cuộn trong đúng 348px, không đẩy layout trang.
 - **FR-204** → Card Highlight và card feed clamp nội dung đúng số dòng khác nhau (3 và 5).
 - **FR-205** → Bố cục word-cloud giống hệt nhau giữa lần render đầu tiên trên server và trên trình duyệt (không lệch do random).
 - **FR-206** → Feed chỉ tải thêm khi sentinel lọt vào khung nhìn, không tải trước khi cần.
