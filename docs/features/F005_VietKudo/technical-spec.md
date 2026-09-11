@@ -17,7 +17,7 @@ Trang `/kudos/new` (Client Component form + Server Action) thay thế nội dung
 | # | Action (handler) | Method · Path | Codes | Writes | Detail |
 |---|---|---|---|---|---|
 | **A0** | *cross-cutting — belongs to no single action* | — | FR-101, FR-601, FR-602 | — | § 4.4 |
-| **A1** | `KudosComposePage#Page` (planned) | `GET` `/kudos/new` | FR-102, FR-201, FR-202, FR-203, FR-204, FR-205, FR-206, FR-207, FR-208, FR-209, FR-210, FR-211, FR-212, FR-401, FR-403, BR-002, BR-003, DEC-001, DEC-002, US001, US002, US003 | — *(read-only)* | § 3.1 |
+| **A1** | `KudosComposePage#Page` (planned) | `GET` `/kudos/new` | FR-102, FR-201, FR-202, FR-203, FR-204, FR-205, FR-206, FR-207, FR-208, FR-209, FR-210, FR-211, FR-212, FR-213, FR-214, FR-215, FR-216, FR-217, FR-218, FR-219, FR-401, FR-403, BR-002, BR-003, BR-006, DEC-001, DEC-002, US001, US002, US003 | — *(read-only)* | § 3.1 |
 | **A2** | `uploadKudosAttachment` (planned, client → Storage) | `POST` (Storage upload) `kudos-attachments/*` | FR-001, FR-206, BR-004, US002 | Storage object (`kudos-attachments` bucket) | § 3.2 |
 | **A3** | `createKudos` (planned, Server Action) | `POST` (server action) `/kudos/new` | FR-002, FR-003, FR-402, FR-403, BR-001, BR-002, BR-004, BR-005, US001, US002, US003 | `sunners`, `kudos`, `kudos_hashtags`, `kudos_attachments` | § 3.3 |
 
@@ -27,15 +27,16 @@ Trang `/kudos/new` (Client Component form + Server Action) thay thế nội dung
 
 #### A1 · Dựng trang soạn Kudos và xử lý toàn bộ tương tác nhập liệu
 `GET` `/kudos/new` → `` `KudosComposePage#Page` `` (planned)
-`FR-102` `FR-201` `FR-202` `FR-203` `FR-204` `FR-205` `FR-206` `FR-207` `FR-401` `FR-403` · `US001` `US002` `US003`
+`FR-102` `FR-201` `FR-202` `FR-203` `FR-204` `FR-205` `FR-206` `FR-207` `FR-213` `FR-214` `FR-215` `FR-216` `FR-217` `FR-218` `FR-219` `FR-401` `FR-403` · `US001` `US002` `US003`
 
 **Who** · Sunner đã đăng nhập *(gate A0 — § 4.4, FR-101/FR-601)*
-**FE** · Client Component dựng form một trang (không phải modal chồng route) theo đúng thứ tự trường của `test-contract.md` § "Field order": Người nhận → Danh hiệu → ô soạn nội dung (toolbar 6 nút + textarea + hint) → Hashtag → Image → checkbox ẩn danh → footer Hủy/Gửi. Ô tìm Người nhận và mention `@` đều lọc client-side (substring, đã trim, không phân biệt hoa/thường — `ALG-001`, § 4.5) trên danh sách Sunner đã fetch một lần khi trang render, cùng khuôn với cách F004 lọc Highlight/All Kudos trên dữ liệu đã fetch. Dropdown Hashtag (`+ Hashtag`) cũng lấy danh sách hashtag đã fetch cùng lúc.
+**FE** · Client Component dựng form một trang (không phải modal chồng route) theo đúng thứ tự trường của `test-contract.md` § "Field order": Người nhận → Danh hiệu → ô soạn nội dung (toolbar 6 nút + textarea + hint) → Hashtag → Image → checkbox ẩn danh → footer Hủy/Gửi. Ô tìm Người nhận và mention `@` đều lọc client-side (substring, đã trim, không phân biệt hoa/thường — `ALG-001`, § 4.5) trên danh sách Sunner đã fetch một lần khi trang render, cùng khuôn với cách F004 lọc Highlight/All Kudos trên dữ liệu đã fetch. Dropdown Hashtag (`+ Hashtag`) cũng lấy danh sách hashtag đã fetch cùng lúc. Nút liên kết trên toolbar mở hộp thoại `Thêm đường dẫn` hai trường (`Nội dung` + `URL`, MoMorph `OyDLDuSGEa`): đoạn đang bôi đen trong textarea được chụp lại **tại lúc mở** và điền sẵn vào ô `Nội dung` — đọc lại selection lúc xác nhận là không an toàn khi focus đã đi qua hai ô nhập. Xác nhận hợp lệ thay đúng đoạn đó bằng giá trị ô `Nội dung` qua `insertLink` (`lib/kudos/rich-text.ts`) rồi đánh dấu liên kết lên đoạn vừa chèn; `toggleInlineMark` không dùng được cho đường này vì nó trả về state nguyên vẹn khi range rỗng.
 **Request** · không tham số bắt buộc.
 **BE** · Đọc `sunners` (autocomplete Người nhận + mention) và `hashtags` (dropdown) qua `lib/supabase/server.ts`, cùng khuôn `getPageContext()` đã dùng ở mọi trang khác.
 **Rule**
 - **BR-002 — Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag.** Trang này ép nửa "tối đa 5" bằng cách vô hiệu hoá các dòng hashtag chưa chọn khi đã đủ 5, kèm `Tối đa 5 hashtag` hiển thị thường trực làm lý do (FR-210, FR-211); reducer vẫn giữ guard `MAX_HASHTAGS` phía sau. Nửa "tối thiểu 1" được server ép lại khi gửi. *(§ 4.4)*
 - **BR-003 — Một Kudos đính kèm tối đa 5 ảnh.** Nút `+ Image` bị ẩn hoàn toàn (không phải disabled) khi đã đủ 5, và hiện lại ngay khi một ảnh bị xoá. *(inline)*
+- **BR-006 — Một liên kết chỉ vào được nội dung khi cả văn bản hiển thị và URL đều hợp lệ.** Hộp thoại `Thêm đường dẫn` (MoMorph `OyDLDuSGEa`, FR-213..FR-219) kiểm cả hai ô khi bấm `Lưu` và hiện lỗi từng ô thay vì khoá nút — một nút `disabled` không phát ra được lý do. Scheme URL đọc từ đúng hằng số `ACCEPTED_LINK_SCHEMES` mà `parseKudosDoc` và trình vẽ cùng dùng, nên ba chốt chặn kiểm một danh sách chứ không ba. *(§ 4.4)*
 
 | DEC | subtype | Condition | What the user sees | Source |
 |---|---|---|---|---|
@@ -62,6 +63,7 @@ Dropdown Hashtag (`+ Hashtag`, danh sách lấy động từ `hashtags` theo `po
 **Request** · file ảnh nhị phân từ input, gửi trực tiếp qua Supabase client phía trình duyệt tới bucket `kudos-attachments`.
 **BE** · `storage.objects` INSERT giới hạn bởi policy owner-scoped (§ 4.2) — object được lưu dưới một path riêng cho phiên đăng nhập đó; không có bảng Postgres nào bị ghi ở bước này — `kudos_attachments` chỉ được ghi ở A3, sau khi biết `kudos_id`. Bucket `kudos-attachments` (FR-001) phải tồn tại và bật RLS trước khi A2 chạy được lần đầu.
 **Rule**
+- **BR-006 — Một liên kết chỉ vào được nội dung khi cả văn bản hiển thị và URL đều hợp lệ.** A1 kiểm khi bấm `Lưu` (client); `parseKudosDoc` kiểm lại scheme khi đọc nội dung không tin cậy; trình vẽ kiểm lần thứ ba khi hiển thị. Ba lớp đọc chung `ACCEPTED_LINK_SCHEMES`, nên `javascript:`/`data:`/`vbscript:` không qua được lớp nào. **Used in:** A1, A3. *(đường đọc của F004 kiểm lớp thứ ba)*
 - **BR-004 — Chỉ file đúng định dạng ảnh mới được đính kèm.** Kiểm tra ngay tại đây (client, trước khi gọi Storage) và kiểm tra lại lần nữa ở A3 khi ghi `kudos_attachments` — client không được tin tưởng một mình. *(§ 4.4)*
 
 **Result** · Ghi một object mới vào bucket `kudos-attachments`, trả về URL cho thumbnail hiển thị ngay; URL này được giữ ở state phía client cho tới khi A3 ghi nó vào `kudos_attachments.image_url`. Xoá một thumbnail chỉ xoá khỏi state hiển thị (không xoá object khỏi Storage ở bản vẽ này — object mồ côi không phải rủi ro bảo mật, chỉ là dọn dẹp có thể làm sau).
@@ -111,6 +113,7 @@ sequenceDiagram
 **Rule**
 - **BR-001 — Sunner viết Kudos lần đầu được tự động cấp một dòng `sunners`.** `full_name`/`avatar_url` lấy từ `user_metadata` của phiên Google OAuth (`full_name`/`name`, `avatar_url`/`picture`), rơi về phần trước `@` của email và ảnh mẫu đã commit (`public/images/kudos/sample-avatar.png`) nếu hồ sơ thiếu; `department_id` luôn là phòng ban `Unassigned` đã seed (§ 4.2), `filter_position NULL` nên không lọt vào dropdown lọc Phòng ban của F004. *(inline)*
 - **BR-002 — Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag.** Nửa "tối thiểu 1" được ép lại ở đây — thiếu hashtag khiến request bị từ chối dù nút Gửi đã mở khoá bằng cách nào đó. *(§ 4.4)*
+- **BR-006 — Một liên kết chỉ vào được nội dung khi cả văn bản hiển thị và URL đều hợp lệ.** A1 kiểm khi bấm `Lưu` (client); `parseKudosDoc` kiểm lại scheme khi đọc nội dung không tin cậy; trình vẽ kiểm lần thứ ba khi hiển thị. Ba lớp đọc chung `ACCEPTED_LINK_SCHEMES`, nên `javascript:`/`data:`/`vbscript:` không qua được lớp nào. **Used in:** A1, A3. *(đường đọc của F004 kiểm lớp thứ ba)*
 - **BR-004 — Chỉ file đúng định dạng ảnh mới được đính kèm.** Kiểm tra lại URL/metadata của từng `attachmentUrls` trước khi ghi `kudos_attachments`, không tin riêng kết quả kiểm tra ở A2. *(§ 4.4)*
 - **BR-005 — Kudos ẩn danh ẩn người gửi thật trên bảng tin công khai.** Cột `is_anonymous`/`anonymous_name` được ghi ở đây; card Kudos trên `/kudos` (F004, ngoài phạm vi bản vẽ này) là nơi thật sự đổi cách hiển thị — bản vẽ này chỉ đảm bảo dữ liệu được ghi đúng để F004 đọc được. *(inline)*
 
@@ -136,6 +139,9 @@ sequenceDiagram
 |---|---|---|---|
 | `KudosComposePage` (planned) | Client Component duy nhất của route — dựng toàn bộ form, quản lý state client (hashtag chip, thumbnail, checkbox ẩn danh, trạng thái nút Gửi) | A1 | `app/kudos/new/page.tsx` (thay thế nội dung `ComingSoon` hiện có) |
 | `uploadKudosAttachment` (planned) | Hàm phía client gọi Supabase Storage khi chọn file ảnh | A2 | TBD (draft) — dự kiến `app/kudos/new/_actions/upload-kudos-attachment.ts` |
+| `LinkDialog` | Hộp thoại `Thêm đường dẫn`: hai ô nhập có nhãn bên trái, lỗi từng ô khi bấm `Lưu`, đóng bằng `Hủy`/`Escape`/bấm ra ngoài | A1 | `app/kudos/new/_components/link-dialog.tsx` |
+| `validateLinkText` / `validateLinkUrl` / `validateLinkFields` | Luật kiểm hai trường của hộp thoại, thuần hàm, không React — một bộ luật cho cả component lẫn test | A1 | `lib/kudos/validate-link.ts` |
+| `insertLink` | Nguyên thuỷ rich-text: thay một range bằng văn bản mới rồi đánh dấu liên kết lên đúng đoạn đó | A1 | `lib/kudos/rich-text.ts` |
 | `createKudos` (planned) | Server Action validate + ghi `sunners`/`kudos`/`kudos_hashtags`/`kudos_attachments` | A3 | TBD (draft) — dự kiến `app/kudos/new/_actions/create-kudos.ts`, cùng thư mục `_actions` mà `app/kudos/_actions/toggle-kudos-like.ts` đã dùng cho F004 |
 
 ### 4.2 Data Model
@@ -210,6 +216,7 @@ None. Không có state machine nào đạt ngưỡng phân loại (`kind: ui` ch
 #### Bin 2
 
 - **BR-002 — Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag.** Nửa "tối đa 5" được A1 chặn ngay khi thêm hashtag (client); nửa "tối thiểu 1" được A3 ép lại khi ghi (server) — hai lớp độc lập, không tin riêng lớp client. **Used in:** A1, A3.
+- **BR-006 — Một liên kết chỉ vào được nội dung khi cả văn bản hiển thị và URL đều hợp lệ.** A1 kiểm khi bấm `Lưu` (client); `parseKudosDoc` kiểm lại scheme khi đọc nội dung không tin cậy; trình vẽ kiểm lần thứ ba khi hiển thị. Ba lớp đọc chung `ACCEPTED_LINK_SCHEMES`, nên `javascript:`/`data:`/`vbscript:` không qua được lớp nào. **Used in:** A1, A3. *(đường đọc của F004 kiểm lớp thứ ba)*
 - **BR-004 — Chỉ file đúng định dạng ảnh mới được đính kèm.** A2 kiểm tra ngay khi chọn file (client, trước khi gọi Storage); A3 kiểm tra lại URL/metadata trước khi ghi `kudos_attachments` (server) — cùng lý do defense-in-depth mà `docs/system/permissions.md:91` đã phát biểu cho `kudos_likes`: "Hai lớp này phải cùng đúng, và nếu chỉ một lớp đúng thì lớp phải đúng là RLS". **Used in:** A2, A3.
 
 #### Bin 3
@@ -242,7 +249,7 @@ None.
 
 ### 5.1 Technical Verification
 
-- **SC-001** *(A1)* Mọi hook trong `test-contract.md` (`compose-form`, `recipient-input`/`recipient-menu`/`recipient-empty`/`recipient-selected`, `title-input`/`title-hint`, `body-editor`/`body-hint`, `toolbar-*`, `link-dialog`/`link-url-input`, `mention-menu`/`mention-option`, `hashtag-*`, `image-*`, `anonymous-checkbox`/`anonymous-name-input`, `field-error-*`, `compose-submit`/`compose-cancel`) render đúng thuộc tính đã liệt kê ở đó — nguồn xác nhận duy nhất khi implement, không lặp lại nội dung ở đây.
+- **SC-001** *(A1)* Mọi hook trong `test-contract.md` (`compose-form`, `recipient-input`/`recipient-menu`/`recipient-empty`/`recipient-selected`, `title-input`/`title-hint`, `body-editor`/`body-hint`, `toolbar-*`, `link-dialog`/`link-url-input`/`link-text-input`/`link-text-error`/`link-url-error`/`link-confirm`/`link-cancel`, `mention-menu`/`mention-option`, `hashtag-*`, `image-*`, `anonymous-checkbox`/`anonymous-name-input`, `field-error-*`, `compose-submit`/`compose-cancel`) render đúng thuộc tính đã liệt kê ở đó — nguồn xác nhận duy nhất khi implement, không lặp lại nội dung ở đây.
 - **SC-002** *(A1)* Nút Gửi chỉ chuyển sang có thể bấm khi cả 4 điều kiện của `DEC-002` đều đúng cùng lúc — xoá lại bất kỳ điều kiện nào phải khoá nút ngay.
 - **SC-003** *(A3)* Gửi thành công phải chứng minh được bằng dữ liệu thật: Kudos mới xuất hiện trên `/kudos` sau điều hướng, không chỉ là form đóng lại (`test-contract.md` § Submit state).
 - **SC-004** *(A2, A3)* Một file `.pdf`/`.mp4`/`.txt` bị từ chối ở cả hai lớp — chọn file đó không tạo thumbnail (A2) và không thể lách qua bằng cách gọi thẳng `createKudos` với một URL giả mạo đuôi ảnh (A3 kiểm tra lại).

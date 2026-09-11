@@ -25,7 +25,7 @@ lang: vi
 
 | ID | Capability | What the user can do | User Stories | Requirements | Business Rules | Screens |
 |----|------------|------------------------|-----------------|---------------|-------------------|---------|
-| CAP-01 | Soạn nội dung Kudos | Chọn người nhận, đặt Danh hiệu, viết nội dung có định dạng và mention đồng nghiệp | US001 | FR-102, FR-201, FR-202, FR-203, FR-204 | — | TBD (draft) |
+| CAP-01 | Soạn nội dung Kudos | Chọn người nhận, đặt Danh hiệu, viết nội dung có định dạng và mention đồng nghiệp | US001 | FR-102, FR-201, FR-202, FR-203, FR-204, FR-213, FR-214, FR-215, FR-216, FR-217, FR-218, FR-219 | BR-006 | TBD (draft) |
 | CAP-02 | Đính kèm hashtag và ảnh | Gắn 1–5 hashtag từ danh sách có sẵn, đính kèm tối đa 5 ảnh thật | US002 | FR-001, FR-205, FR-206 | BR-002, BR-003, BR-004 | TBD (draft) |
 | CAP-03 | Gửi hoặc hủy Kudos | Bật ẩn danh kèm tên hiển thị tuỳ chọn, gửi (validate đầy đủ) hoặc hủy bỏ | US003 | FR-002, FR-003, FR-101, FR-207, FR-401, FR-402, FR-403, FR-601, FR-602 | BR-001, BR-005, DEC-001, DEC-002 | TBD (draft) |
 
@@ -51,7 +51,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 - **FR-201** Các trường hiển thị đúng thứ tự: Người nhận, Danh hiệu, nội dung, Hashtag, Image, checkbox gửi ẩn danh, rồi hai nút Hủy/Gửi ở cuối.
 - **FR-202** Trường Người nhận là ô tìm kiếm bắt buộc, chỉ chọn được từ danh sách Sunner có sẵn qua autocomplete; khoảng trắng đầu/cuối chuỗi tìm được bỏ qua.
 - **FR-203** Trường Danh hiệu là input văn bản bắt buộc; nội dung nhập sẽ hiển thị làm tiêu đề Kudos trên bảng tin.
-- **FR-204** Ô soạn nội dung bắt buộc có toolbar 6 định dạng (đậm, nghiêng, gạch ngang, danh sách đánh số, chèn liên kết qua hộp thoại nhập URL, trích dẫn) và hỗ trợ gõ `@ + tên` để mở danh sách gợi ý và mention một đồng nghiệp.
+- **FR-204** Ô soạn nội dung bắt buộc có toolbar 6 định dạng (đậm, nghiêng, gạch ngang, danh sách đánh số, chèn liên kết qua hộp thoại `Thêm đường dẫn` hai trường — FR-213..FR-219, trích dẫn) và hỗ trợ gõ `@ + tên` để mở danh sách gợi ý và mention một đồng nghiệp.
 - **FR-205** Trường Hashtag bắt buộc tối thiểu 1, tối đa 5; chọn qua dropdown đa chọn có trạng thái (FR-208..FR-212) lấy dữ liệu hashtag có sẵn, hiển thị dạng chip có nút xoá riêng từng chip.
 - **FR-206** Trường Image không bắt buộc, tối đa 5 ảnh thật được tải lên Storage; nút thêm ảnh ẩn hoàn toàn khi đủ 5 và hiện lại ngay khi một ảnh bị xoá; chỉ nhận file ảnh, các định dạng khác bị từ chối.
 - **FR-207** Checkbox "Gửi lời cám ơn và ghi nhận ẩn danh" tắt theo mặc định; bật lên hiện thêm một ô nhập tên hiển thị ẩn danh (tuỳ chọn, không bắt buộc).
@@ -60,6 +60,13 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 - **FR-210** Khi đã chọn đủ 5 hashtag, mọi dòng **chưa chọn** bị vô hiệu hoá — mờ đi, `disabled`, không phản hồi click. Các dòng **đã chọn** vẫn bấm được: đó là lối thoát duy nhất khỏi trạng thái đầy.
 - **FR-211** Khi đã chọn đủ 5 hashtag, thông báo "Tối đa 5 hashtag" hiển thị thường trực như lý do của trạng thái vô hiệu hoá ở FR-210, và biến mất ngay khi số hashtag tụt xuống dưới 5.
 - **FR-212** Dropdown giữ nguyên thứ tự `public.hashtags.position` lấy từ Supabase; chọn hay bỏ chọn không sắp xếp lại dòng nào.
+- **FR-213** Hộp thoại chèn liên kết hiển thị tiêu đề `Thêm đường dẫn` và hai ô nhập xếp dọc, mỗi ô có nhãn nằm **bên trái**: `Nội dung` rồi `URL`. Bấm nhãn `Nội dung` chuyển focus sang ô nhập của nó; nhãn `URL` chỉ để thông tin. Ô đang được focus hiện viền nổi.
+- **FR-214** Ô `Nội dung` là văn bản hiển thị của liên kết: bắt buộc, 1–100 ký tự, không được chỉ gồm khoảng trắng. Khi mở hộp thoại, nếu trong ô soạn đang bôi đen một đoạn khác rỗng thì ô này điền sẵn đoạn đó; nếu không thì để trống.
+- **FR-215** Ô `URL` bắt buộc, 5–2048 ký tự, và phải là URL hợp lệ theo danh sách scheme đã chốt (`http:`, `https:`, `mailto:`). Định dạng được kiểm khi rời ô (blur) và khi bấm `Lưu`. Khi mở hộp thoại ô luôn trống.
+- **FR-216** Nút `Lưu` luôn bấm được. Bấm `Lưu` kiểm cả hai ô: mỗi ô sai hiện thông báo lỗi của riêng nó, hộp thoại không đóng và không liên kết nào được chèn. Cả hai hợp lệ thì liên kết được chèn và hộp thoại đóng.
+- **FR-217** Chèn thành công thay đoạn văn bản đang bôi đen bằng giá trị ô `Nội dung` (chèn tại con trỏ nếu không bôi đen gì), rồi đánh dấu liên kết mang `href` là giá trị ô `URL` lên đúng đoạn vừa chèn. Định dạng nào đang chồng lên vùng bị thay sẽ bị bỏ, không neo lại bằng phỏng đoán.
+- **FR-218** Nút `Hủy`, phím `Escape` và bấm ra ngoài đều đóng hộp thoại và hủy mọi thay đổi: không chèn gì, và giá trị hai ô không được giữ lại cho lần mở sau.
+- **FR-219** Nhóm nút nằm cố định ở đáy hộp thoại và ở lại đó khi nội dung cuộn. `Hủy` là nút nhỏ có viền kèm icon `X`; `Lưu` là nút lớn nền vàng `#FFEA9E` chiếm phần chiều ngang còn lại, kèm icon liên kết.
 
 ### Interaction (4xx)
 
@@ -79,6 +86,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 - Một Kudos đính kèm tối đa 5 ảnh; nút thêm ảnh ẩn hoàn toàn khi đủ 5 và hiện lại ngay khi một ảnh bị xoá bớt. (BR-003)
 - Chỉ file đúng định dạng ảnh mới được đính kèm; file sai định dạng (ví dụ pdf, mp4, txt) bị từ chối ngay khi chọn và không được tải lên. (BR-004)
 - Khi gửi ẩn danh, bảng tin công khai hiển thị tên hiển thị ẩn danh (hoặc một nhãn trung lập nếu bỏ trống) thay cho người gửi thật; người nhận luôn hiển thị đúng như đã chọn. (BR-005)
+- Một liên kết chỉ vào được nội dung Kudo khi **cả** văn bản hiển thị **và** URL đều hợp lệ; URL phải nằm trong danh sách scheme đã chốt. Đây là chốt chặn thứ nhất trong ba: trình đọc kiểm lại khi phân tích nội dung, trình vẽ kiểm lần nữa khi hiển thị. (BR-006)
 - Bật checkbox ẩn danh hiện ngay ô nhập tên hiển thị; tắt lại ẩn ô đó đi. (DEC-001)
 - Nút Gửi chuyển từ khoá sang mở ngay khi đủ bốn trường bắt buộc (Người nhận, Danh hiệu, nội dung, Hashtag); thiếu bất kỳ trường nào trong bốn trường đó nút vẫn khoá. (DEC-002)
 
@@ -108,7 +116,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 
 **Acceptance Criteria:**
 - [ ] Gõ vào ô tìm Người nhận hiện danh sách gợi ý lọc theo tên đã gõ (khoảng trắng thừa được bỏ qua); chọn một tên điền vào trường và đóng danh sách.
-- [ ] Bôi đen văn bản trong ô soạn rồi bấm một nút định dạng (đậm/nghiêng/gạch ngang/danh sách đánh số/trích dẫn) áp đúng định dạng đó; bấm nút liên kết mở hộp thoại nhập URL và chèn liên kết vào đúng vị trí bôi đen.
+- [ ] Bôi đen văn bản trong ô soạn rồi bấm một nút định dạng (đậm/nghiêng/gạch ngang/danh sách đánh số/trích dẫn) áp đúng định dạng đó; bấm nút liên kết mở hộp thoại `Thêm đường dẫn` (điền sẵn đoạn đang bôi đen vào ô `Nội dung`), nhập `Nội dung` và `URL` hợp lệ rồi bấm `Lưu` chèn liên kết vào đúng vị trí đó; bỏ trống hoặc nhập sai thì mỗi ô sai hiện lỗi và hộp thoại không đóng.
 - [ ] Gõ `@` rồi tiếp tục gõ tên mở danh sách gợi ý đồng nghiệp; chọn một người chèn đúng tên đó vào nội dung.
 
 ### US002_AttachHashtagsAndImages — Đính kèm hashtag và ảnh
@@ -166,7 +174,9 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 ## 10. Edge Behaviours to Verify
 
 - **FR-202** Gõ khoảng trắng đầu/cuối vào ô tìm Người nhận vẫn lọc đúng danh sách (khoảng trắng bị bỏ qua trước khi so khớp).
-- **FR-204** Chèn liên kết qua hộp thoại URL đặt đúng liên kết vào đúng phần văn bản đã bôi đen, không làm mất định dạng khác đã áp trước đó.
+- **FR-214 / FR-217** Mở hộp thoại khi đang bôi đen một đoạn điền sẵn đúng đoạn đó vào ô `Nội dung`; sửa lại giá trị rồi `Lưu` thay đoạn cũ bằng giá trị mới chứ không chèn thêm.
+- **FR-216** Bấm `Lưu` với cả hai ô trống hiện đồng thời lỗi ở cả hai ô, không phải lần lượt từng ô sau mỗi lần bấm.
+- **FR-218** Đóng hộp thoại bằng `Hủy`, `Escape` hoặc bấm ra ngoài rồi mở lại: hai ô trống, không giữ giá trị nhập dở của lần trước.
 - **FR-205** Xoá một hashtag chip không ảnh hưởng tới các chip còn lại.
 - **FR-206** Xoá một ảnh khi đang đủ 5 làm nút "+ Image" hiện lại ngay, không cần tải lại trang.
 - **FR-401 / DEC-002** Điền đủ 4 trường bắt buộc rồi xoá lại một trường làm nút Gửi khoá lại ngay, không cần bấm Gửi để kiểm tra.
