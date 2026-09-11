@@ -1,0 +1,81 @@
+{
+  "score": 9.2,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "FR-208 a selected row shows the lifted background and a 24x24 circular check at its right; an unselected row keeps an empty 24x24 slot so the list never reflows — proved by: e2e ID-58 asserts data-selected=true and hashtag-check visible on the selected row, and measures the unselected row's hashtag-check-slot bounding box at exactly 24x24. Visually confirmed in evidence/hashtag-dropdown-one-selected-1440.png: twelve unselected rows hold empty slots and the list does not reflow. It was RED before the change (hashtag-check did not exist).",
+    "FR-209 clicking a selected row removes that hashtag; clicking an unselected row adds it — proved by: e2e ID-57 selects one tag (1 chip), reopens, clicks the SAME row and asserts 0 chips plus the row no longer carrying data-selected. RED before the change at toHaveCount expected 0 received 2, because the second click duplicated instead of toggling.",
+    "FR-210 at 5 selected every unselected row is disabled, while selected rows stay clickable as the only exit from the full state — proved by: e2e ID-59 asserts the exact unselected count (SEEDED_HASHTAG_ORDER.length - 5 = 8) and each toBeDisabled(), then clicks a SELECTED row and asserts 4 chips with the unselected rows toBeEnabled() again. ID-17 and ID-53 assert the same disable independently. All three were RED at 'expected disabled, received enabled'.",
+    "FR-211 at 5 selected the max message renders as the standing reason and disappears as soon as the count drops below 5 — proved by: e2e ID-59 asserts hashtag-error visible with HASHTAG_ERROR_FULL at 5, then not.toBeVisible() after a single deselect; ID-17 and ID-53 assert the exact text at the cap. Source-verified at hashtag-picker.tsx:161 that visibility derives from atLimit, not from the error prop.",
+    "FR-212 row order stays public.hashtags.position from Supabase and never re-sorts on selection — proved by: e2e ID-60 captures all 13 labels, toggles a row, reopens, and asserts the list equals SEEDED_HASHTAG_ORDER and equals the pre-toggle capture. Green both before and after the change, so it stands as a regression guard against hoisting rather than as a RED expectation.",
+    "BR-002 a kudos carries 1 to 5 hashtags, enforced by disabling unselected rows with the reducer MAX_HASHTAGS guard still behind it — proved by: three independent layers read in source. UI disables unselected rows at hashtag-option-row.tsx:62; the reducer still refuses past the cap at compose-state.ts:97; the database raises 23514 for an array outside 1..5 at supabase/migrations/20260907025909_viet_kudo_write_path.sql:198. The UI is not the only thing between a user and a 6th hashtag."
+  ],
+  "regressionChecked": [
+    "Full e2e/viet-kudo.spec.ts on --project=kudos-authed: 64 passed, exit 0. No previously-green test newly red.",
+    "ID-15 and ID-16 deliberately left untouched as tripwires for the label-wrapping change — both green, confirming the new <span> around the label did not make the text= locator ambiguous.",
+    "field-error-hashtag, the separate required-field error, is driven by errors.hashtag through ComposeField at compose-form.tsx:155 and is untouched by this change.",
+    "Frozen files verified unmodified in git diff 65a554f..HEAD: compose-contract.ts, compose-state.ts, compose-options.ts, compose-form.tsx.",
+    "npm run typecheck exit 0 tree-wide; npm run lint 0 errors.",
+    "Both owned files under the 200-line rule: hashtag-picker.tsx 168, hashtag-option-row.tsx 86."
+  ],
+  "contractStatus": "HELD",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "low",
+      "category": "design-fidelity",
+      "location": "app/kudos/new/_components/hashtag-option-row.tsx:69",
+      "summary": "The hover tint hover:bg-white/10 is an INFERRED value, not one read from MCP design data. The frame's item A/B/C/D text calls for a light hover highlight but carries no colour or opacity, and the node export has no hover variant to read. Disclosed rather than presented as design-sourced. Every other visual value came from get_node: 40px row and 16px padding and rgba(255,234,158,0.2) fill from 1002:13185, no-fill row from 1002:13104, 24x24 icon from 1002:13204, #00070C menu and #998C5F border from 1002:13102. Not covered by an automated assertion — Playwright asserts no hover style here.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "low",
+      "category": "dead-state",
+      "location": "app/kudos/new/_components/hashtag-picker.tsx:40",
+      "summary": "error?: ComposeFieldErrorCode stays declared on the local props but is no longer destructured, so the reducer's hashtagError 'tooMany' at compose-state.ts:97 is now written and never rendered. That branch is only reachable if the UI lets a 6th add through, which the disable prevents, so it is harmless defence-in-depth rather than a broken path. Deliberate: deriving the message from selected.length is what makes it disappear below the cap, because the frozen reducer's removeHashtag never clears hashtagError and reading the prop would pin the message on screen after a deselect. Clearing it in removeHashtag would mean editing a frozen file. Documented in-code at hashtag-picker.tsx:71 and :155.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "low",
+      "category": "accessibility",
+      "location": "app/kudos/new/_components/hashtag-picker.tsx:116",
+      "summary": "Each role=option button sits inside an <li> within <ul role=listbox>. The li carries an implicit listitem role, which is not a permitted child of listbox (only option and group are). PRE-EXISTING — the li wrapper predates this change. Separately, disabled rows leave the tab order, so at the cap a keyboard user cannot focus the unselected rows; that is exactly what frame item D specifies. Worth a separate a11y pass across the compose pickers as a group.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "medium",
+      "category": "test-integrity",
+      "location": "e2e/viet-kudo.spec.ts:669",
+      "summary": "ID-17 and ID-53 were re-pointed from options.first() to the first UNSELECTED row. Verified this is a strengthening, not a weakening: TEST_HASHTAG_1 'Toan dien' is seed position 1, so at the cap first() was an already-selected row, and under the frame's toggle semantics clicking it means deselect — the old assertion would now exercise the wrong thing entirely. Both original assertions (hashtag-error visible, exact HASHTAG_ERROR_FULL text, chips still 5) are kept verbatim and toBeDisabled() is added on top. The cap stays asserted by three independent tests.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "medium",
+      "category": "test-integrity",
+      "location": "e2e/viet-kudo.spec.ts:181",
+      "summary": "The phase-01 agent's original locators chained .locator('text=<tag>') off the option button, which resolves to whichever element owns the text node — it would have silently started matching the inner <span> once the row wrapped its label, putting data-selected and toBeDisabled() assertions on the wrong element. Replaced with a hashtagOption() helper using filter({ hasText }), which always resolves to the button. Two prefer-const lint errors fixed and the unused selectTags helper wired into ID-17, ID-53 and ID-59.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "low",
+      "category": "test-flake",
+      "location": "playwright.config.ts:190",
+      "summary": "Two runs failed on their FIRST test only — ID-15 on hashtag-add, ID-0 on an <h1> reading 'This page couldn't load' — each contradicted by a green re-run (ID-14|ID-15|ID-16 exit 0 with ID-15 green in 2.1s; full suite re-run 64 passed exit 0). Cause is structural rather than this change: webServer uses reuseExistingServer false and waits only on the root URL, so the first navigation to /kudos/new pays Next dev's cold compile against a 30s test timeout. The explanation holds because a genuine component defect would have failed the other 63 tests, which all load the same page. A warm-up step or a longer first-test timeout would remove it.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "medium",
+      "category": "process",
+      "location": "plans/260911-0707-dropdown-list-hashtag/reports/tester-260911-0916-red-hashtag-dropdown.md:1",
+      "summary": "Three subagents (tester, momorph-ui-implementer, reviewer) each ran 50 to 120 minutes without producing output and without answering a status message, and were stopped per orchestration-protocol.md. The RED verification, the UI implementation and this inspection were therefore all completed by the orchestrator. This verdict is consequently NOT an independent second pair of eyes on the orchestrator's own code. The strongest evidence for this change is executable, not narrative: a valid RED at exit 1 with 5 assertion failures, followed by a full-suite GREEN at exit 0 with 64 passed. An independent human review before merge is advisable.",
+      "disposition": "Accept"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": false,
+    "signoffRequired": false,
+    "humanSignedOff": false
+  }
+}

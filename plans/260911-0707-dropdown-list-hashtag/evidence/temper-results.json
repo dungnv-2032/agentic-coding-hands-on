@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e -- e2e/viet-kudo.spec.ts --project=kudos-authed",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "64 passed (1.6m) — full compose suite green end to end, including the untouched tripwires ID-15/ID-16 and the five previously-RED hashtag tests",
+      "ts": "2026-09-11T02:38:00Z"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/viet-kudo.spec.ts --project=kudos-authed -g \"ID-14|ID-15|ID-16\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "4 passed (51.2s) — ID-15 green in 2.1s once a prior test absorbs Next dev's cold compile, isolating the cold-start flake documented in green-evidence.md",
+      "ts": "2026-09-11T02:22:00Z"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "tsc --noEmit clean tree-wide",
+      "ts": "2026-09-11T02:30:00Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors, 29 warnings — all pre-existing unused imports in older e2e files; the 2 prefer-const errors left by the phase-01 agent were fixed",
+      "ts": "2026-09-11T02:30:00Z"
+    },
+    {
+      "command": "npm run test:e2e -- --project=hashtag-dropdown-visual-capture",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "2 passed (1.5m) — three menu states captured at 1440px clipped to the menu box; the at-cap shot asserts toBeDisabled() before capturing rather than only photographing the state",
+      "ts": "2026-09-11T02:26:00Z"
+    }
+  ]
+}

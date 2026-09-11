@@ -1,0 +1,25 @@
+{
+  "task": "Dropdown list hashtag (MoMorph p9zO-c4a4x) — turn the add-only hashtag menu on /kudos/new into a stateful multi-select: per-row selected state with a check icon, click-to-toggle both directions, and unselected rows disabled at the 5-hashtag cap with 'Toi da 5 hashtag' standing as the reason. Options come from the local Supabase project. This amends F005/SCR005; it is not a new feature code, because the frame is the open state of E13 already declared in the screen spec.",
+  "mode": "takumi auto, e2e-red-first",
+  "acceptanceCriteria": [
+    "FR-208 a selected row shows the lifted background and a 24x24 circular check at its right; an unselected row keeps an empty 24x24 slot so the list never reflows",
+    "FR-209 clicking a selected row removes that hashtag; clicking an unselected row adds it",
+    "FR-210 at 5 selected every unselected row is disabled, while selected rows stay clickable as the only exit from the full state",
+    "FR-211 at 5 selected the max message renders as the standing reason and disappears as soon as the count drops below 5",
+    "FR-212 row order stays public.hashtags.position from Supabase and never re-sorts on selection",
+    "BR-002 a kudos carries 1 to 5 hashtags, enforced by disabling unselected rows with the reducer MAX_HASHTAGS guard still behind it"
+  ],
+  "touchpoints": [
+    "app/kudos/new/_components/hashtag-picker.tsx",
+    "app/kudos/new/_components/hashtag-option-row.tsx",
+    "e2e/viet-kudo.spec.ts",
+    "e2e/fixtures/viet-kudo-constants.ts",
+    "e2e/capture-hashtag-dropdown-visual.spec.ts",
+    "playwright.config.ts",
+    "docs/features/F005_VietKudo/functional-spec.md",
+    "docs/features/F005_VietKudo/technical-spec.md",
+    "docs/screens/SCR005_VietKudo/spec.md"
+  ],
+  "blastRadius": "The compose screen /kudos/new only. No route, table, migration, Server Action or Supabase read path changed. Frozen and verified untouched in the diff: lib/kudos/compose-contract.ts, lib/kudos/compose-state.ts, lib/kudos/compose-options.ts, app/kudos/new/_components/compose-form.tsx. Data is the real local Supabase public.hashtags (13 rows, position order, verified live this session); the Figma mock labels were not seeded over them.",
+  "contracts": "HashtagPickerProps onAdd/onRemove reused as-is so compose-contract.ts stays frozen; the toggle needed no contract widening. The cap is defended at three layers: UI disable, composeReducer MAX_HASHTAGS, and the database check raising 23514 for an array outside 1..5."
+}
