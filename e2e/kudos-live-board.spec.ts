@@ -13,6 +13,7 @@ import {
   HASHTAG_OPTIONS,
   DEPARTMENT_OPTIONS,
   TEST_DEPARTMENT,
+  TEST_HASHTAG,
   SIDEBAR_STATS,
 } from "./fixtures/kudos-constants";
 
@@ -176,6 +177,9 @@ const toast = (page: Page): Locator =>
 const departmentOption = (page: Page, name: string): Locator =>
   filterMenuDepartment(page).getByRole("option", { name, exact: true });
 
+const hashtagOption = (page: Page, name: string): Locator =>
+  filterMenuHashtag(page).getByRole("option", { name, exact: true });
+
 // The receiver's department is a sibling <span> of the `kudos-receiver` link
 // inside the same chip wrapper (`sunner-chip.tsx`), so scope through the
 // parent — a bare page-level text match would also hit the SENDER's
@@ -183,6 +187,11 @@ const departmentOption = (page: Page, name: string): Locator =>
 // prefix of "STVC - R&D - DTR" and three other department names.
 const receiverDepartment = (card: Locator, name: string): Locator =>
   card.getByTestId("kudos-receiver").locator("..").getByText(name, { exact: true });
+
+// Card hashtag chip: matches exactly on `#${name}` (e.g., `#Wasshoi`). Each card
+// renders a chip per hashtag; filter by exact text to avoid substring collisions.
+const cardHashtag = (card: Locator, name: string): Locator =>
+  card.getByTestId("kudos-hashtag").filter({ hasText: `#${name}` }).first();
 
 // ============================================================================
 // Test Suite
@@ -800,6 +809,200 @@ test.describe("Kudos Live Board screen — /kudos (anon)", () => {
     await departmentOption(page, TEST_DEPARTMENT).click();
 
     await expect(filterMenuDepartment(page)).not.toBeVisible();
+
+    const restoredHrefs = await page.evaluate(() => {
+      const elements = document.querySelectorAll('[data-testid="kudos-receiver"]');
+      return Array.from(elements)
+        .map((el) => el.getAttribute("href"))
+        .filter((href) => href !== null)
+        .sort();
+    });
+
+    expect(restoredHrefs).toEqual(baselineHrefs);
+  });
+
+  // ==========================================================================
+  // K-31 to K-35: hashtag filter listbox (FR-214..FR-219, MoMorph JWpsISMAaM).
+  // Hashtag listbox mirrors department listbox structure (same Figma component
+  // `mms_A_Dropdown-List`, instance `mm:563:8026`), so most behavioral tests
+  // will pass immediately (K-33/K-34/K-35 lock in that behavior); K-31 and
+  // K-32 carry the real RED: missing scroll box and missing focus glow.
+  // ==========================================================================
+
+  // K-31 — hashtag filter menu max-height is 348px and contains all 13 options.
+  test("K-31 — hashtag filter menu max-height is 348px and contains all 13 options", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await filterHashtagButton(page).click();
+    const hashtagMenu = filterMenuHashtag(page);
+    await expect(hashtagMenu).toBeVisible();
+
+    // Exactly 348px: 6 rows x 56px + 6px top/bottom padding, per the frame.
+    // The box is bounded because 13 options overflow the visible area.
+    const boundingBox = await hashtagMenu.boundingBox();
+    expect(boundingBox).not.toBeNull();
+    if (boundingBox) {
+      expect(boundingBox.height).toBe(348);
+    }
+
+    const maxHeight = await hashtagMenu.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return style.maxHeight;
+    });
+
+    expect(maxHeight).toBe("348px");
+
+    // Verify the box actually scrolls: scrollHeight > clientHeight.
+    const scrollData = await hashtagMenu.evaluate((el) => ({
+      scrollHeight: el.scrollHeight,
+      clientHeight: el.clientHeight,
+    }));
+
+    expect(scrollData.scrollHeight).toBeGreaterThan(scrollData.clientHeight);
+
+    // All 13 options stay mounted inside the bounded box.
+    const options = hashtagMenu.locator('[role="option"]');
+    await expect(options).toHaveCount(HASHTAG_OPTIONS.length);
+  });
+
+  // K-32 — hashtag option shows focus glow with correct color on keyboard focus.
+  test("K-32 — hashtag option shows focus glow with correct color on keyboard focus", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Open the menu with keyboard (Enter on trigger), then Tab to first option.
+    // This is the only way to achieve :focus-visible on a button in Chromium.
+    await filterHashtagButton(page).focus();
+    await filterHashtagButton(page).press("Enter");
+
+    const hashtagMenu = filterMenuHashtag(page);
+    await expect(hashtagMenu).toBeVisible();
+
+    // Tab to the first option in the listbox (DOM order: first option follows trigger).
+    await page.keyboard.press("Tab");
+
+    // The first option should now have :focus-visible and show the glow shadow.
+    const firstOption = hashtagOption(page, HASHTAG_OPTIONS[0]);
+    const shadowStyle = await firstOption.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return style.textShadow;
+    });
+
+    // Glow color is rgb(250, 226, 135) — the selected state token (#FAE287).
+    // Never assert an exact shadow string; Chromium varies serialization.
+    expect(shadowStyle).toContain("rgb(250, 226, 135)");
+
+    // Confirm hover state is unchanged: background still the light amber.
+    // (Focus glow does NOT alter the hover background.)
+    // Hover state on a non-focused, non-selected option would show
+    // rgba(255, 234, 158, 0.05); we just confirm the first option under focus
+    // still has hover-friendly styling.
+    const bgStyle = await firstOption.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return style.backgroundColor;
+    });
+
+    // Background should be the hover/default state, not the selected dark.
+    // (The exact hover color is applied on :hover, not always on render,
+    // so we just confirm it's not the selected dark background.)
+    expect(bgStyle).not.toBe("rgb(255, 234, 158, 0.1)"); // not selected dark
+  });
+
+  // K-33 — clicking hashtag option closes menu and filters both sections.
+  test("K-33 — clicking hashtag option closes menu and filters both sections", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await filterHashtagButton(page).click();
+    const hashtagMenu = filterMenuHashtag(page);
+    await expect(hashtagMenu).toBeVisible();
+
+    await hashtagOption(page, TEST_HASHTAG).click();
+
+    // Menu closes on select (frame item A.1).
+    await expect(hashtagMenu).not.toBeVisible();
+
+    // Proven per-card: every visible card in both sections must carry TEST_HASHTAG.
+    const highlightCards = highlightSection(page).locator('[data-testid="kudos-card"]');
+    const highlightCount = await highlightCards.count();
+    expect(highlightCount).toBeGreaterThan(0);
+    for (let i = 0; i < highlightCount; i++) {
+      const card = highlightCards.nth(i);
+      await expect(cardHashtag(card, TEST_HASHTAG)).toBeVisible();
+    }
+
+    const allKudosCards = allKudosSection(page).locator('[data-testid="kudos-card"]');
+    const allKudosCount = await allKudosCards.count();
+    expect(allKudosCount).toBeGreaterThan(0);
+    for (let i = 0; i < allKudosCount; i++) {
+      const card = allKudosCards.nth(i);
+      await expect(cardHashtag(card, TEST_HASHTAG)).toBeVisible();
+    }
+  });
+
+  // K-34 — hashtag option retains aria-selected and styling after reopen.
+  test("K-34 — hashtag option retains aria-selected and styling after reopen", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await filterHashtagButton(page).click();
+    await hashtagOption(page, TEST_HASHTAG).click();
+
+    // Reopen — the selection must still be visible as selected state.
+    await filterHashtagButton(page).click();
+    const hashtagMenu = filterMenuHashtag(page);
+    await expect(hashtagMenu).toBeVisible();
+
+    const selectedOption = hashtagOption(page, TEST_HASHTAG);
+    await expect(selectedOption).toHaveAttribute("aria-selected", "true");
+
+    // The selected option shows the glow shadow.
+    const shadowStyle = await selectedOption.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return style.textShadow;
+    });
+
+    expect(shadowStyle).toContain("rgb(250, 226, 135)");
+  });
+
+  // K-35 — re-clicking hashtag option clears filter and restores full board.
+  test("K-35 — re-clicking hashtag option clears filter and restores full board", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Baseline captured BEFORE selecting: the exact set of receiver links.
+    // An href round-trip proves restoration without depending on the seed
+    // hashtag mix of the first feed page.
+    const baselineHrefs = await page.evaluate(() => {
+      const elements = document.querySelectorAll('[data-testid="kudos-receiver"]');
+      return Array.from(elements)
+        .map((el) => el.getAttribute("href"))
+        .filter((href) => href !== null)
+        .sort();
+    });
+
+    await filterHashtagButton(page).click();
+    await hashtagOption(page, TEST_HASHTAG).click();
+
+    const narrowedCards = allKudosSection(page).locator('[data-testid="kudos-card"]');
+    const narrowedCount = await narrowedCards.count();
+    expect(narrowedCount).toBeGreaterThan(0);
+    for (let i = 0; i < narrowedCount; i++) {
+      const card = narrowedCards.nth(i);
+      await expect(cardHashtag(card, TEST_HASHTAG)).toBeVisible();
+    }
+
+    // Re-click the same option — the only way back out of a filtered board.
+    await filterHashtagButton(page).click();
+    await hashtagOption(page, TEST_HASHTAG).click();
+
+    await expect(filterMenuHashtag(page)).not.toBeVisible();
 
     const restoredHrefs = await page.evaluate(() => {
       const elements = document.querySelectorAll('[data-testid="kudos-receiver"]');

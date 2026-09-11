@@ -65,6 +65,13 @@ export const HASHTAG_OPTIONS = [
 export const TEST_DEPARTMENT = "STVC - R&D";
 
 /**
+ * Test hashtag for K-31..K-35 — position 8 of 13, so outside the 6 visible rows in the
+ * 348px box; 8/69 seeded kudos carry this tag, narrowing is clear. Chosen to exercise
+ * both the scroll box (K-31) and filter retention (K-34).
+ */
+export const TEST_HASHTAG = "Wasshoi";
+
+/**
  * Department filter options (clarifications § Resolved from source data,
  * from `WXK5AYB_rG` item A, verbatim, 50 entries — the dropdown frame holds
  * 50; clarifications.md originally mislabelled it 48 and was corrected by
