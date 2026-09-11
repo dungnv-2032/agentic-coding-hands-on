@@ -44,10 +44,20 @@ export const enKudosCompose: Dictionary["kudosCompose"] = {
     link: "Link",
     quote: "Quote",
   },
+  // Addlink Box (OyDLDuSGEa) — en takes spec item A/B/C/D's own English naming
+  // ("Add link"/"Text"/"URL"/"Save"), per clarifications.md § Copy for the two locales.
   linkDialog: {
-    heading: "Insert link",
+    heading: "Add link",
+    textLabel: "Text",
     urlLabel: "URL",
-    confirm: "Insert",
+    confirm: "Save",
+    // Unauthored — the frame carries no error state.
+    errors: {
+      required: "This field is required",
+      tooShort: "URL is too short",
+      tooLong: "This exceeds the maximum length",
+      invalidUrl: "Enter a valid URL",
+    },
   },
   errors: {
     required: "This field is required",

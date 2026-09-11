@@ -73,6 +73,7 @@ export function KudosBodyEditor({
   mentionQuery,
   mentionOptions,
   linkDialogOpen,
+  linkDialogInitialText,
   error,
   onTextChange,
   onToggleInlineMark,
@@ -142,9 +143,14 @@ export function KudosBodyEditor({
         {copy.hint}
       </p>
       <LinkDialog
+        // Keyed on open/closed so every open is a fresh mount — the dialog's
+        // local text/url/error state resets with no setState-in-effect (see
+        // link-dialog.tsx doc comment).
+        key={linkDialogOpen ? "open" : "closed"}
         open={linkDialogOpen}
+        initialText={linkDialogInitialText}
         copy={{ ...copy.linkDialog, cancel: copy.cancelLabel }}
-        onConfirm={onConfirmLink}
+        onConfirmLink={onConfirmLink}
         onCancel={onCloseLinkDialog}
         triggerRef={linkButtonRef}
       />

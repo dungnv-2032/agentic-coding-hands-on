@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type {
   ComposeSunnerOption,
@@ -50,13 +50,15 @@ export interface BodyEditorController {
   mentionQuery: string | null;
   mentionOptions: readonly ComposeSunnerOption[];
   linkDialogOpen: boolean;
+  /** The selection captured at the moment `link-dialog` opened (FR-214 prefill). */
+  linkDialogInitialText: string;
   onTextChange: (text: string) => void;
   onToggleInlineMark: (mark: ToggleableInlineMark) => void;
   onToggleBlock: (block: ToggleableBlock) => void;
   onMentionQueryChange: (query: string | null) => void;
   onInsertMention: (option: ComposeSunnerOption) => void;
   onOpenLinkDialog: () => void;
-  onConfirmLink: (href: string) => void;
+  onConfirmLink: (text: string, href: string) => void;
   onCloseLinkDialog: () => void;
 }
 
@@ -77,7 +79,12 @@ export function useBodyEditorController(
 ): BodyEditorController {
   const [selection, setSelection] = useState<TextRange>({ start: 0, end: 0 });
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [linkDialogInitialText, setLinkDialogInitialText] = useState("");
   const [mentionDismissed, setMentionDismissed] = useState(false);
+  // The range captured at the moment the dialog opened — `onConfirmLink` must
+  // splice THIS range, not re-read the live selection: focus has moved through
+  // two dialog inputs by the time Lưu is clicked (phase-03 task note).
+  const linkRangeRef = useRef<TextRange>({ start: 0, end: 0 });
 
   useEffect(() => {
     function handleSelectionChange() {
@@ -128,6 +135,7 @@ export function useBodyEditorController(
     mentionQuery,
     mentionOptions,
     linkDialogOpen,
+    linkDialogInitialText,
     onTextChange,
     onToggleInlineMark: (mark) => dispatch({ type: "toggleMark", kind: mark, range: readBodySelection() }),
     onToggleBlock: (block) => dispatch({ type: "toggleMark", kind: block, range: readBodySelection() }),
@@ -135,9 +143,24 @@ export function useBodyEditorController(
       if (query === null) setMentionDismissed(true);
     },
     onInsertMention,
-    onOpenLinkDialog: () => setLinkDialogOpen(true),
-    onConfirmLink: (href) => {
-      dispatch({ type: "toggleMark", kind: "link", range: readBodySelection(), href });
+    onOpenLinkDialog: () => {
+      // FR-214: a non-empty selection prefills `link-text-input`; captured now
+      // because focus (and therefore the live selection) moves into the
+      // dialog's own inputs the instant it opens.
+      const range = readBodySelection();
+      linkRangeRef.current = range;
+      setLinkDialogInitialText(state.body.text.slice(range.start, range.end));
+      setLinkDialogOpen(true);
+    },
+    onConfirmLink: (text, href) => {
+      // Clamp the range captured at open against the body as it stands NOW. The
+      // dialog traps focus, so the body should not have moved — but a range that
+      // has gone stale must land somewhere valid rather than splice past the end
+      // of the string. Defense behind the trap, not instead of it.
+      const limit = state.body.text.length;
+      const start = Math.min(linkRangeRef.current.start, limit);
+      const end = Math.min(Math.max(linkRangeRef.current.end, start), limit);
+      dispatch({ type: "insertLink", range: { start, end }, text, href });
       setLinkDialogOpen(false);
     },
     onCloseLinkDialog: () => setLinkDialogOpen(false),

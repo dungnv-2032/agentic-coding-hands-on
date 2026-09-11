@@ -52,13 +52,21 @@ export const viKudosCompose: Dictionary["kudosCompose"] = {
     link: "Liên kết",
     quote: "Trích dẫn",
   },
-  // Unauthored — test-contract.md § Rich-text toolbar requires the dialog
-  // but names no literal copy for it. Its cancel action reuses
-  // `buttons.cancel` rather than a second "Hủy" key.
+  // Addlink Box (OyDLDuSGEa) — heading/textLabel/urlLabel/confirm are the frame
+  // image's own vi copy verbatim (clarifications.md § Copy for the two locales).
+  // Cancel action reuses `buttons.cancel` rather than a second "Hủy" key.
   linkDialog: {
-    heading: "Chèn liên kết",
+    heading: "Thêm đường dẫn",
+    textLabel: "Nội dung",
     urlLabel: "URL",
-    confirm: "Chèn",
+    confirm: "Lưu",
+    // Unauthored — the frame carries no error state (design/momorph-node-values.md).
+    errors: {
+      required: "Không được để trống",
+      tooShort: "URL quá ngắn",
+      tooLong: "Vượt quá độ dài cho phép",
+      invalidUrl: "URL không hợp lệ",
+    },
   },
   errors: {
     required: "Không được để trống",

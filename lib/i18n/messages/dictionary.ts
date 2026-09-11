@@ -10,6 +10,7 @@
 
 import type { AwardUnitKey } from "../../award-system";
 import type { ComposeFieldErrorCode } from "../../kudos/compose-contract";
+import type { LinkFieldError } from "../../kudos/validate-link";
 
 /**
  * The six award categories, in the design's fixed order. A string-literal
@@ -275,11 +276,19 @@ export interface Dictionary {
       link: string;
       quote: string;
     };
-    /** Unauthored — no design source names this dialog's contents. */
+    /**
+     * Addlink Box (MoMorph `OyDLDuSGEa`, spec-delta FR-213..FR-219): `heading`/
+     * `textLabel`/`urlLabel`/`confirm` are authored copy (frame items A/B.1/C.1/D.2,
+     * vi verbatim from the frame image, en from spec item A/B/C/D). `errors` has no
+     * design source — the frame carries no error state — flagged unauthored where used.
+     */
     linkDialog: {
       heading: string;
+      textLabel: string;
       urlLabel: string;
       confirm: string;
+      /** Unauthored — keyed by `LinkFieldError` (validate-link.ts). */
+      errors: Record<LinkFieldError, string>;
     };
     errors: Record<ComposeFieldErrorCode, string>;
     /** The `recipient-empty` text. */
