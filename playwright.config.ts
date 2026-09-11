@@ -182,6 +182,13 @@ export default defineConfig({
       },
       dependencies: ["kudos-auth-setup"],
     },
+    // Department dropdown visual capture — runs on demand only, not in the
+    // default suite. `/kudos` is public, so this needs no stored session.
+    {
+      name: "department-dropdown-visual-capture",
+      testMatch: /capture-department-dropdown-visual\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
     // Addlink Box visual capture project — runs on demand only
     // SKIP by default to prevent interference with main tests
     {
