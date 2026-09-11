@@ -10,7 +10,8 @@ import type { FilterOptionView } from "@/lib/kudos/view-model";
  *
  * `scrollable` bounds the 50-entry department list in its own box (dropdown
  * spec: it must not push the page layout) while all 50 stay mounted for
- * K-3's count.
+ * K-3's count. The box is exactly 348px tall: 6 rows x 56px (p-4 + text-base
+ * leading-6) + 6px top/bottom container padding, with no gap between rows.
  */
 export function KudosFilterMenu({
   testId,
@@ -30,8 +31,8 @@ export function KudosFilterMenu({
     <div
       role="listbox"
       data-testid={testId}
-      className={`absolute top-full left-0 z-20 mt-2 flex w-64 flex-col gap-1 rounded-lg border border-[#998C5F] bg-[#00070C] p-[6px] ${
-        scrollable ? "max-h-80 overflow-y-auto" : ""
+      className={`absolute top-full left-0 z-20 mt-2 flex w-64 flex-col rounded-lg border border-[#998C5F] bg-[#00070C] p-[6px] ${
+        scrollable ? "max-h-[348px] overflow-y-auto" : ""
       }`}
     >
       {options.map((option) => {
@@ -45,7 +46,7 @@ export function KudosFilterMenu({
             role="option"
             aria-selected={selected}
             onClick={() => onSelect(option)}
-            className={`w-full rounded p-4 text-left text-base leading-6 font-bold tracking-[0.5px] text-white ${
+            className={`w-full cursor-pointer rounded p-4 text-center text-base leading-6 font-bold tracking-[0.5px] text-white ${
               selected
                 ? "bg-[rgba(255,234,158,0.10)] [text-shadow:0_0_6px_#FAE287]"
                 : "hover:bg-[rgba(255,234,158,0.05)]"
