@@ -29,7 +29,7 @@ asserted on the hashtag side.
 | # | Phase | Owner | Status | Evidence |
 |---|-------|-------|--------|----------|
 | 01 | [RED e2e — hashtag dropdown](phase-01-red-e2e-hashtag-dropdown.md) | tester | done | [report](reports/tester-260911-1556-red-hashtag-filter.md) |
-| 02 | [UI — hashtag scroll box + focus glow](phase-02-ui-hashtag-dropdown-scroll-box.md) | momorph-ui-implementer | done | commit 25d8f7f |
+| 02 | [UI — hashtag scroll box + focus glow](phase-02-ui-hashtag-dropdown-scroll-box.md) | momorph-ui-implementer | done | commit c4bf487 |
 | 03 | [GREEN + visual evidence](phase-03-green-and-visual-evidence.md) | tester | done | [report](reports/tester-260911-1610-green-hashtag-filter.md) |
 
 ## Data flow (read/filter path unchanged — BR-216)
