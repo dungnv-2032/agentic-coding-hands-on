@@ -24,6 +24,8 @@ import {
   TEST_HASHTAG_3,
   TEST_HASHTAG_4,
   TEST_HASHTAG_5,
+  TEST_HASHTAG_6,
+  SEEDED_HASHTAG_ORDER,
   TEST_TITLE,
   TEST_BODY,
   TEST_ANONYMOUS_NAME,
@@ -127,6 +129,12 @@ const hashtagChipRemove = (page: Page): Locator =>
 const hashtagError = (page: Page): Locator =>
   page.getByTestId("hashtag-error");
 
+const hashtagOptionsUnselected = (page: Page): Locator =>
+  hashtagMenu(page).locator('[role="option"]:not([data-selected="true"])');
+
+const hashtagOptionsSelected = (page: Page): Locator =>
+  hashtagMenu(page).locator('[role="option"][data-selected="true"]');
+
 const imageAddButton = (page: Page): Locator =>
   page.getByTestId("image-add");
 
@@ -168,6 +176,25 @@ const composeSubmit = (page: Page): Locator =>
 
 const composeCancel = (page: Page): Locator =>
   page.getByTestId("compose-cancel");
+
+/**
+ * The option BUTTON carrying `tag`, never a descendant of it. `.locator("text=")`
+ * resolves to whichever element owns the text node, so it would return an inner
+ * `<span>` the moment the row wraps its label — and `data-selected` /
+ * `toBeDisabled()` live on the button, not on the label. `filter({ hasText })`
+ * keeps the button as the match whatever the row's internal markup becomes.
+ */
+const hashtagOption = (page: Page, tag: string): Locator =>
+  hashtagMenu(page).locator('[role="option"]').filter({ hasText: tag });
+
+// Open the menu and toggle each named hashtag in turn (the menu closes per toggle).
+async function selectTags(page: Page, tags: string[]): Promise<void> {
+  for (const tag of tags) {
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+    await hashtagOption(page, tag).click();
+  }
+}
 
 // ============================================================================
 // Test Suite
@@ -452,8 +479,63 @@ test.describe("Viết Kudo screen — /kudos/new (kudos-authed)", () => {
     await expect(hashtagChip(page)).toHaveCount(5);
   });
 
-  // ID-17 — hashtag limit: 6th tag shows error and is not added
-  test("ID-17 — attempting 6th hashtag shows error and is not added", async ({
+  // ID-57 — toggle selected row deselects it (FR-208)
+  test("ID-57 — clicking selected row deselects it and removes chip", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Select one hashtag
+    await selectTags(page, [TEST_HASHTAG_1]);
+    await expect(hashtagChip(page)).toHaveCount(1);
+
+    // Reopen and click the SAME row again — it must toggle off, not duplicate
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+    await hashtagOption(page, TEST_HASHTAG_1).click();
+
+    // Chip is gone
+    await expect(hashtagChip(page)).toHaveCount(0);
+
+    // ...and the row no longer advertises itself as selected
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+    await expect(hashtagOption(page, TEST_HASHTAG_1)).not.toHaveAttribute(
+      "data-selected",
+      "true",
+    );
+  });
+
+  // ID-58 — selected row shows check icon; unselected row shows check-slot (FR-207)
+  test("ID-58 — selected row has check icon; unselected row has 24x24 check-slot", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Select one hashtag so the list holds both states at once
+    await selectTags(page, [TEST_HASHTAG_1]);
+
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+
+    // Selected row: marked, and carrying the check icon
+    const selectedRow = hashtagOption(page, TEST_HASHTAG_1);
+    await expect(selectedRow).toHaveAttribute("data-selected", "true");
+    await expect(selectedRow.locator('[data-testid="hashtag-check"]')).toBeVisible();
+
+    // Unselected row should have check-slot
+    const unselectedRow = hashtagOptionsUnselected(page).first();
+    const checkSlot = unselectedRow.locator('[data-testid="hashtag-check-slot"]');
+    await expect(checkSlot).toBeVisible();
+
+    // Verify check-slot is 24x24
+    const bbox = await checkSlot.boundingBox();
+    expect(bbox?.width).toBe(24);
+    expect(bbox?.height).toBe(24);
+  });
+
+  // ID-59 — at 5 selected, unselected rows disabled and error visible; click selected row to deselect (FR-209, FR-210)
+  test("ID-59 — at 5 hashtags, unselected rows disabled and error visible; clicking selected row re-enables others", async ({
     page,
   }) => {
     await page.goto(ROUTE);
@@ -466,20 +548,114 @@ test.describe("Viết Kudo screen — /kudos/new (kudos-authed)", () => {
       TEST_HASHTAG_5,
     ];
 
-    // Add 5 tags first
-    for (const tag of tags) {
-      await hashtagAddButton(page).click();
-      await expect(hashtagMenu(page)).toBeVisible();
-      const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
-      await hashtagOptions.locator(`text=${tag}`).click();
-    }
+    await selectTags(page, tags);
+    await expect(hashtagChip(page)).toHaveCount(5);
 
-    // Attempt to add 6th
+    // Reopen menu and verify unselected rows are disabled
     await hashtagAddButton(page).click();
     await expect(hashtagMenu(page)).toBeVisible();
 
-    const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
-    await hashtagOptions.first().click();
+    const unselectedRows = hashtagOptionsUnselected(page);
+    const unselectedCount = await unselectedRows.count();
+    expect(unselectedCount).toBe(SEEDED_HASHTAG_ORDER.length - 5);
+
+    // Every unselected row is inert — including the concrete 6th seeded tag
+    for (let i = 0; i < unselectedCount; i++) {
+      await expect(unselectedRows.nth(i)).toBeDisabled();
+    }
+    await expect(hashtagOption(page, TEST_HASHTAG_6)).toBeDisabled();
+
+    // Error should be visible
+    await expect(hashtagError(page)).toBeVisible();
+    await expect(hashtagError(page)).toHaveText(HASHTAG_ERROR_FULL);
+
+    // Click a selected row to deselect it
+    const selectedRows = hashtagOptionsSelected(page);
+    await selectedRows.first().click();
+
+    // Now 4 chips
+    await expect(hashtagChip(page)).toHaveCount(4);
+
+    // Reopen menu and verify unselected rows are enabled again
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+
+    const nowUnselectedRows = hashtagOptionsUnselected(page);
+    const nowUnselectedCount = await nowUnselectedRows.count();
+    // All should be enabled now
+    for (let i = 0; i < nowUnselectedCount; i++) {
+      await expect(nowUnselectedRows.nth(i)).toBeEnabled();
+    }
+
+    // Error should be hidden
+    await expect(hashtagError(page)).not.toBeVisible();
+  });
+
+  // ID-60 — hashtag list order is preserved from database (FR-211, regression guard)
+  test("ID-60 — hashtag order matches seeded position order and does not re-sort", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Capture initial option labels
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+
+    const initialLabels: string[] = [];
+    const initialOptions = hashtagMenu(page).locator('[role="option"]');
+    const optionCount = await initialOptions.count();
+
+    for (let i = 0; i < optionCount; i++) {
+      const text = await initialOptions.nth(i).textContent();
+      initialLabels.push(text?.trim() || "");
+    }
+
+    // Toggle one row (select it)
+    await initialOptions.first().click();
+
+    // Reopen menu
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+
+    // Capture labels again
+    const finalLabels: string[] = [];
+    const finalOptions = hashtagMenu(page).locator('[role="option"]');
+    const finalOptionCount = await finalOptions.count();
+
+    for (let i = 0; i < finalOptionCount; i++) {
+      const text = await finalOptions.nth(i).textContent();
+      finalLabels.push(text?.trim() || "");
+    }
+
+    // Labels should match the seeded order
+    expect(finalLabels).toEqual(SEEDED_HASHTAG_ORDER);
+
+    // Labels should be identical before and after toggle
+    expect(finalLabels).toEqual(initialLabels);
+  });
+
+  // ID-17 — hashtag limit: at 5, first unselected row is disabled and shows error
+  test("ID-17 — at 5 hashtags, unselected row is disabled and error appears", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    const tags = [
+      TEST_HASHTAG_1,
+      TEST_HASHTAG_2,
+      TEST_HASHTAG_3,
+      TEST_HASHTAG_4,
+      TEST_HASHTAG_5,
+    ];
+
+    await selectTags(page, tags);
+
+    // At cap, reopen menu and check first unselected row
+    await hashtagAddButton(page).click();
+    await expect(hashtagMenu(page)).toBeVisible();
+
+    const blocked = hashtagOptionsUnselected(page).first();
+    await expect(blocked).toBeDisabled();
 
     // Error should appear
     await expect(hashtagError(page)).toBeVisible();
@@ -1106,8 +1282,8 @@ test.describe("Viết Kudo screen — /kudos/new (kudos-authed)", () => {
     await expect(fieldErrorHashtag(page)).toHaveText(HASHTAG_REQUIRED_ERROR);
   });
 
-  // ID-53 — hashtag error: 6th tag refused with "Tối đa 5 hashtag"
-  test("ID-53 — attempting 6th hashtag shows max error", async ({ page }) => {
+  // ID-53 — hashtag error: at 5, unselected row is disabled and shows max error
+  test("ID-53 — at 5 hashtags, unselected row disabled and max error appears", async ({ page }) => {
     await page.goto(ROUTE);
 
     const tags = [
@@ -1118,20 +1294,14 @@ test.describe("Viết Kudo screen — /kudos/new (kudos-authed)", () => {
       TEST_HASHTAG_5,
     ];
 
-    // Add 5 tags
-    for (const tag of tags) {
-      await hashtagAddButton(page).click();
-      await expect(hashtagMenu(page)).toBeVisible();
-      const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
-      await hashtagOptions.locator(`text=${tag}`).click();
-    }
+    await selectTags(page, tags);
 
-    // Try to add 6th
+    // At cap, reopen menu and check first unselected row
     await hashtagAddButton(page).click();
     await expect(hashtagMenu(page)).toBeVisible();
 
-    const hashtagOptions = hashtagMenu(page).locator('[role="option"]');
-    await hashtagOptions.first().click();
+    const blocked = hashtagOptionsUnselected(page).first();
+    await expect(blocked).toBeDisabled();
 
     // Error appears
     await expect(hashtagError(page)).toBeVisible();

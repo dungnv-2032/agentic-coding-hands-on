@@ -171,6 +171,17 @@ export default defineConfig({
       testMatch: /capture-fab-visual\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
+    // Hashtag dropdown visual capture — runs on demand only, not in the default
+    // suite. `/kudos/new` is route-guarded, so it rides the kudos-authed session.
+    {
+      name: "hashtag-dropdown-visual-capture",
+      testMatch: /capture-hashtag-dropdown-visual\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/kudos-user.json",
+      },
+      dependencies: ["kudos-auth-setup"],
+    },
     // Secret Box visual capture project — runs on demand only
     // SKIP by default to prevent interference with main tests
     {

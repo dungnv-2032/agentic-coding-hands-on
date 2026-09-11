@@ -49,6 +49,24 @@ export const TEST_HASHTAG_2 = "Giỏi chuyên môn";
 export const TEST_HASHTAG_3 = "Hiệu suất cao";
 export const TEST_HASHTAG_4 = "Truyền cảm hứng";
 export const TEST_HASHTAG_5 = "Cống hiến";
+export const TEST_HASHTAG_6 = "Aim High";
+
+/** Seeded hashtag order from public.hashtags (position order) — includes # prefix as rendered in UI */
+export const SEEDED_HASHTAG_ORDER = [
+  "#Toàn diện",
+  "#Giỏi chuyên môn",
+  "#Hiệu suất cao",
+  "#Truyền cảm hứng",
+  "#Cống hiến",
+  "#Aim High",
+  "#Be Agile",
+  "#Wasshoi",
+  "#Hướng mục tiêu",
+  "#Hướng khách hàng",
+  "#Chuẩn quy trình",
+  "#Giải pháp sáng tạo",
+  "#Quản lý xuất sắc",
+];
 
 /** Test data: sample title and body text */
 export const TEST_TITLE = "Người truyền động lực cho tôi";
