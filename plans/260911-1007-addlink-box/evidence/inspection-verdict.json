@@ -1,0 +1,74 @@
+{
+  "score": 6.5,
+  "criticalCount": 0,
+  "decision": "REWORK",
+  "acceptanceCovered": [
+    "FR-213 title + two stacked labelled fields + label-click-focus — proved by e2e ID-61 (link-dialog.tsx:102 title, :108-149 both labelled inputs) and ID-62 (native <label htmlFor=\"link-text-input\"> at link-dialog.tsx:108 focuses the input on click). The row-layout sub-clause (labels are intrinsic-width, not a fixed column) matches design/momorph-node-values.md verbatim at link-dialog.tsx:106,134 (`flex h-14 w-full items-center gap-4`). The 'focused input shows a lifted border' sub-clause is NOT met — see refuted.",
+    "FR-214 Nội dung required/1-100/non-whitespace + prefill-from-selection — proved by lib/kudos/validate-link.ts:17-21 (validateLinkText) plus e2e ID-63 (prefill from a captured selection) and ID-65 (whitespace error, 101-char error, 1-char accepted).",
+    "FR-215 URL required/5-2048/scheme-checked, validated on blur AND save — proved by lib/kudos/validate-link.ts:24-30 (validateLinkUrl) plus e2e ID-66 (blur-only triggers link-url-error before any save click) and ID-64 (save-time validation).",
+    "FR-216 Lưu always clickable; save validates both fields, per-field errors, dialog stays open on error — proved by app/kudos/new/_components/link-dialog.tsx:172-181 (link-confirm button carries no disabled attribute anywhere in the file) plus e2e ID-64 (both fields empty -> both link-text-error/link-url-error visible, dialog still open).",
+    "FR-217 replace-selection-or-insert-at-caret + link mark placement + drop-overlapping-marks — proved at the source level: lib/kudos/rich-text.ts:91-96 (insertLink) mirrors remapMarks' documented drop-overlap policy exactly (mark.end<=range.start kept, mark.start>=range.end shifted by delta, otherwise dropped — verified equivalent to remapMarks:99-113's prefix/suffix diff for the same caret-insertion case). Wiring verified end-to-end via source read: use-body-editor-controller.ts:155-157 dispatches insertLink with the captured range -> compose-state.ts:98-99 calls lib/kudos/rich-text.ts's insertLink. e2e ID-63 proves the prefill half and ID-67 proves the plain-text half (text appears in body-editor after save). The 'a link run with correct href actually lands in the document' half of this criterion is NOT proved by any executed test — see the test-integrity finding.",
+    "FR-218 Hủy/Escape/outside-click all discard, no field values survive to the next open — proved by e2e ID-68 (three sub-cases, including the outside-click fix using page.mouse.click(20,20) instead of the overlay-centre click documented in green-evidence.md) and by the LinkDialog remount pattern at kudos-body-editor.tsx:149 (`key={linkDialogOpen ? \"open\" : \"closed\"}`), which forces fresh useState initializers on every open.",
+    "FR-219 bottom-anchored button row, Hủy bordered+X narrow, Lưu yellow+link full-width — proved by matching app/kudos/new/_components/link-dialog.tsx:159-182 against design/momorph-node-values.md § D verbatim: Hủy `rounded`(4px)+`border-[#998C5F]`+`rgba(255,234,158,0.10)`+IconClose vs Lưu `rounded-lg`(8px)+`flex-1`+`bg-[#FFEA9E]`+IconLink — the two differing border-radii (4px vs 8px) that the design doc calls out as deliberate are both reproduced exactly. Visually confirmed in evidence/addlink-box-*-1440.png, each captured only after asserting the shown state (per green-evidence.md).",
+    "BR-006 a link reaches the document only when both fields validate, ACCEPTED_LINK_SCHEMES is the first of three independent checks — proved by three separately-read call sites: lib/kudos/validate-link.ts:32-37 (dialog, new), lib/kudos/rich-text.ts:157-160 inside parseRun/parseKudosDoc (untrusted-input boundary; confirmed via `git diff main...HEAD -- lib/kudos/rich-text.ts` that parseBlock/parseKudosDoc's reflow is whitespace-only, behaviour-identical to main), and app/kudos/_components/kudos-message-body.tsx:2,61 (renderer, untouched by this diff). All three read the same ACCEPTED_LINK_SCHEMES = [\"http:\",\"https:\",\"mailto:\"] (compose-contract.ts:45, untouched), so `javascript:`/`data:`/`vbscript:` protocols fail every one of the three checks."
+  ],
+  "regressionChecked": [
+    "Full e2e/viet-kudo.spec.ts on --project=kudos-authed: 72 passed, exit 0 per green-evidence.md/temper-results.json — same test count as before plus the 8 new tests, no previously-green test newly red.",
+    "Independently re-ran `npx tsc --noEmit` (clean) and `npm run lint` (0 errors, 31 pre-existing unused-var warnings, none new) myself this session — matches the claimed evidence.",
+    "compose-contract.ts diff (`git diff main...HEAD`) confirmed to touch ONLY the doc comment and BodyEditorProps (linkDialogInitialText added, onConfirmLink widened to (text, href)) — ACCEPTED_LINK_SCHEMES, KudosRun, KudosDoc all untouched.",
+    "BodyEditorProps' widened surface has exactly one production wiring point (grep confirmed): kudos-body-editor.tsx passes the two new fields through untouched, use-body-editor-controller.ts implements them, and compose-form.tsx:141 spreads `{...bodyController}` into KudosBodyEditor — no stale call site left on the old (href)-only signature.",
+    "rich-text.ts's parseBlock/parseKudosDoc reflow (multi-line for-loops collapsed to one-liners) verified line-by-line against main to be formatting-only — no logic changed in the untrusted-input parsing boundary.",
+    "File-size rule: every touched/new file is under 200 lines (validate-link.ts 45, rich-text.ts 195, compose-state.ts 168, compose-contract.ts 187, link-dialog.tsx 186, kudos-body-editor.tsx 159, use-body-editor-controller.ts 161, capture-addlink-box-visual.spec.ts 93). lib/i18n/messages/dictionary.ts is 356 lines, but that is a pre-existing violation (347 lines on main already) that this diff only grows by 9 lines — not newly introduced.",
+    "Design-value citation rule: every visual value in link-dialog.tsx carries an `mm:` node comment or an explicit unauthored disclosure (overlay scrim, IconClose, error styling) — except the FR-213 focus-visible border, which is neither cited nor flagged (see refuted)."
+  ],
+  "contractStatus": "CHANGED",
+  "refuted": [
+    "FR-213's 'focused input shows a lifted border' is unimplemented, not merely unauthored-and-flagged. app/kudos/new/_components/link-dialog.tsx:120 and :146 apply `outline-none` to both link-text-input and link-url-input with no `focus:`/`focus-visible:` class anywhere in the file (grep for `focus:` in this file returns zero matches) and no matching rule in app/globals.css. This both fails the explicit FR and removes the browser's native focus ring with nothing put in its place — a WCAG 2.4.7 regression on top of the missed acceptance criterion. design/momorph-node-values.md itself calls this value out as unauthored and says to 'flag in code'; the code does neither cite nor flag it, it silently omits it."
+  ],
+  "unproven": [],
+  "reachableRegressions": [
+    "The dialog traps pointer events (full-screen overlay) but not keyboard focus, so the range captured for insertLink can go stale against a body the user edited while the dialog was still open. Concretely: LinkDialog is the last focusable region in DOM order after body-editor's textarea (MentionMenu renders `null` while closed per mention-menu.tsx:35, and body-hint is a non-focusable <p>), and use-dismiss-on-outside.ts only listens for `pointerdown`-outside and `Escape` — it never traps Tab. So Shift+Tab from the just-focused link-text-input (use-body-editor-controller.ts's onOpenLinkDialog focuses it via link-dialog.tsx:69) lands the user back on the live `body-editor` textarea while the dialog is still rendered on top. From there the user can edit `state.body.text` through the ordinary onChange path, tab forward again, fill the dialog fields, and click Lưu: onConfirmLink (use-body-editor-controller.ts:155-157) splices `insertLink` (rich-text.ts:91-96) using `linkRangeRef.current` — captured BEFORE the edit — against the NEW, already-mutated text, with no bounds check against the current text length. Because JS string `.slice()` never throws on an out-of-range index, this doesn't crash; it silently places the link mark at a start/end pair that may no longer correspond to any real span of the post-edit text (worst case: the body shrank below `range.end`, so the mark's declared offsets sit past the actual inserted text and the link silently fails to render at all, or renders over the wrong words) — a data-integrity defect with no error surfaced to the user, reachable through ordinary keyboard navigation and not covered by ID-61..68 (none of which test a body edit between open and confirm, or Tab order at all)."
+  ],
+  "findings": [
+    {
+      "severity": "High",
+      "category": "API contracts / concurrency",
+      "location": "app/kudos/new/_components/use-body-editor-controller.ts:84-87",
+      "summary": "linkRangeRef is captured once at dialog-open and never re-validated at confirm time, and nothing prevents the user from returning focus to the live body-editor textarea while the dialog is open (no focus trap in link-dialog.tsx or use-dismiss-on-outside.ts — only pointerdown-outside and Escape are handled). A body edit between open and confirm makes insertLink (rich-text.ts:91-96) splice a stale range into new text with no bounds check, silently mis-placing or losing the link mark. Fix: either (a) add a focus trap while `open` — a keydown handler in link-dialog.tsx that cycles Tab among the dialog's own focusable children (or render via a native <dialog> element with `showModal()`, which traps focus for free) — or (b) at minimum, in onConfirmLink, re-clamp `linkRangeRef.current` to `[0, state.body.text.length]` and treat a range that no longer matches (e.g. re-derive against a text-length snapshot taken at open) as invalid, falling back to caret-at-end rather than silently misplacing the mark.",
+      "disposition": "Reject"
+    },
+    {
+      "severity": "High",
+      "category": "Craft / accessibility / design-fidelity",
+      "location": "app/kudos/new/_components/link-dialog.tsx:120",
+      "summary": "FR-213 explicitly requires the focused input to show a lifted border ('Focus: Hiện viền nổi'), and design/momorph-node-values.md instructs flagging it in code since the exact color isn't specified. Neither happened: `outline-none` is applied to both link-text-input (:120) and link-url-input (:146) with no `focus:`/`focus-visible:` replacement anywhere in the file, and no fallback in app/globals.css. This is a missed, explicit acceptance criterion and a WCAG focus-visibility regression, not just an unauthored-and-disclosed value. Fix: add e.g. `focus:border-2 focus:border-[#998C5F]` (reusing the row's own border color) or a `focus-visible:shadow-[...]` 'lifted' treatment to both inputs, with a one-line comment citing this is an unauthored value per momorph-node-values.md.",
+      "disposition": "Reject"
+    },
+    {
+      "severity": "Medium",
+      "category": "test-integrity",
+      "location": "e2e/viet-kudo.spec.ts:1599-1601",
+      "summary": "ID-67 (and the whole suite — confirmed by grep, no test in this file ever intercepts a network request or reads back a submitted payload) only asserts `bodyValue.toContain(validText)`, i.e. that the plain text appears in the textarea. It does not, and structurally cannot given the suite's architecture, prove the acceptance criterion's other half: 'payload gửi đi chứa run { type: \"link\", text, href }'. A regression that reduced insertLink to plain string concatenation (dropping the link mark entirely) would still pass ID-67. The wiring is verified correct by direct source read (compose-state.ts:98-99 -> rich-text.ts:91-96), so this is a coverage gap rather than a known defect, but it should be tracked: e.g. a future phase could add a doc-level assertion by submitting the kudos and reading the persisted/rendered link back through F004's read path.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "logic",
+      "location": "lib/kudos/rich-text.ts:91-96",
+      "summary": "insertLink drops any mark that straddles a zero-width (caret) insertion point entirely, whereas insertMention (rich-text.ts:81-88) extends such a mark instead. Verified this is NOT a bug: insertLink's caret case is algebraically identical to what remapMarks (rich-text.ts:99-113) would compute for the same text diff (prefixLen/oldChangeEnd both equal the caret position when nothing is deleted), so insertLink correctly reuses remapMarks' stated 'drop, never re-anchor' policy rather than insertMention's older, more lenient one. Worth a one-line comment noting the deliberate divergence from insertMention so a future reader doesn't 'fix' it into an inconsistency.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Low",
+      "category": "maintainability",
+      "location": "lib/i18n/messages/dictionary.ts:1",
+      "summary": "File is 356 lines, over the repo's 200-line guideline. Pre-existing (347 lines on main before this diff); this change only adds 9 lines for the Addlink Box copy shape. Not this diff's debt to pay down, but flagged since it keeps growing with every kudos-compose amendment.",
+      "disposition": "Defer"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": true,
+    "signoffRequired": false,
+    "humanSignedOff": false
+  }
+}

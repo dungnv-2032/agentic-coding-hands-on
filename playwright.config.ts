@@ -182,6 +182,17 @@ export default defineConfig({
       },
       dependencies: ["kudos-auth-setup"],
     },
+    // Addlink Box visual capture project — runs on demand only
+    // SKIP by default to prevent interference with main tests
+    {
+      name: "addlink-box-visual-capture",
+      testMatch: /capture-addlink-box-visual\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/kudos-user.json",
+      },
+      dependencies: ["kudos-auth-setup"],
+    },
     // Secret Box visual capture project — runs on demand only
     // SKIP by default to prevent interference with main tests
     {

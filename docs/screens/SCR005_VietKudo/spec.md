@@ -68,7 +68,12 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 | E06 | Ô soạn nội dung | textarea | yes | Empty | Always | Gõ nội dung, bôi đen để áp định dạng (requires E08) | — | raw | placeholder "Hãy gửi gắm lời cám ơn và ghi nhận đến đồng đội tại đây nhé!" | `data-testid: body-editor` |
 | E07 | Gợi ý mention | message | — | — | Always | — | — | raw | — | `data-testid: body-hint`; text "Bạn có thể "@ + tên" để nhắc tới đồng nghiệp khác" |
 | E08 | Toolbar định dạng {đậm, nghiêng, gạch ngang, danh sách đánh số, liên kết, trích dẫn} | button {x6} | — | Enabled | Always | Áp/gỡ định dạng cho phần đang bôi đen trong E06; nút liên kết mở E09 | — | — | — | `data-testid: toolbar-bold/italic/strike/ordered-list/link/quote`; nút đậm/nghiêng carry `aria-pressed` |
-| E09 | Hộp thoại nhập liên kết | dialog | — | Hidden | Conditional | Nhập URL, xác nhận để chèn liên kết vào E06 | — | raw | — | `data-testid: link-dialog` (chứa `link-url-input`) |
+| E09 | Hộp thoại `Thêm đường dẫn` | dialog | — | Hidden | Conditional | Nhập `Nội dung` + `URL`, bấm `Lưu` để chèn liên kết vào E06 | MoMorph `OyDLDuSGEa` | raw | — | `data-testid: link-dialog` (chứa E09.1–E09.5); `role="dialog"`, `aria-modal="true"`, tiêu đề "Thêm đường dẫn" |
+| E09.1 | Ô `Nội dung` (văn bản hiển thị của liên kết) | text input | yes | Empty (điền sẵn đoạn đang bôi đen trong E06 nếu có) | Conditional | Nhập văn bản sẽ hiển thị thay cho URL | MoMorph `OyDLDuSGEa` item B.2 | raw, 1–100 ký tự | lỗi bắt buộc khi bấm `Lưu` | `data-testid: link-text-input`; nhãn "Nội dung" nằm bên trái, là `<label for>` nên bấm nhãn thì focus vào ô |
+| E09.2 | Ô `URL` | text input | yes | Empty | Conditional | Nhập đường dẫn | MoMorph `OyDLDuSGEa` item C.2 | url, 5–2048 ký tự, scheme `http:`/`https:`/`mailto:` | lỗi bắt buộc khi bấm `Lưu` | `data-testid: link-url-input`; nhãn "URL" bên trái, không tương tác |
+| E09.3 | Lỗi của ô `Nội dung` | message | — | Hidden | Conditional | — | — | raw | — | `data-testid: link-text-error` |
+| E09.4 | Lỗi của ô `URL` | message | — | Hidden | Conditional | — | — | raw | — | `data-testid: link-url-error` |
+| E09.5 | Nhóm nút `Hủy` / `Lưu` | button {x2} | — | Enabled | Conditional | `Hủy` đóng và huỷ; `Lưu` kiểm hai ô rồi chèn hoặc hiện lỗi | MoMorph `OyDLDuSGEa` items D.1/D.2 | — | — | `data-testid: link-cancel` (nhỏ, có viền, icon `X`) / `link-confirm` (lớn, nền `#FFEA9E`, icon liên kết, **không bao giờ** `disabled`); nhóm bám đáy hộp thoại |
 | E10 | Danh sách gợi ý mention | list | — | Hidden | Conditional | Gõ `@ + tên` mở ra; chọn một người chèn vào E06 | — | raw | — | `data-testid: mention-menu` (role listbox), `mention-option` (role option) |
 | E11 | Tiêu chuẩn cộng đồng | link | — | Enabled | Always | Mở trang tiêu chuẩn cộng đồng | — | — | — | `data-testid: community-standards-link` |
 | E12 | Nút thêm Hashtag | button | — | Enabled | Always | Mở E13 (requires E13) | — | — | — | `data-testid: hashtag-add`; label chứa "Hashtag" và "Tối đa 5" |
@@ -97,7 +102,8 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 |--------|---------|---------|-----------|------------------------|--------|
 | Tìm và chọn người nhận | E01, E02, E03 | gõ, click một option | — | E01 điền tên đã chọn, E02 đóng | TBD (draft) |
 | Áp định dạng văn bản | E08 | bôi đen rồi click một nút | có phần văn bản đang bôi đen trong E06 | Định dạng áp lên đúng phần đã bôi đen | TBD (draft) |
-| Chèn liên kết | E08 (nút liên kết), E09 | click nút liên kết, nhập URL, xác nhận | — | Liên kết được chèn vào E06, E09 đóng | TBD (draft) |
+| Chèn liên kết | E08 (nút liên kết), E09 | click nút liên kết, nhập `Nội dung` + `URL`, bấm `Lưu` | cả hai ô hợp lệ | Đoạn đang bôi đen trong E06 (hoặc vị trí con trỏ) được thay bằng `Nội dung` và mang liên kết tới `URL`; E09 đóng | TBD (draft) |
+| Huỷ chèn liên kết | E09.5, E09 | click `Hủy`, bấm `Escape`, hoặc click ra ngoài hộp thoại | E09 đang mở | E09 đóng, E06 không đổi, hai ô không giữ giá trị cho lần mở sau | TBD (draft) |
 | Mention đồng nghiệp | E06, E10 | gõ `@` rồi tiếp tục gõ tên, click một option | — | Tên được chèn vào đúng vị trí trong E06 | TBD (draft) |
 | Thêm hashtag | E12, E13, E14 | click E12, chọn một hashtag | tổng số hashtag đã chọn < 5 | E14 thêm một chip mới | TBD (draft) |
 | Thêm hashtag khi đã đủ 5 | E13.1, E15 | cố chọn một hashtag thứ 6 | tổng số hashtag đã chọn = 5 | Mọi dòng chưa chọn `disabled`; E15 hiện thường trực; không có chip nào được thêm | TBD (draft) |
@@ -135,7 +141,7 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 |-------|---------|----------------|-----------------------|--------|
 | loading | Trang vừa render, đang đọc danh sách Sunner/Hashtag | TBD (draft) — chưa quyết định skeleton hay chỉ hiện form rỗng | Chờ | TBD (draft) |
 | empty | Gõ vào E01 không khớp Sunner nào | E03 hiện, E02 rỗng | Sửa lại chuỗi tìm | TBD (draft) |
-| error | Submit thiếu trường / file sai định dạng / vượt quá 5 hashtag hoặc ảnh | E22 / E19 / E15 hiện đúng lỗi tương ứng | Sửa lại rồi thử lại | TBD (draft) |
+| error | Submit thiếu trường / file sai định dạng / vượt quá 5 hashtag hoặc ảnh / hai ô của E09 sai | E22 / E19 / E15 / E09.3 + E09.4 hiện đúng lỗi tương ứng | Sửa lại rồi thử lại | TBD (draft) |
 | saving | Đã bấm E24 với dữ liệu hợp lệ, đang chờ server | E24 hiện trạng thái đang xử lý, không bấm được lần hai | Chờ | TBD (draft) |
 | success | Server ghi Kudos thành công | Trình duyệt rời `/kudos/new`, về `/kudos` với Kudos mới đã hiển thị | — | TBD (draft) |
 
@@ -147,6 +153,8 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 | E04 | Bắt buộc | "Không được để trống" (E22, `field-error-title`) | submit |
 | E06 | Bắt buộc | "Không được để trống" (E22, `field-error-body`) | submit |
 | E14 | Tối thiểu 1, tối đa 5 hashtag | Thiếu: "Không được để trống" (`field-error-hashtag`, submit). Đủ 5: "Tối đa 5 hashtag" (E15) hiện thường trực kèm E13.1 `disabled` | submit (thiếu) / change (đủ 5) |
+| E09.1 | Bắt buộc, 1–100 ký tự, không được chỉ gồm khoảng trắng | Thông báo lỗi trong E09.3; hộp thoại không đóng, không chèn gì | click `Lưu` |
+| E09.2 | Bắt buộc, 5–2048 ký tự, URL hợp lệ với scheme `http:`/`https:`/`mailto:` | Thông báo lỗi trong E09.4; hộp thoại không đóng, không chèn gì | blur (định dạng) / click `Lưu` (tất cả) |
 | E17 | Chỉ nhận file đúng định dạng ảnh | Thông báo lỗi định dạng (E19) | change |
 
 ## 7. Conditional UI
@@ -177,7 +185,7 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 |--------|--------|-------|
 | ARIA roles/labels | [EXPECTED] | E02/E10/E13 dùng `role="listbox"` + `role="option"`; E01 mang `aria-invalid="true"` khi lỗi; E08 (đậm/nghiêng) mang `aria-pressed` |
 | Keyboard navigation | [EXPECTED] | Toàn bộ trường và nút thao tác được bằng bàn phím, kể cả mở/đóng E09/E13 |
-| Focus management | [EXPECTED] | E09 (hộp thoại liên kết) bẫy focus khi mở, trả focus lại đúng vị trí khi đóng |
+| Focus management | [EXPECTED] | E09 tự focus vào E09.1 khi mở và trả focus về nút liên kết của E08 khi đóng bằng `Escape`. Bẫy focus đầy đủ (`Tab` vòng trong hộp thoại) vẫn là kỳ vọng chưa dựng — bản vẽ `OyDLDuSGEa` không nói tới nó |
 | Screen reader compatibility | [EXPECTED] | Mỗi input có label liên kết đúng; E22/E15/E19 được đọc ra khi xuất hiện |
 | Error announcement | [EXPECTED] | E22/E15/E19 dùng vùng `aria-live` để trình đọc màn hình thông báo lỗi ngay khi hiện ra |
 

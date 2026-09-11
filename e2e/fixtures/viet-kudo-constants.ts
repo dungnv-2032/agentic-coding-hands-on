@@ -33,6 +33,13 @@ export const SUBMIT_BUTTON_LABEL = "Gửi";
 export const RECIPIENT_EMPTY_STATE = "No matches found"; // Will be localized; use role="option" count check instead
 export const IMAGE_ERROR_INVALID_TYPE = "Định dạng file không được hỗ trợ";
 
+// Link dialog constants (Addlink Box / OyDLDuSGEa, phase 01 RED gate)
+export const LINK_DIALOG_TITLE = "Thêm đường dẫn";
+export const LINK_DIALOG_TEXT_LABEL = "Nội dung";
+export const LINK_DIALOG_URL_LABEL = "URL";
+export const LINK_DIALOG_CANCEL_LABEL = "Hủy";
+export const LINK_DIALOG_CONFIRM_LABEL = "Lưu";
+
 /** Test data: two distinct sunner names for recipient selection
  * WARNING: These constants are NOT present in supabase/seed.sql (phase-02 repair):
  * - TEST_SUNNER_1 "Nguyễn Văn An" does not exist in the seed

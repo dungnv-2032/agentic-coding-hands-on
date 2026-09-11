@@ -1,0 +1,34 @@
+{
+  "task": "Addlink Box (MoMorph OyDLDuSGEa) — give the compose screen's link dialog its real design: two labelled fields (Noi dung / URL) instead of one URL box, per-field validation errors raised by a Luu button that is always clickable instead of a disabled-button gate, and a Noi dung value that becomes the link's display text inserted into the body. This amends F005/SCR005; it is not a new feature code, because the frame is the authored design for app/kudos/new/_components/link-dialog.tsx, which its own doc comment records as unauthored guesswork.",
+  "mode": "takumi auto, e2e-red-first",
+  "acceptanceCriteria": [
+    "FR-213 the dialog shows the title Them duong dan and two stacked fields whose labels sit to the LEFT of their inputs; clicking the Noi dung label focuses its input; a focused input shows a lifted border",
+    "FR-214 Noi dung is required, 1-100 characters, never whitespace-only, and prefills from a non-empty body selection when the dialog opens",
+    "FR-215 URL is required, 5-2048 characters, and must parse to a scheme in ACCEPTED_LINK_SCHEMES; it is validated on blur as well as on save",
+    "FR-216 Luu is always clickable; a click validates both fields, renders a per-field error for each invalid one, and leaves the dialog open with nothing inserted",
+    "FR-217 a successful save replaces the current body selection with the Noi dung text (or inserts at the caret) and marks that exact span as a link carrying the URL as href; marks overlapping the replaced span are dropped, not re-anchored",
+    "FR-218 Huy, Escape and an outside click all close the dialog discarding both field values, leaving the body unchanged",
+    "FR-219 the button group is anchored at the dialog bottom; Huy is narrow bordered with an X icon, Luu fills the remaining width on #FFEA9E with a link icon",
+    "BR-006 a link reaches the document only when BOTH the display text and the URL are valid, with ACCEPTED_LINK_SCHEMES as the first of the three scheme checks rich-text.ts already promises"
+  ],
+  "touchpoints": [
+    "app/kudos/new/_components/link-dialog.tsx",
+    "app/kudos/new/_components/kudos-body-editor.tsx",
+    "app/kudos/new/_components/use-body-editor-controller.ts",
+    "lib/kudos/validate-link.ts",
+    "lib/kudos/rich-text.ts",
+    "lib/kudos/compose-state.ts",
+    "lib/kudos/compose-contract.ts",
+    "lib/i18n/messages/dictionary.ts",
+    "lib/i18n/messages/vi-kudos-compose.ts",
+    "lib/i18n/messages/en-kudos-compose.ts",
+    "e2e/viet-kudo.spec.ts",
+    "e2e/capture-addlink-box-visual.spec.ts",
+    "playwright.config.ts",
+    "docs/features/F005_VietKudo/functional-spec.md",
+    "docs/features/F005_VietKudo/technical-spec.md",
+    "docs/screens/SCR005_VietKudo/spec.md"
+  ],
+  "blastRadius": "The compose screen /kudos/new only, and within it the link path specifically. No route, table, migration, Server Action or Supabase read path changed. Local Supabase is used exactly as it already is: it backs the kudos-authed Playwright session the strict E2E gate runs under, and the body carrying the new link is persisted by F005's existing createKudos write path. compose-contract.ts IS widened this time (onConfirmLink gains the text argument, BodyEditorProps gains linkDialogInitialText) — unlike the hashtag delta, the frame's second field cannot be expressed through the existing props, so the contract is amended once, deliberately, and both consumers are updated in the same phase. KudosRun, KudosDoc and ACCEPTED_LINK_SCHEMES stay frozen.",
+  "contracts": "KudosRun's link variant already carries both text and href; this change is the first that can actually populate both, so no run-type change is needed. The scheme allow-list stays ACCEPTED_LINK_SCHEMES so the dialog, parseKudosDoc and the renderer keep checking one list. Validation lives in lib/kudos/validate-link.ts as a pure function so the dialog component, the e2e expectations and any future server-side check read the same rules rather than three copies. The range-replacing insert is a new rich-text primitive, insertLink, mirroring insertMention's existing shift logic and reusing remapMarks' published drop-overlapping-marks policy."
+}

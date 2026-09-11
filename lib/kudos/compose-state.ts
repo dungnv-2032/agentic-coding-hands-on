@@ -23,6 +23,7 @@ import {
 } from "./compose-contract";
 import {
   docToPlainText,
+  insertLink,
   insertMention,
   isToggleableInlineMark,
   remapMarks,
@@ -65,6 +66,7 @@ export type ComposeAction =
   | { type: "setBody"; text: string }
   | { type: "toggleMark"; kind: ToggleableInlineMark | ToggleableBlock; range: TextRange; href?: string }
   | { type: "insertMention"; at: number; label: string; sunnerId: number }
+  | { type: "insertLink"; range: TextRange; text: string; href: string }
   | { type: "addHashtag"; hashtag: ComposeHashtagOption }
   | { type: "removeHashtag"; id: number }
   | { type: "addImage"; image: ComposeAttachedImage }
@@ -93,6 +95,8 @@ export function composeReducer(state: ComposeState, action: ComposeAction): Comp
     }
     case "insertMention":
       return { ...state, body: insertMention(state.body, action.at, action.label, action.sunnerId) };
+    case "insertLink":
+      return { ...state, body: insertLink(state.body, action.range, action.text, action.href) };
     case "addHashtag":
       if (state.hashtags.length >= MAX_HASHTAGS) return { ...state, hashtagError: "tooMany" };
       return {
