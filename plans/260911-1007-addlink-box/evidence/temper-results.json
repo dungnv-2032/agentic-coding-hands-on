@@ -1,0 +1,46 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e -- e2e/viet-kudo.spec.ts --project=kudos-authed",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "73 passed (2.5m) — post-rework full suite, including the new ID-69 board-anchor assertion. ID-31 green in 526ms in-suite.",
+      "ts": "2026-09-11T13:05:00Z"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/viet-kudo.spec.ts --project=kudos-authed",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "72 passed (3.2m) — full compose suite green end to end, including ID-31 and the eight new ID-61..ID-68 link-dialog tests. No previously-green test newly red.",
+      "ts": "2026-09-11T11:56:00Z"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/viet-kudo.spec.ts --project=kudos-authed -g \"ID-31|ID-68\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "3 passed (2.1m) — isolated confirmation after the ID-68 test defect was fixed; ID-31 also green, ruling out the transient the earlier targeted run hit.",
+      "ts": "2026-09-11T11:50:00Z"
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "tsc clean tree-wide",
+      "ts": "2026-09-11T11:57:00Z"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors, 31 warnings — all pre-existing unused-import warnings in older e2e files, none from this change",
+      "ts": "2026-09-11T11:57:00Z"
+    },
+    {
+      "command": "npm run test:e2e -- --project=addlink-box-visual-capture",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "2 passed (1.5m) — three dialog states captured at 1440px clipped to the panel; each asserts its state before the shot rather than only photographing it",
+      "ts": "2026-09-11T11:44:00Z"
+    }
+  ]
+}
