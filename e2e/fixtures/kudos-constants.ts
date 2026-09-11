@@ -59,6 +59,12 @@ export const HASHTAG_OPTIONS = [
 ];
 
 /**
+ * Test department for K-26..K-30 — seed has 12 kudos to receiver in this department,
+ * used as the narrowing target for filter assertions.
+ */
+export const TEST_DEPARTMENT = "STVC - R&D";
+
+/**
  * Department filter options (clarifications § Resolved from source data,
  * from `WXK5AYB_rG` item A, verbatim, 50 entries — the dropdown frame holds
  * 50; clarifications.md originally mislabelled it 48 and was corrected by
