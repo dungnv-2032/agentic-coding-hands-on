@@ -1,0 +1,51 @@
+{
+  "score": 9,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "FR-208 — each department option label renders centred: K-26 asserts computed text-align is 'center' on a department option and on a hashtag option",
+    "FR-209 — hovering an option shows a pointer cursor and keeps the highlight: K-26 asserts computed cursor is 'pointer'; the hover background token is unchanged",
+    "FR-210 — clicking an option closes the dropdown and filters both HIGHLIGHT KUDOS and ALL KUDOS to that department: K-28 asserts the menu is hidden and every visible card in both sections carries the receiver department, with a non-zero card guard",
+    "FR-211 — the selected option keeps its highlight and aria-selected=true when the menu is reopened: K-29 reopens the menu and asserts aria-selected='true'",
+    "FR-212 — clicking the selected option again clears the filter and restores the full board: K-30 round-trips the sorted receiver-href set against a pre-selection baseline",
+    "FR-213 — the department listbox is bounded to exactly 348px and scrolls internally without pushing page layout: K-27 asserts boundingBox height 348 and computed max-height '348px' with all 50 options mounted"
+  ],
+  "regressionChecked": [
+    "Shared component: the hashtag listbox renders the same KudosFilterMenu — full-file anon run green including K-3 (13 options, exact text)",
+    "max-h-[348px] stays gated on the scrollable prop, which kudos-filter-bar.tsx passes only for the department menu, so the hashtag menu is unbounded as before",
+    "Untouched filter logic in kudos-board.tsx / kudos-filter-bar.tsx — K-8 (carousel resets to slide 1 on filter) still green",
+    "Row geometry: option rows are flex children of an overflow-y-auto column and could have shrunk; measured at exactly 56px, so six rows show as the frame draws them",
+    "Full /kudos anon suite: 30/30 passed"
+  ],
+  "contractStatus": "UNCHANGED",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "medium",
+      "category": "test-config",
+      "location": "playwright.config.ts:183-188",
+      "summary": "The new department-dropdown-visual-capture project has no testIgnore, so it runs under a bare npm run test:e2e. This mirrors four sibling on-demand capture projects already in the config — a pre-existing repo-wide convention, not a defect introduced here.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "low",
+      "category": "maintainability",
+      "location": "e2e/kudos-live-board.spec.ts:1-814",
+      "summary": "The spec file grew to 814 lines. Test files are exempt from the 200-line source ceiling, but the K-series would eventually read better split by concern.",
+      "disposition": "Defer"
+    },
+    {
+      "severity": "low",
+      "category": "style",
+      "location": "e2e/capture-department-dropdown-visual.spec.ts:21-24",
+      "summary": "Uses an inline import('@playwright/test').Page type rather than a top-level type import; copied verbatim from the sibling hashtag capture spec it mirrors.",
+      "disposition": "Defer"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": false,
+    "signoffRequired": false
+  }
+}
