@@ -17,7 +17,7 @@ Trang `/kudos/new` (Client Component form + Server Action) thay thế nội dung
 | # | Action (handler) | Method · Path | Codes | Writes | Detail |
 |---|---|---|---|---|---|
 | **A0** | *cross-cutting — belongs to no single action* | — | FR-101, FR-601, FR-602 | — | § 4.4 |
-| **A1** | `KudosComposePage#Page` (planned) | `GET` `/kudos/new` | FR-102, FR-201, FR-202, FR-203, FR-204, FR-205, FR-206, FR-207, FR-401, FR-403, BR-002, BR-003, DEC-001, DEC-002, US001, US002, US003 | — *(read-only)* | § 3.1 |
+| **A1** | `KudosComposePage#Page` (planned) | `GET` `/kudos/new` | FR-102, FR-201, FR-202, FR-203, FR-204, FR-205, FR-206, FR-207, FR-208, FR-209, FR-210, FR-211, FR-212, FR-401, FR-403, BR-002, BR-003, DEC-001, DEC-002, US001, US002, US003 | — *(read-only)* | § 3.1 |
 | **A2** | `uploadKudosAttachment` (planned, client → Storage) | `POST` (Storage upload) `kudos-attachments/*` | FR-001, FR-206, BR-004, US002 | Storage object (`kudos-attachments` bucket) | § 3.2 |
 | **A3** | `createKudos` (planned, Server Action) | `POST` (server action) `/kudos/new` | FR-002, FR-003, FR-402, FR-403, BR-001, BR-002, BR-004, BR-005, US001, US002, US003 | `sunners`, `kudos`, `kudos_hashtags`, `kudos_attachments` | § 3.3 |
 
@@ -34,7 +34,7 @@ Trang `/kudos/new` (Client Component form + Server Action) thay thế nội dung
 **Request** · không tham số bắt buộc.
 **BE** · Đọc `sunners` (autocomplete Người nhận + mention) và `hashtags` (dropdown) qua `lib/supabase/server.ts`, cùng khuôn `getPageContext()` đã dùng ở mọi trang khác.
 **Rule**
-- **BR-002 — Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag.** Trang này ép nửa "tối đa 5" khi thêm hashtag (chặn thêm tag thứ 6, hiện `Tối đa 5 hashtag`); nửa "tối thiểu 1" được server ép lại khi gửi. *(§ 4.4)*
+- **BR-002 — Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag.** Trang này ép nửa "tối đa 5" bằng cách vô hiệu hoá các dòng hashtag chưa chọn khi đã đủ 5, kèm `Tối đa 5 hashtag` hiển thị thường trực làm lý do (FR-210, FR-211); reducer vẫn giữ guard `MAX_HASHTAGS` phía sau. Nửa "tối thiểu 1" được server ép lại khi gửi. *(§ 4.4)*
 - **BR-003 — Một Kudos đính kèm tối đa 5 ảnh.** Nút `+ Image` bị ẩn hoàn toàn (không phải disabled) khi đã đủ 5, và hiện lại ngay khi một ảnh bị xoá. *(inline)*
 
 | DEC | subtype | Condition | What the user sees | Source |
@@ -51,7 +51,7 @@ Trang `/kudos/new` (Client Component form + Server Action) thay thế nội dung
 
 ### 3.2 CAP-02 — Đính kèm hashtag và ảnh
 
-Dropdown Hashtag (`+ Hashtag`, danh sách lấy động từ `hashtags`, tối đa 5 lựa chọn) được dựng và tương tác ngay trong `A1` (§ 3.1) — cùng một lần render, không có handler riêng. Chỉ việc tải ảnh thật lên Storage cần một hành động ghi riêng, vì nó chạm tới Supabase Storage ngay khi người dùng chọn file, trước khi form được gửi.
+Dropdown Hashtag (`+ Hashtag`, danh sách lấy động từ `hashtags` theo `position`, tối đa 5 lựa chọn) được dựng và tương tác ngay trong `A1` (§ 3.1) — cùng một lần render, không có handler riêng. Danh sách là một multi-select có trạng thái (FR-208..FR-212, MoMorph `p9zO-c4a4x`): mỗi dòng tự vẽ trạng thái selected của nó, bấm để bật/tắt qua đúng hai callback `onAdd`/`onRemove` đã có trong `compose-contract.ts`, và khi đủ 5 thì các dòng chưa chọn nhận `disabled`. Giao diện không bao giờ tự ép cap — `composeReducer` (`compose-state.ts`) vẫn là nơi duy nhất giữ guard `MAX_HASHTAGS`, `disabled` chỉ là lớp hiển thị đứng trước nó. Chỉ việc tải ảnh thật lên Storage cần một hành động ghi riêng, vì nó chạm tới Supabase Storage ngay khi người dùng chọn file, trước khi form được gửi.
 
 #### A2 · Tải ảnh lên Supabase Storage khi chọn file
 `POST` (Storage upload) `kudos-attachments/*` → `` `uploadKudosAttachment` `` (planned)

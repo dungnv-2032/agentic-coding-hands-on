@@ -52,9 +52,14 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 - **FR-202** Trường Người nhận là ô tìm kiếm bắt buộc, chỉ chọn được từ danh sách Sunner có sẵn qua autocomplete; khoảng trắng đầu/cuối chuỗi tìm được bỏ qua.
 - **FR-203** Trường Danh hiệu là input văn bản bắt buộc; nội dung nhập sẽ hiển thị làm tiêu đề Kudos trên bảng tin.
 - **FR-204** Ô soạn nội dung bắt buộc có toolbar 6 định dạng (đậm, nghiêng, gạch ngang, danh sách đánh số, chèn liên kết qua hộp thoại nhập URL, trích dẫn) và hỗ trợ gõ `@ + tên` để mở danh sách gợi ý và mention một đồng nghiệp.
-- **FR-205** Trường Hashtag bắt buộc tối thiểu 1, tối đa 5; chọn qua dropdown lấy dữ liệu hashtag có sẵn, hiển thị dạng chip có nút xoá riêng từng chip.
+- **FR-205** Trường Hashtag bắt buộc tối thiểu 1, tối đa 5; chọn qua dropdown đa chọn có trạng thái (FR-208..FR-212) lấy dữ liệu hashtag có sẵn, hiển thị dạng chip có nút xoá riêng từng chip.
 - **FR-206** Trường Image không bắt buộc, tối đa 5 ảnh thật được tải lên Storage; nút thêm ảnh ẩn hoàn toàn khi đủ 5 và hiện lại ngay khi một ảnh bị xoá; chỉ nhận file ảnh, các định dạng khác bị từ chối.
 - **FR-207** Checkbox "Gửi lời cám ơn và ghi nhận ẩn danh" tắt theo mặc định; bật lên hiện thêm một ô nhập tên hiển thị ẩn danh (tuỳ chọn, không bắt buộc).
+- **FR-208** Mỗi dòng trong dropdown Hashtag hiển thị trạng thái đã chọn của chính nó: nền nổi `rgba(255,234,158,0.2)` kèm icon check tròn 24×24 bên phải. Dòng chưa chọn giữ đúng một khoảng trống 24×24 ở chỗ icon để danh sách không xô lệch khi trạng thái đổi.
+- **FR-209** Bấm một dòng **đã chọn** trong dropdown gỡ hashtag đó ra: icon check biến mất, nền trở lại bình thường, chip tương ứng biến mất. Bấm một dòng **chưa chọn** thêm hashtag đó như cũ.
+- **FR-210** Khi đã chọn đủ 5 hashtag, mọi dòng **chưa chọn** bị vô hiệu hoá — mờ đi, `disabled`, không phản hồi click. Các dòng **đã chọn** vẫn bấm được: đó là lối thoát duy nhất khỏi trạng thái đầy.
+- **FR-211** Khi đã chọn đủ 5 hashtag, thông báo "Tối đa 5 hashtag" hiển thị thường trực như lý do của trạng thái vô hiệu hoá ở FR-210, và biến mất ngay khi số hashtag tụt xuống dưới 5.
+- **FR-212** Dropdown giữ nguyên thứ tự `public.hashtags.position` lấy từ Supabase; chọn hay bỏ chọn không sắp xếp lại dòng nào.
 
 ### Interaction (4xx)
 
@@ -70,7 +75,7 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 ## 5. Business Rules
 
 - Sunner viết Kudos lần đầu được tự động cấp một dòng `sunners` gắn với tài khoản đăng nhập, dùng tên/ảnh từ hồ sơ Google và phòng ban `Unassigned` khi chưa có phòng ban thật; gửi trùng lúc không tạo ra hai dòng trùng nhau. (BR-001)
-- Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag; cố thêm hashtag thứ 6 bị từ chối với thông báo "Tối đa 5 hashtag" và hashtag đó không được thêm. (BR-002)
+- Một Kudos phải có tối thiểu 1 và tối đa 5 hashtag; khi đã đủ 5, mọi dòng hashtag chưa chọn trong dropdown bị vô hiệu hoá và "Tối đa 5 hashtag" hiển thị thường trực làm lý do — không hashtag thứ 6 nào được thêm. (BR-002)
 - Một Kudos đính kèm tối đa 5 ảnh; nút thêm ảnh ẩn hoàn toàn khi đủ 5 và hiện lại ngay khi một ảnh bị xoá bớt. (BR-003)
 - Chỉ file đúng định dạng ảnh mới được đính kèm; file sai định dạng (ví dụ pdf, mp4, txt) bị từ chối ngay khi chọn và không được tải lên. (BR-004)
 - Khi gửi ẩn danh, bảng tin công khai hiển thị tên hiển thị ẩn danh (hoặc một nhãn trung lập nếu bỏ trống) thay cho người gửi thật; người nhận luôn hiển thị đúng như đã chọn. (BR-005)
@@ -114,7 +119,10 @@ None — no unresolved domain confirmations. `/tkm:takumi --auto` đã quyết �
 
 **Acceptance Criteria:**
 - [ ] Bấm "+ Hashtag" mở danh sách chọn; chọn tối đa 5 hashtag, mỗi hashtag hiện thành một chip; bấm nút xoá trên một chip chỉ xoá đúng chip đó, các chip còn lại giữ nguyên.
-- [ ] Cố chọn hashtag thứ 6 bị từ chối, hiện thông báo "Tối đa 5 hashtag", 5 hashtag đã chọn không đổi.
+- [ ] Cố chọn hashtag thứ 6 bị từ chối: các dòng chưa chọn trong dropdown đã `disabled`, thông báo "Tối đa 5 hashtag" đang hiện, 5 hashtag đã chọn không đổi.
+- [ ] Dòng đã chọn hiện icon check và nền nổi; dòng chưa chọn không có icon nhưng vẫn giữ khoảng trống 24×24 nên danh sách không xô lệch.
+- [ ] Bấm lại một dòng đã chọn sẽ gỡ đúng hashtag đó — chip tương ứng biến mất, các chip khác nguyên vẹn; ở trạng thái đủ 5, thao tác này mở khoá lại các dòng chưa chọn và ẩn thông báo.
+- [ ] Thứ tự dòng trong dropdown khớp `public.hashtags.position` và không đổi qua các lần chọn/bỏ chọn.
 - [ ] Bấm "+ Image" chọn một file `.jpg`/`.png` tải lên thành công và hiện đúng ảnh vừa chọn dưới dạng thumbnail có nút xoá; chọn file `.pdf`/`.mp4`/`.txt` bị từ chối với thông báo lỗi định dạng, không có ảnh nào được thêm.
 - [ ] Đủ 5 ảnh thì nút "+ Image" biến mất; xoá bớt một ảnh thì nút hiện lại ngay.
 

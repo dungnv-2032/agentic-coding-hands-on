@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 
 import { useDismissOnOutside } from "@/app/_components/use-dismiss-on-outside";
+import { HashtagOptionRow } from "./hashtag-option-row";
 import { MAX_HASHTAGS, type ComposeFieldErrorCode, type ComposeHashtagOption } from "@/lib/kudos/compose-contract";
 
 /**
@@ -49,25 +50,39 @@ export interface HashtagPickerProps {
  * selected row, 40px tall, bg `rgba(255,234,158,0.2)`) · mm:1002:13104 (an
  * unselected row, no fill).
  *
- * Options are add-only and never `disabled` (test-contract.md § Blueprint
- * ratification item 5) — the companion frame's own toggle/disable spec
- * cannot satisfy ID-17/ID-53, which click an already-selected row at the
- * cap and expect the error with the chip count unchanged. The reducer
- * (`compose-state.ts`, frozen) is the only place `MAX_HASHTAGS` is
- * enforced; this component never re-implements that check. The menu closes
- * on every selection (ID-16's loop clicks `hashtag-add` again each round
- * and awaits `hashtag-menu` visible, which would fail if a second click
- * merely toggled an already-open menu shut).
+ * The list is a stateful multi-select, per the companion frame and
+ * `plans/260911-0707-dropdown-list-hashtag/spec/.../spec-delta.md`
+ * (promoted as FR-208..FR-212): a row carries its own selected state, a
+ * click toggles it in both directions, and at the cap the UNSELECTED rows
+ * go `disabled` with "Tối đa 5 hashtag" standing as the reason. This
+ * supersedes the earlier add-only note here — ID-17/ID-53 used to click
+ * `options.first()`, which at the cap is an already-selected row and under
+ * toggle semantics means "deselect"; they now target an unselected row,
+ * which is what "a 6th hashtag" actually means.
+ *
+ * The reducer (`compose-state.ts`, frozen) remains the only place
+ * `MAX_HASHTAGS` is truly enforced; `disabled` is the display layer in
+ * front of it, never a replacement for it. The menu still closes on every
+ * toggle (ID-16's loop clicks `hashtag-add` again each round and awaits
+ * `hashtag-menu` visible, which would fail if a second click merely
+ * toggled an already-open menu shut). Row order stays `hashtags.position`
+ * as Supabase returns it — selecting never re-sorts the list.
  */
-export function HashtagPicker({ copy, options, selected, error, onAdd, onRemove }: HashtagPickerProps) {
+// `error` stays in the props for contract parity but is deliberately not
+// destructured — see the `atLimit` block below for why the cap, not the prop,
+// drives `hashtag-error`.
+export function HashtagPicker({ copy, options, selected, onAdd, onRemove }: HashtagPickerProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useDismissOnOutside(menuOpen, rootRef, triggerRef, () => setMenuOpen(false));
 
-  function handleOptionClick(option: ComposeHashtagOption) {
-    onAdd(option);
+  function handleOptionClick(option: ComposeHashtagOption, isSelected: boolean) {
+    // FR-209: one row, both directions. The reducer owns `MAX_HASHTAGS`; this
+    // only routes the click to the callback the frozen contract already gives us.
+    if (isSelected) onRemove(option.id);
+    else onAdd(option);
     setMenuOpen(false);
   }
 
@@ -99,19 +114,12 @@ export function HashtagPicker({ copy, options, selected, error, onAdd, onRemove 
               const isSelected = selected.some((tag) => tag.id === option.id);
               return (
                 <li key={option.id}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    data-selected={isSelected ? "true" : undefined}
-                    onClick={() => handleOptionClick(option)}
-                    // mm:1002:13185 (selected) / mm:1002:13104 (unselected)
-                    className={`h-10 w-full rounded px-4 text-left text-base leading-6 font-bold tracking-[0.15px] text-white ${
-                      isSelected ? "bg-[rgba(255,234,158,0.2)]" : atLimit ? "opacity-50" : ""
-                    }`}
-                  >
-                    #{option.name}
-                  </button>
+                  <HashtagOptionRow
+                    option={option}
+                    isSelected={isSelected}
+                    atLimit={atLimit}
+                    onToggle={handleOptionClick}
+                  />
                 </li>
               );
             })}
@@ -143,7 +151,14 @@ export function HashtagPicker({ copy, options, selected, error, onAdd, onRemove 
         </div>
       )}
 
-      {error === "tooMany" && (
+      {/*
+        FR-211: derived from the count, never from the `error` prop. The frozen
+        reducer's `removeHashtag` never clears `hashtagError`, so a stale
+        `"tooMany"` would pin this message on screen after the user drops back
+        to four. Here the message is the standing reason the unselected rows are
+        inert, so it must appear and disappear exactly with the cap.
+      */}
+      {atLimit && (
         <p data-testid="hashtag-error" className="text-sm font-semibold text-[#D4271D]">
           {copy.maxError}
         </p>
