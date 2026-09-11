@@ -1,0 +1,67 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e -- e2e/kudos-live-board.spec.ts --project=anon -g \"K-31|K-32|K-33|K-34|K-35\"",
+      "exitCode": 0,
+      "summary": "Targeted GREEN: K-31..K-35 (hashtag filter listbox), 6/6 passed (5 tests + setup)",
+      "status": "pass",
+      "ts": "2026-09-11T16:15:00+07:00"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/kudos-live-board.spec.ts --project=anon",
+      "exitCode": 0,
+      "summary": "Full regression: K-0..K-35 (all kudos-live-board tests), 35/35 passed, K-27 (department tripwire) passed",
+      "status": "pass",
+      "ts": "2026-09-11T16:19:00+07:00"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "summary": "Linting passed, 0 errors, 31 pre-existing warnings",
+      "status": "pass",
+      "ts": "2026-09-11T16:20:00+07:00"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "summary": "Type checking passed",
+      "status": "pass",
+      "ts": "2026-09-11T16:21:00+07:00"
+    },
+    {
+      "command": "npx playwright test --project=hashtag-filter-visual-capture",
+      "exitCode": 0,
+      "summary": "Visual capture: 1/1 passed, three screenshots generated (closed, open-unselected, open-selected-scrolled)",
+      "status": "pass",
+      "ts": "2026-09-11T16:24:00+07:00"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/kudos-live-board.spec.ts --project=anon -g \"K-31|K-32|K-33|K-34|K-35\"",
+      "exitCode": 0,
+      "summary": "Re-run AFTER the review fixes (K-32 tautological hover assertion replaced with two positive toHaveCSS assertions): 6/6 passed",
+      "status": "pass",
+      "ts": "2026-09-11T16:37:00+07:00"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/kudos-live-board.spec.ts --project=anon",
+      "exitCode": 0,
+      "summary": "Full regression re-run after the review fixes: 35/35 passed",
+      "status": "pass",
+      "ts": "2026-09-11T16:39:00+07:00"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "summary": "Re-run after the review fixes: 0 errors, 31 pre-existing warnings",
+      "status": "pass",
+      "ts": "2026-09-11T16:41:00+07:00"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "summary": "Re-run after the review fixes: no TS errors",
+      "status": "pass",
+      "ts": "2026-09-11T16:41:30+07:00"
+    }
+  ]
+}

@@ -26,7 +26,7 @@ lang: vi
 
 | ID | Capability | What the user can do | User Stories | Requirements | Business Rules | Screens |
 |----|------------|------------------------|-----------------|---------------|-------------------|---------|
-| CAP-01 | Xem & lọc kudos | Xem carousel Highlight và feed All Kudos đầy đủ, lọc theo Hashtag/Phòng ban | US001, US002, US003 | FR-001, FR-002, FR-201, FR-202, FR-203, FR-204, FR-206, FR-208, FR-209, FR-210, FR-211, FR-212, FR-213, FR-601 | DEC-001, DEC-002 | TBD (draft) |
+| CAP-01 | Xem & lọc kudos | Xem carousel Highlight và feed All Kudos đầy đủ, lọc theo Hashtag/Phòng ban | US001, US002, US003 | FR-001, FR-002, FR-201, FR-202, FR-203, FR-204, FR-206, FR-208, FR-209, FR-210, FR-211, FR-212, FR-213, FR-214, FR-215, FR-216, FR-217, FR-218, FR-219, FR-601 | DEC-001, DEC-002 | TBD (draft) |
 | CAP-02 | Tương tác với một kudos | Thả/gỡ tim, copy link chia sẻ, bấm hashtag trên card để lọc | US004, US005 | FR-401, FR-402, FR-403, FR-602 | BR-001, BR-002, BR-003, DEC-003, SM-001 | TBD (draft) |
 | CAP-03 | Khám phá Spotlight board | Xem word-cloud + ticker hoạt động trực tiếp, tìm tên trong board | US006 | FR-205 | — | TBD (draft) |
 | CAP-04 | Xem vị trí ghi nhận cá nhân | Xem 5 số liệu của bản thân và bảng xếp hạng quà tặng | US007 | FR-207 | BR-004 | TBD (draft) |
@@ -62,6 +62,12 @@ None — no unresolved domain confirmations. Bốn câu hỏi còn để ngỏ c
 - **FR-211** Option đang chọn giữ highlight bền: mở lại dropdown vẫn thấy `aria-selected="true"` kèm nền sáng + glow chữ.
 - **FR-212** Click lại chính option đang chọn sẽ bỏ lọc, board trở về đầy đủ.
 - **FR-213** Hộp dropdown Phòng ban cao tối đa **348px** (6 dòng 56px + padding trên/dưới hộp), phần dư cuộn trong hộp — không đẩy layout trang.
+- **FR-214** Listbox hashtag cao tối đa **348px** (6 hàng 56px + 6px padding trên/dưới), phần dư cuộn trong hộp — không đẩy layout trang, không cắt mất option nào (đủ 13 mục).
+- **FR-215** Khi option hashtag nhận focus bàn phím, nó hiển thị **glow** cùng token `#FAE287` của trạng thái selected; hiệu ứng hover (nền `rgba(255,234,158,0.05)`) giữ nguyên.
+- **FR-216** Click một option hashtag **đóng dropdown ngay** và áp filter lên cả HIGHLIGHT KUDOS lẫn ALL KUDOS: chỉ còn kudos mang hashtag đó.
+- **FR-217** Option hashtag đang chọn mang highlight bền: mở lại dropdown vẫn thấy `aria-selected="true"` cùng nền sáng + glow.
+- **FR-218** Click lại chính option hashtag đang chọn sẽ **bỏ lọc**, board trở về đầy đủ.
+- **FR-219** Danh sách hashtag đúng **13 mục theo `position`** của `public.hashtags`, khớp thứ tự frame — giữ nguyên, không hoist mục đã chọn lên đầu.
 
 ### Interaction (4xx)
 
@@ -80,6 +86,9 @@ None — no unresolved domain confirmations. Bốn câu hỏi còn để ngỏ c
 - Mỗi người xem chỉ thả được một tim cho một kudos, ép bằng ràng buộc duy nhất trong database. (BR-002)
 - Người gửi không thể tự thả tim cho kudos của chính mình. (BR-003)
 - Khách ẩn danh xem sidebar của một Sunner mẫu đã seed sẵn (không gắn với tài khoản thật), để khối này luôn có đúng một trạng thái hiển thị. (BR-004)
+- Nhãn option hashtag là tên trong bảng `hashtags` (`Cống hiến`, `Wasshoi`, …); chuỗi `#Dedicated`/`#Inspring` trên ảnh frame Figma chỉ là placeholder tiếng Anh của bản dựng, không phải dữ liệu thật. (BR-214)
+- Bộ lọc Hashtag và bộ lọc Phòng ban AND với nhau — `matchesFilters()` giữ nguyên không đổi. (BR-215)
+- Delta này không thêm route, bảng, migration hay Server Action nào mới; `fetchFilterOptions()` và `matchesFilters()` không đổi một dòng. (BR-216)
 - Carousel Highlight luôn là 5 kudos nhiều tim nhất, tính lại mỗi khi bộ lọc đổi và quay về slide 1. (DEC-001)
 - Chọn hashtag hoặc phòng ban lọc đồng thời cả Highlight và All Kudos; chọn lại option đang chọn để bỏ lọc. (DEC-002)
 - Nút tim bị khoá khi chưa đăng nhập hoặc khi đang xem đúng kudos mình gửi; các trường hợp còn lại nút tim hoạt động và lưu lại lượt thích. (DEC-003)
@@ -268,6 +277,8 @@ None — no unresolved domain confirmations. Bốn câu hỏi còn để ngỏ c
 - **FR-203** → Chọn/bỏ chọn một filter option lọc đồng thời cả hai khu vực và luôn đưa carousel về slide 1.
 - **FR-211** → Mở lại dropdown Hashtag/Phòng ban vẫn thấy option đã chọn giữ `aria-selected="true"` và highlight.
 - **FR-213** → Hộp dropdown Phòng ban cuộn trong đúng 348px, không đẩy layout trang.
+- **FR-214** → Listbox hashtag cuộn trong đúng 348px, hiển thị đủ 13 mục, không đẩy layout trang.
+- **FR-217** → Mở lại dropdown Hashtag vẫn thấy option đã chọn giữ `aria-selected="true"` và highlight.
 - **FR-204** → Card Highlight và card feed clamp nội dung đúng số dòng khác nhau (3 và 5).
 - **FR-205** → Bố cục word-cloud giống hệt nhau giữa lần render đầu tiên trên server và trên trình duyệt (không lệch do random).
 - **FR-206** → Feed chỉ tải thêm khi sentinel lọt vào khung nhìn, không tải trước khi cần.

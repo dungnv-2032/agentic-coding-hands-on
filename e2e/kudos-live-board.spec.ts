@@ -895,20 +895,26 @@ test.describe("Kudos Live Board screen — /kudos (anon)", () => {
     // Never assert an exact shadow string; Chromium varies serialization.
     expect(shadowStyle).toContain("rgb(250, 226, 135)");
 
-    // Confirm hover state is unchanged: background still the light amber.
-    // (Focus glow does NOT alter the hover background.)
-    // Hover state on a non-focused, non-selected option would show
-    // rgba(255, 234, 158, 0.05); we just confirm the first option under focus
-    // still has hover-friendly styling.
-    const bgStyle = await firstOption.evaluate((el) => {
-      const style = window.getComputedStyle(el);
-      return style.backgroundColor;
-    });
+    // FR-215's second clause: the focus glow must not disturb the background
+    // tokens. Assert both backgrounds POSITIVELY — a negative assertion here
+    // is untestable, because getComputedStyle always serialises an alpha < 1
+    // colour as `rgba(...)`, so `not.toBe("rgb(255, 234, 158, 0.1)")` could
+    // never fail no matter what the component did.
+    // `toHaveCSS` (not a one-shot getComputedStyle) because the unselected
+    // branch carries `transition-colors`: a single read right after .hover()
+    // catches the colour mid-transition and fails on a correct component.
 
-    // Background should be the hover/default state, not the selected dark.
-    // (The exact hover color is applied on :hover, not always on render,
-    // so we just confirm it's not the selected dark background.)
-    expect(bgStyle).not.toBe("rgb(255, 234, 158, 0.1)"); // not selected dark
+    // Focused but NOT selected and NOT hovered → transparent. This is what
+    // breaks if the selected background ever leaks onto a merely-focused row.
+    await expect(firstOption).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+
+    // Hover on that same option → exactly the unchanged hover token
+    // rgba(255, 234, 158, 0.05), never the selected rgba(255, 234, 158, 0.1).
+    await firstOption.hover();
+    await expect(firstOption).toHaveCSS(
+      "background-color",
+      "rgba(255, 234, 158, 0.05)",
+    );
   });
 
   // K-33 — clicking hashtag option closes menu and filters both sections.

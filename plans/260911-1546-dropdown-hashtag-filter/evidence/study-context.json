@@ -1,0 +1,31 @@
+{
+  "task": "Dropdown Hashtag filter (MoMorph JWpsISMAaM) — bound the shared kudos filter listbox to the frame's 348px scroll box, add the #FAE287 focus glow, and lock in the hashtag filter behavior with e2e. testPolicy: e2e-red-first. Data source: Supabase local (http://127.0.0.1:54321) — public.hashtags 13 rows, 69 kudos, 'Wasshoi' carries 8.",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "FR-214: hashtag listbox max-height is 348px with internal scroll and still contains all 13 options",
+    "FR-215: an option receiving keyboard focus shows the #FAE287 glow; hover background unchanged",
+    "FR-216: clicking a hashtag option closes the menu and filters HIGHLIGHT KUDOS and ALL KUDOS to that hashtag",
+    "FR-217: the selected hashtag option keeps aria-selected=true and its highlight when the menu is reopened",
+    "FR-218: re-clicking the selected hashtag option clears the filter and restores the full board",
+    "FR-219: the hashtag listbox lists exactly 13 options in public.hashtags position order",
+    "Valid RED recorded before implementation; same command GREEN after; lint + typecheck clean",
+    "Three visual evidence screenshots captured and compared against the frame"
+  ],
+  "touchpoints": [
+    "app/kudos/_components/kudos-filter-menu.tsx",
+    "app/kudos/_components/kudos-filter-bar.tsx",
+    "e2e/kudos-live-board.spec.ts",
+    "e2e/fixtures/kudos-constants.ts",
+    "e2e/capture-hashtag-dropdown-visual.spec.ts"
+  ],
+  "blastRadius": [
+    "kudos-filter-menu.tsx is shared by the hashtag and department listboxes — dropping the scrollable flag must leave department behavior byte-identical (K-27 must stay green)",
+    "K-3 (13 hashtag options) and K-8 (filter resets carousel) already assert on this listbox",
+    "No database, route, Server Action, or read-path change"
+  ],
+  "contracts": [
+    "fetchFilterOptions() — unchanged",
+    "matchesFilters() — unchanged",
+    "KudosFilterMenu props: scrollable flag removed (only caller passing it is kudos-filter-bar.tsx)"
+  ]
+}

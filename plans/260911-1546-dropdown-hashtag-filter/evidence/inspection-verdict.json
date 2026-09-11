@@ -1,0 +1,60 @@
+{
+  "score": 8,
+  "criticalCount": 0,
+  "decision": "SEALED",
+  "acceptanceCovered": [
+    "FR-214: hashtag listbox max-height is 348px with internal scroll and still contains all 13 options — K-31 asserts the computed max-height is 348px, the bounding box is exactly 348, scrollHeight > clientHeight (it really scrolls), and all 13 options stay mounted; the capture spec re-asserts menuBox.height === 348 and rowBox.height === 56 at runtime.",
+    "FR-215: an option receiving keyboard focus shows the #FAE287 glow; hover background unchanged — K-32 drove focus by keyboard (Enter on the trigger, then Tab) and asserts the computed text-shadow contains rgb(250, 226, 135); it was a genuine RED (text-shadow: none) before the fix. Its background half was rewritten after review into two positive toHaveCSS assertions — focused-unselected is rgba(0, 0, 0, 0), hovered is exactly rgba(255, 234, 158, 0.05).",
+    "FR-216: clicking a hashtag option closes the menu and filters HIGHLIGHT KUDOS and ALL KUDOS to that hashtag — K-33 asserts the menu is hidden after the click and loops every visible card in BOTH highlight-section and all-kudos-section, requiring each to carry the #Wasshoi chip.",
+    "FR-217: the selected hashtag option keeps aria-selected=true and its highlight when the menu is reopened — K-34 reopens the menu after K-33's selection and asserts aria-selected=\"true\" plus the selected glow on the Wasshoi option.",
+    "FR-218: re-clicking the selected hashtag option clears the filter and restores the full board — K-35 captures the sorted kudos-receiver hrefs as a baseline, selects Wasshoi, confirms narrowing, then re-clicks and asserts the re-captured sorted hrefs deep-equal the baseline — order-independent, not a card count.",
+    "FR-219: the hashtag listbox lists exactly 13 options in public.hashtags position order — K-3 asserts toHaveText(HASHTAG_OPTIONS) — 13 names in public.hashtags position order — and passed unchanged in the full-file run; K-31 re-verifies all 13 remain mounted inside the bounded box.",
+    "Valid RED recorded before implementation; same command GREEN after; lint + typecheck clean — Phase 01 recorded exit 1 caused by K-31 (742px, not 348px) and K-32 (text-shadow: none); phase 03 reran the byte-identical command to exit 0 with no assertion weakened. After the post-review test fix both were rerun: targeted 6/6 exit 0, full file 35/35 exit 0, lint 0 errors, typecheck clean. All nine runs are in temper-results.json.",
+    "Three visual evidence screenshots captured and compared against the frame — hashtag-filter-closed.png, hashtag-filter-open-unselected.png and hashtag-filter-open-selected-scrolled.png were captured by e2e/capture-hashtag-filter-visual.spec.ts and compared against the MoMorph frame image for JWpsISMAaM: dark bounded box with exactly 6 visible rows, centred bold labels, and the selected Wasshoi row (position 8, reached by scrolling) carrying the raised background plus gold glow. No material mismatch."
+  ],
+  "regressionChecked": [
+    "Department listbox (K-26..K-30, especially K-27 348px/50-option tripwire) — passed in the reported full-file run",
+    "K-3 (13 hashtag option count/order) and K-8 (filter resets carousel) — passed in the reported full-file run",
+    "Row-compression risk under max-h + overflow-y-auto flex column — no compression found: CSS 'automatic minimum size' keeps content-sized flex items at natural height inside a scrolling container, and the capture spec independently proves it at runtime with an exact (not approximate) rowBox.height===56 assertion, not merely a screenshot",
+    "focus-visible glow scoped to shared base className (not the ternary) so it applies to both selected and unselected options as required, without altering the frozen selected/hover tokens",
+    "No new prop, no new testid, no behavior change outside presentation — confirmed by reading the diff hunks directly"
+  ],
+  "contractStatus": "OK",
+  "refuted": [],
+  "unproven": [],
+  "reachableRegressions": [],
+  "findings": [
+    {
+      "severity": "Warning",
+      "category": "Logic",
+      "location": "e2e/kudos-live-board.spec.ts:911",
+      "summary": "K-32's hover/background half is tautological: it asserts `bgStyle !== \"rgb(255, 234, 158, 0.1)\"`, but getComputedStyle always serializes an alpha<1 color as `rgba(...)`, never `rgb(...)` with 4 args — that literal string can never be produced by a browser, so the assertion is unconditionally true and would still pass even if a future change leaked the selected background onto a focused-but-unselected option.  [RESOLVED] Fixed — tautological comparison replaced with two positive toHaveCSS assertions (transparent when focused-unselected, rgba(255, 234, 158, 0.05) on hover); retested 6/6 then 35/35, both exit 0.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Warning",
+      "category": "Structure",
+      "location": "docs/screens/SCR004_KudosLiveBoard/spec.md:74",
+      "summary": "Phase 03's own Next Steps direct promoting FR-214..FR-219 into both docs/features/F004_KudosLiveBoard/ and docs/screens/SCR004_KudosLiveBoard/, but only the features docs were touched. This UI-states row still reads 'khối Phòng ban cuộn trong hộp cao tối đa 348px' (department-only) and omits the new focus glow — now stale relative to the shipped behavior, where the scroll box is the shared default for both listboxes (FR-214) and both get the focus glow (FR-215).  [RESOLVED] Fixed — the UI-states row now records the 348px box as the shared KudosFilterMenu default for both listboxes and adds the FR-215 focus glow.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Suggestion",
+      "category": "Security",
+      "location": "app/kudos/_components/kudos-filter-menu.tsx:47",
+      "summary": "FR-215's glow is additive to the browser's native :focus-visible outline (no outline-none anywhere in this file or app/globals.css), which is what actually keeps this WCAG 2.1 AA-compliant today (2.4.7 Focus Visible / 1.4.11 Non-text Contrast) — a text-shadow glow alone would not reliably clear the 3:1 non-text-contrast bar on its own. Nothing pins this down, so a later 'polish' pass adding focus-visible:outline-none to clean up the double ring would silently regress accessibility with no test catching it.  [RESOLVED] Fixed — a comment now pins the native focus outline as load-bearing for WCAG 2.1 AA and warns against adding focus-visible:outline-none.",
+      "disposition": "Accept"
+    },
+    {
+      "severity": "Suggestion",
+      "category": "Structure",
+      "location": "plans/260911-1546-dropdown-hashtag-filter/plan.md:30-32",
+      "summary": "Phase status column and the 'Done when' checklist (lines 75-79) are still 'pending'/unchecked despite valid RED, GREEN, and visual evidence already on disk — tracking hygiene only, no functional impact.  [RESOLVED] Fixed — delivery-tracker reconciled the phase table and Done-when checklist against the evidence on disk.",
+      "disposition": "Accept"
+    }
+  ],
+  "riskGate": {
+    "touchesSensitiveArea": false,
+    "signoffRequired": false
+  }
+}

@@ -104,7 +104,6 @@ export function KudosFilterBar({
               onSelectDepartment(option);
               setOpenMenu(null);
             }}
-            scrollable
           />
         )}
       </div>
