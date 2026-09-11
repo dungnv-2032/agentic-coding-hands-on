@@ -72,7 +72,9 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 | E10 | Danh sách gợi ý mention | list | — | Hidden | Conditional | Gõ `@ + tên` mở ra; chọn một người chèn vào E06 | — | raw | — | `data-testid: mention-menu` (role listbox), `mention-option` (role option) |
 | E11 | Tiêu chuẩn cộng đồng | link | — | Enabled | Always | Mở trang tiêu chuẩn cộng đồng | — | — | — | `data-testid: community-standards-link` |
 | E12 | Nút thêm Hashtag | button | — | Enabled | Always | Mở E13 (requires E13) | — | — | — | `data-testid: hashtag-add`; label chứa "Hashtag" và "Tối đa 5" |
-| E13 | Danh sách chọn Hashtag | list | — | Hidden | Conditional | Chọn một hashtag thêm vào E14 | — | raw | — | `data-testid: hashtag-menu` (role listbox); nguồn dữ liệu companion frame `p9zO-c4a4x` |
+| E13 | Danh sách chọn Hashtag | list | — | Hidden | Conditional | Bấm một dòng để bật/tắt hashtag đó (thêm vào hoặc gỡ khỏi E14) | — | raw | — | `data-testid: hashtag-menu` (role listbox); multi-select có trạng thái theo frame `p9zO-c4a4x`; thứ tự dòng = `hashtags.position` |
+| E13.1 | Dòng hashtag {row_1..n} | list item {xN} | — | Unselected | Always | Bấm để bật/tắt; `disabled` khi chưa chọn và đã đủ 5 | — | raw | — | `role: option`; `data-selected="true"` khi đã chọn; nền `rgba(255,234,158,0.2)` khi selected |
+| E13.2 | Ô icon check của dòng | display field | — | Trống | Always | — | — | — | — | `data-testid: hashtag-check-slot` (luôn 24×24, giữ chỗ); chứa `hashtag-check` khi dòng đã chọn |
 | E14 | Chip hashtag đã chọn {chip_1..5} | display field {x1-5} | — | Hidden | Conditional | Bấm nút xoá trên một chip để gỡ đúng chip đó (requires E12) | — | raw | không hiện chip nào | `data-testid: hashtag-chip`, `hashtag-chip-remove` |
 | E15 | Lỗi tối đa hashtag | message | — | Hidden | Conditional | — | — | raw | — | `data-testid: hashtag-error`; text "Tối đa 5 hashtag" |
 | E16 | Nút thêm Image | button | — | Enabled | Conditional | Mở file picker (requires E17) | — | — | — | `data-testid: image-add`; label chứa "Image" và "Tối đa 5"; ẩn hoàn toàn khi đã đủ 5 ảnh |
@@ -98,7 +100,8 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 | Chèn liên kết | E08 (nút liên kết), E09 | click nút liên kết, nhập URL, xác nhận | — | Liên kết được chèn vào E06, E09 đóng | TBD (draft) |
 | Mention đồng nghiệp | E06, E10 | gõ `@` rồi tiếp tục gõ tên, click một option | — | Tên được chèn vào đúng vị trí trong E06 | TBD (draft) |
 | Thêm hashtag | E12, E13, E14 | click E12, chọn một hashtag | tổng số hashtag đã chọn < 5 | E14 thêm một chip mới | TBD (draft) |
-| Thêm hashtag khi đã đủ 5 | E12, E13 | chọn một hashtag thứ 6 | tổng số hashtag đã chọn = 5 | E15 hiện, không có chip nào được thêm | TBD (draft) |
+| Thêm hashtag khi đã đủ 5 | E13.1, E15 | cố chọn một hashtag thứ 6 | tổng số hashtag đã chọn = 5 | Mọi dòng chưa chọn `disabled`; E15 hiện thường trực; không có chip nào được thêm | TBD (draft) |
+| Bỏ chọn hashtag từ dropdown | E13.1, E14 | bấm một dòng đã chọn | dòng đang ở trạng thái selected | Dòng về unselected, chip tương ứng biến mất; nếu trước đó đủ 5 thì các dòng chưa chọn mở khoá lại và E15 ẩn đi | TBD (draft) |
 | Xoá hashtag | E14 | click nút xoá trên một chip | — | Đúng chip đó biến mất, các chip khác giữ nguyên | TBD (draft) |
 | Thêm ảnh hợp lệ | E16, E17, E18 | click E16, chọn 1+ file ảnh đúng định dạng | tổng số ảnh đã đính kèm < 5 | Mỗi file hợp lệ hiện thành một thumbnail mới trong E18 | TBD (draft) |
 | Chọn ảnh sai định dạng | E16, E17 | chọn một file không phải ảnh | — | E19 hiện, không có thumbnail nào được thêm | TBD (draft) |
@@ -121,7 +124,7 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 
 | Decision point | Condition | Outcome on this screen | Source |
 |----------------|-----------|------------------------|--------|
-| Bước 4 | Đã chọn đủ 5 hashtag, cố chọn thêm | E15 hiện "Tối đa 5 hashtag"; chip không tăng thêm | TBD (draft) |
+| Bước 4 | Đã chọn đủ 5 hashtag, cố chọn thêm | Dòng chưa chọn đã `disabled`; E15 hiện "Tối đa 5 hashtag"; chip không tăng thêm | TBD (draft) |
 | Bước 5 | Đã đính kèm đủ 5 ảnh | E16 ẩn hoàn toàn cho tới khi một ảnh bị xoá | TBD (draft) |
 | Bước 5 | File chọn không phải ảnh hợp lệ | E19 hiện lỗi định dạng; không có thumbnail nào được thêm | TBD (draft) |
 | Bước 7 | Bấm E24 khi còn thiếu trường bắt buộc | E22 hiện đồng thời cho mọi trường thiếu; không rời màn hình | TBD (draft) |
@@ -143,7 +146,7 @@ Trang một cột, không phải modal chồng route — thẻ soạn Kudos căn
 | E01 | Bắt buộc, phải chọn từ danh sách Sunner có sẵn | "Không được để trống" (E22, `field-error-recipient`), viền đỏ trên E01, `aria-invalid="true"` | submit |
 | E04 | Bắt buộc | "Không được để trống" (E22, `field-error-title`) | submit |
 | E06 | Bắt buộc | "Không được để trống" (E22, `field-error-body`) | submit |
-| E14 | Tối thiểu 1, tối đa 5 hashtag | Thiếu: "Không được để trống" (`field-error-hashtag`, submit). Vượt quá: "Tối đa 5 hashtag" (E15, change) | submit (thiếu) / change (vượt quá) |
+| E14 | Tối thiểu 1, tối đa 5 hashtag | Thiếu: "Không được để trống" (`field-error-hashtag`, submit). Đủ 5: "Tối đa 5 hashtag" (E15) hiện thường trực kèm E13.1 `disabled` | submit (thiếu) / change (đủ 5) |
 | E17 | Chỉ nhận file đúng định dạng ảnh | Thông báo lỗi định dạng (E19) | change |
 
 ## 7. Conditional UI
