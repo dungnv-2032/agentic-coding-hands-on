@@ -29,6 +29,11 @@ import {
   TEST_TITLE,
   TEST_BODY,
   TEST_ANONYMOUS_NAME,
+  LINK_DIALOG_TITLE,
+  LINK_DIALOG_TEXT_LABEL,
+  LINK_DIALOG_URL_LABEL,
+  LINK_DIALOG_CANCEL_LABEL,
+  LINK_DIALOG_CONFIRM_LABEL,
 } from "./fixtures/viet-kudo-constants";
 
 /**
@@ -107,6 +112,21 @@ const linkDialog = (page: Page): Locator =>
 
 const linkUrlInput = (page: Page): Locator =>
   page.getByTestId("link-url-input");
+
+const linkTextInput = (page: Page): Locator =>
+  page.getByTestId("link-text-input");
+
+const linkTextError = (page: Page): Locator =>
+  page.getByTestId("link-text-error");
+
+const linkUrlError = (page: Page): Locator =>
+  page.getByTestId("link-url-error");
+
+const linkConfirm = (page: Page): Locator =>
+  page.getByTestId("link-confirm");
+
+const linkCancel = (page: Page): Locator =>
+  page.getByTestId("link-cancel");
 
 const mentionMenu = (page: Page): Locator =>
   page.getByTestId("mention-menu");
@@ -883,6 +903,7 @@ test.describe("Viết Kudo screen — /kudos/new (kudos-authed)", () => {
 
     await expect(linkDialog(page)).toBeVisible();
     await expect(linkUrlInput(page)).toBeVisible();
+    await expect(linkTextInput(page)).toBeVisible();
   });
 
   // ID-32 — toolbar quote button present
@@ -1407,5 +1428,263 @@ test.describe("Viết Kudo screen — /kudos/new (kudos-authed)", () => {
 
     await expect(composeCancel(page)).toContainText(CANCEL_BUTTON_LABEL);
     await expect(composeSubmit(page)).toContainText(SUBMIT_BUTTON_LABEL);
+  });
+
+  // ID-61 — dialog shows title, both inputs visible and empty, both labels present
+  test("ID-61 — dialog shows title, both inputs visible and empty, both labels present", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await toolbarLink(page).click();
+
+    // Dialog title
+    await expect(linkDialog(page)).toBeVisible();
+    await expect(linkDialog(page)).toContainText(LINK_DIALOG_TITLE);
+
+    // Both inputs visible
+    await expect(linkTextInput(page)).toBeVisible();
+    await expect(linkUrlInput(page)).toBeVisible();
+
+    // Both inputs empty
+    await expect(linkTextInput(page)).toHaveValue("");
+    await expect(linkUrlInput(page)).toHaveValue("");
+
+    // Both labels present
+    await expect(linkDialog(page)).toContainText(LINK_DIALOG_TEXT_LABEL);
+    await expect(linkDialog(page)).toContainText(LINK_DIALOG_URL_LABEL);
+  });
+
+  // ID-62 — clicking the Nội dung label focuses link-text-input
+  test("ID-62 — clicking the Nội dung label focuses link-text-input", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await toolbarLink(page).click();
+
+    // Get the label element by text and click it
+    const textLabel = linkDialog(page).locator("label").filter({ hasText: LINK_DIALOG_TEXT_LABEL });
+    await textLabel.click();
+
+    // Verify link-text-input is focused
+    await expect(linkTextInput(page)).toBeFocused();
+  });
+
+  // ID-63 — selecting body text then opening dialog prefills link-text-input with it
+  test("ID-63 — selecting body text then opening dialog prefills link-text-input", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    const selectedText = "Đoạn văn bản được bôi đen";
+
+    // Fill body editor with text and select a portion
+    await bodyEditor(page).fill(selectedText);
+    await bodyEditor(page).evaluate((el, length) => {
+      (el as HTMLTextAreaElement).setSelectionRange(0, length);
+    }, selectedText.length);
+
+    // Open dialog
+    await toolbarLink(page).click();
+
+    // Verify text-input is prefilled with selected text
+    await expect(linkTextInput(page)).toHaveValue(selectedText);
+    // URL input should remain empty
+    await expect(linkUrlInput(page)).toHaveValue("");
+  });
+
+  // ID-64 — Lưu with both fields empty → both errors visible, dialog still open
+  test("ID-64 — Lưu with both fields empty shows both errors, dialog stays open", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await toolbarLink(page).click();
+
+    // Both fields should be empty
+    await expect(linkTextInput(page)).toHaveValue("");
+    await expect(linkUrlInput(page)).toHaveValue("");
+
+    // Click Lưu button
+    await linkConfirm(page).click();
+
+    // Both error elements should be visible
+    await expect(linkTextError(page)).toBeVisible();
+    await expect(linkUrlError(page)).toBeVisible();
+
+    // Dialog should still be open
+    await expect(linkDialog(page)).toBeVisible();
+  });
+
+  // ID-65 — whitespace-only Nội dung → error; 101 chars → error; 1 char accepted
+  test("ID-65 — Nội dung validation: whitespace error, 101+ char error, 1 char accepted", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await toolbarLink(page).click();
+
+    // Test 1: whitespace-only should error
+    await linkTextInput(page).fill("   ");
+    await linkUrlInput(page).fill("https://www.example.com");
+    await linkConfirm(page).click();
+
+    await expect(linkTextError(page)).toBeVisible();
+    await expect(linkDialog(page)).toBeVisible(); // Dialog stays open
+
+    // Clear and test 2: 101 chars should error
+    await linkTextInput(page).fill("a".repeat(101));
+    await linkConfirm(page).click();
+
+    await expect(linkTextError(page)).toBeVisible();
+    await expect(linkDialog(page)).toBeVisible();
+
+    // Test 3: a single character is the shortest ACCEPTED value — saving must go through.
+    await linkTextInput(page).fill("a");
+    await linkUrlInput(page).fill("https://www.example.com");
+    await linkConfirm(page).click();
+
+    await expect(linkTextError(page)).not.toBeVisible();
+    await expect(linkDialog(page)).not.toBeVisible();
+  });
+
+  // ID-66 — invalid-url on blur → error without Lưu; www → min-length error
+  test("ID-66 — URL validation on blur: invalid-url error, www min-length error", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await toolbarLink(page).click();
+
+    // Test 1: invalid-url on blur should show error without clicking Lưu
+    await linkUrlInput(page).fill("invalid-url");
+    await linkUrlInput(page).blur();
+
+    await expect(linkUrlError(page)).toBeVisible();
+
+    // Clear and test 2: www (4 chars, min is 5) should error
+    await linkUrlInput(page).clear();
+    await linkUrlInput(page).fill("www");
+    await linkUrlInput(page).blur();
+
+    await expect(linkUrlError(page)).toBeVisible();
+
+    // Dialog should still be open
+    await expect(linkDialog(page)).toBeVisible();
+  });
+
+  // ID-67 — valid text + https://www.example.com + Lưu → dialog closes, text appears in body-editor
+  test("ID-67 — valid text + valid URL + Lưu closes dialog and inserts text in body-editor", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    const validText = "Click here";
+    const validUrl = "https://www.example.com";
+
+    // Open dialog
+    await toolbarLink(page).click();
+
+    // Fill both fields with valid values
+    await linkTextInput(page).fill(validText);
+    await linkUrlInput(page).fill(validUrl);
+
+    // Click Lưu
+    await linkConfirm(page).click();
+
+    // Dialog should close
+    await expect(linkDialog(page)).not.toBeVisible();
+
+    // Text should appear in body-editor
+    const bodyValue = await bodyEditor(page).inputValue();
+    expect(bodyValue).toContain(validText);
+  });
+
+  // ID-68 — link-cancel, Escape, and outside click each close and discard; reopening shows empty
+  test("ID-68 — Hủy, Escape, and outside click close and discard; reopening empty", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Test 1: Hủy button closes and discards
+    await toolbarLink(page).click();
+    await linkTextInput(page).fill("Some text");
+    await linkUrlInput(page).fill("https://example.com");
+    await linkCancel(page).click();
+
+    await expect(linkDialog(page)).not.toBeVisible();
+
+    // Verify body-editor is empty (no changes saved)
+    const bodyValue = await bodyEditor(page).inputValue();
+    expect(bodyValue).toBe("");
+
+    // Test 2: Escape key closes and discards
+    await toolbarLink(page).click();
+    await linkTextInput(page).fill("More text");
+    await linkUrlInput(page).fill("https://example.com");
+    await page.keyboard.press("Escape");
+
+    await expect(linkDialog(page)).not.toBeVisible();
+
+    // Reopen and verify fields are empty
+    await toolbarLink(page).click();
+    await expect(linkTextInput(page)).toHaveValue("");
+    await expect(linkUrlInput(page)).toHaveValue("");
+
+    // Test 3: outside click closes and discards
+    await linkTextInput(page).fill("Third text");
+    await linkUrlInput(page).fill("https://example.com");
+
+    // Click a real point outside the panel. `page.click(".fixed")` would aim at
+    // the OVERLAY'S CENTRE — which is exactly where the centred dialog sits, so
+    // the click would land on the dialog and correctly not dismiss it.
+    await page.mouse.click(20, 20);
+
+    await expect(linkDialog(page)).not.toBeVisible();
+
+    // Reopen and verify fields are empty
+    await toolbarLink(page).click();
+    await expect(linkTextInput(page)).toHaveValue("");
+    await expect(linkUrlInput(page)).toHaveValue("");
+  });
+
+  // ID-69 — the link RUN (not just its text) survives submit and renders as a real
+  // anchor on the board. ID-67 only proves the display text reached the textarea;
+  // a regression collapsing insertLink to plain concatenation would still pass it,
+  // because the textarea holds plain text either way. This is the only test that
+  // proves FR-217's mark and BR-006's href actually reach Postgres and come back.
+  test("ID-69 — a saved link reaches the board as an anchor carrying its href", async ({
+    page,
+  }) => {
+    const linkText = `Link ${Date.now()}`;
+    const href = "https://www.example.com/";
+
+    await page.goto(ROUTE);
+
+    await recipientInput(page).fill("Nguyễn");
+    await recipientMenu(page).waitFor({ state: "visible" });
+    await recipientOption(page).first().click();
+    await titleInput(page).fill(TEST_TITLE);
+
+    // Insert the link through the dialog — the whole point is that this path, not a
+    // hand-built doc, is what produces the run.
+    await toolbarLink(page).click();
+    await linkTextInput(page).fill(linkText);
+    await linkUrlInput(page).fill(href);
+    await linkConfirm(page).click();
+    await expect(linkDialog(page)).not.toBeVisible();
+    await expect(bodyEditor(page)).toHaveValue(linkText);
+
+    await hashtagAddButton(page).click();
+    await hashtagMenu(page).locator('[role="option"]').first().click();
+
+    await composeSubmit(page).click();
+    await page.waitForURL("/kudos", { timeout: 10000 });
+
+    // The run rendered as an <a href>, not as a plain span — which is also the
+    // renderer's own scheme check (BR-006's third layer) agreeing with the dialog's.
+    const anchor = page.getByTestId("kudos-card").locator(`a[href="${href}"]`, { hasText: linkText });
+    await expect(anchor.first()).toBeVisible();
   });
 });
