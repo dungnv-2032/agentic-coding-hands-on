@@ -49,7 +49,7 @@ export function KudosFilterMenu({
             className={`w-full cursor-pointer rounded p-4 text-center text-base leading-6 font-bold tracking-[0.5px] text-white ${
               selected
                 ? "bg-[rgba(255,234,158,0.10)] [text-shadow:0_0_6px_#FAE287]"
-                : "hover:bg-[rgba(255,234,158,0.05)]"
+                : "transition-colors hover:bg-[rgba(255,234,158,0.05)]"
             }`}
           >
             {option.name}
