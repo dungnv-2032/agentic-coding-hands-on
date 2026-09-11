@@ -12,6 +12,7 @@ import {
   GIFT_LEADERBOARD_HEADING,
   HASHTAG_OPTIONS,
   DEPARTMENT_OPTIONS,
+  TEST_DEPARTMENT,
   SIDEBAR_STATS,
 } from "./fixtures/kudos-constants";
 
@@ -171,6 +172,17 @@ const giftEmpty = (page: Page): Locator =>
 
 const toast = (page: Page): Locator =>
   page.getByTestId("toast");
+
+const departmentOption = (page: Page, name: string): Locator =>
+  filterMenuDepartment(page).getByRole("option", { name, exact: true });
+
+// The receiver's department is a sibling <span> of the `kudos-receiver` link
+// inside the same chip wrapper (`sunner-chip.tsx`), so scope through the
+// parent — a bare page-level text match would also hit the SENDER's
+// department on the same card. `exact: true` throughout: "STVC - R&D" is a
+// prefix of "STVC - R&D - DTR" and three other department names.
+const receiverDepartment = (card: Locator, name: string): Locator =>
+  card.getByTestId("kudos-receiver").locator("..").getByText(name, { exact: true });
 
 // ============================================================================
 // Test Suite
@@ -613,5 +625,190 @@ test.describe("Kudos Live Board screen — /kudos (anon)", () => {
 
     const search = sunnerSearch(page);
     await expect(search).toHaveAttribute("maxlength", "100");
+  });
+  // ==========================================================================
+  // Dropdown Phòng ban (MoMorph `WXK5AYB_rG`) — FR-208..FR-213.
+  // K-26/K-27 lock the frame fidelity the listbox was missing; K-28/K-30 lock
+  // the select → close → page-wide filter → toggle-off behaviour that already
+  // shipped in `kudos-board.tsx` but had never been asserted by any test.
+  // ==========================================================================
+
+  // K-26 — department and hashtag options are centered with cursor pointer.
+  test("K-26 — department and hashtag options are centered with cursor pointer", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Open department filter and check one department option
+    await filterDepartmentButton(page).click();
+    const deptMenu = filterMenuDepartment(page);
+    await expect(deptMenu).toBeVisible();
+
+    const deptOption = departmentOption(page, TEST_DEPARTMENT);
+    await expect(deptOption).toBeVisible();
+
+    const deptComputedStyle = await deptOption.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return {
+        textAlign: style.textAlign,
+        cursor: style.cursor,
+      };
+    });
+
+    expect(deptComputedStyle.textAlign).toBe("center");
+    expect(deptComputedStyle.cursor).toBe("pointer");
+
+    // Close department and open hashtag to spot-check: both listboxes render
+    // the SAME Figma component (`mms_A_Dropdown-List`), so the fix is shared
+    // by design, not by accident.
+    await filterDepartmentButton(page).click();
+    await filterHashtagButton(page).click();
+    const hashtagMenu = filterMenuHashtag(page);
+    await expect(hashtagMenu).toBeVisible();
+
+    const hashtagOption = hashtagMenu.getByRole("option", {
+      name: HASHTAG_OPTIONS[0],
+      exact: true,
+    });
+    await expect(hashtagOption).toBeVisible();
+
+    const hashComputedStyle = await hashtagOption.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return {
+        textAlign: style.textAlign,
+        cursor: style.cursor,
+      };
+    });
+
+    expect(hashComputedStyle.textAlign).toBe("center");
+    expect(hashComputedStyle.cursor).toBe("pointer");
+  });
+
+  // K-27 — department filter menu max-height is 348px and contains all 50 options.
+  test("K-27 — department filter menu max-height is 348px and contains all 50 options", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await filterDepartmentButton(page).click();
+    const deptMenu = filterMenuDepartment(page);
+    await expect(deptMenu).toBeVisible();
+
+    // Exactly 348px: 6 rows x 56px + 6px top/bottom padding, per the frame.
+    // Deterministic because 50 options overflow the box, so the rendered
+    // height is pinned to max-height rather than to content.
+    const boundingBox = await deptMenu.boundingBox();
+    expect(boundingBox).not.toBeNull();
+    if (boundingBox) {
+      expect(boundingBox.height).toBe(348);
+    }
+
+    const maxHeight = await deptMenu.evaluate((el) => {
+      const style = window.getComputedStyle(el);
+      return style.maxHeight;
+    });
+
+    expect(maxHeight).toBe("348px");
+
+    // All 50 options stay mounted inside the bounded box.
+    const options = deptMenu.locator('[role="option"]');
+    await expect(options).toHaveCount(DEPARTMENT_OPTIONS.length);
+  });
+
+  // K-28 — selecting department option closes menu and filters both sections.
+  test("K-28 — selecting department option closes menu and filters both sections", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await filterDepartmentButton(page).click();
+    const deptMenu = filterMenuDepartment(page);
+    await expect(deptMenu).toBeVisible();
+
+    await departmentOption(page, TEST_DEPARTMENT).click();
+
+    // Menu closes on select (frame item A.1: "chọn và đóng dropdown").
+    await expect(deptMenu).not.toBeVisible();
+
+    // Proven per-card, not by counting: FEED_PAGE_SIZE is 10 and the carousel
+    // caps at 5, so a raw count can look identical filtered and unfiltered.
+    const highlightCards = highlightSection(page).locator('[data-testid="kudos-card"]');
+    const highlightCount = await highlightCards.count();
+    expect(highlightCount).toBeGreaterThan(0);
+    for (let i = 0; i < highlightCount; i++) {
+      const card = highlightCards.nth(i);
+      await expect(receiverDepartment(card, TEST_DEPARTMENT)).toBeVisible();
+    }
+
+    const allKudosCards = allKudosSection(page).locator('[data-testid="kudos-card"]');
+    const allKudosCount = await allKudosCards.count();
+    expect(allKudosCount).toBeGreaterThan(0);
+    for (let i = 0; i < allKudosCount; i++) {
+      const card = allKudosCards.nth(i);
+      await expect(receiverDepartment(card, TEST_DEPARTMENT)).toBeVisible();
+    }
+  });
+
+  // K-29 — department option retains aria-selected and styling after reopen.
+  test("K-29 — department option retains aria-selected and styling after reopen", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    await filterDepartmentButton(page).click();
+    await departmentOption(page, TEST_DEPARTMENT).click();
+
+    // Reopen — the selection must still be visible as selected state.
+    await filterDepartmentButton(page).click();
+    const deptMenu = filterMenuDepartment(page);
+    await expect(deptMenu).toBeVisible();
+
+    const selectedOption = departmentOption(page, TEST_DEPARTMENT);
+    await expect(selectedOption).toHaveAttribute("aria-selected", "true");
+  });
+
+  // K-30 — re-clicking department option clears filter and restores full board.
+  test("K-30 — re-clicking department option clears filter and restores full board", async ({
+    page,
+  }) => {
+    await page.goto(ROUTE);
+
+    // Baseline captured BEFORE selecting: the exact set of receiver links on
+    // the page. An href round-trip proves restoration without depending on
+    // the seed-order department mix of the first feed page.
+    const baselineHrefs = await page.evaluate(() => {
+      const elements = document.querySelectorAll('[data-testid="kudos-receiver"]');
+      return Array.from(elements)
+        .map((el) => el.getAttribute("href"))
+        .filter((href) => href !== null)
+        .sort();
+    });
+
+    await filterDepartmentButton(page).click();
+    await departmentOption(page, TEST_DEPARTMENT).click();
+
+    const narrowedCards = allKudosSection(page).locator('[data-testid="kudos-card"]');
+    const narrowedCount = await narrowedCards.count();
+    expect(narrowedCount).toBeGreaterThan(0);
+    for (let i = 0; i < narrowedCount; i++) {
+      const card = narrowedCards.nth(i);
+      await expect(receiverDepartment(card, TEST_DEPARTMENT)).toBeVisible();
+    }
+
+    // Re-click the same option — the only way back out of a filtered board.
+    await filterDepartmentButton(page).click();
+    await departmentOption(page, TEST_DEPARTMENT).click();
+
+    await expect(filterMenuDepartment(page)).not.toBeVisible();
+
+    const restoredHrefs = await page.evaluate(() => {
+      const elements = document.querySelectorAll('[data-testid="kudos-receiver"]');
+      return Array.from(elements)
+        .map((el) => el.getAttribute("href"))
+        .filter((href) => href !== null)
+        .sort();
+    });
+
+    expect(restoredHrefs).toEqual(baselineHrefs);
   });
 });

@@ -1,0 +1,29 @@
+{
+  "task": "Implement MoMorph screen WXK5AYB_rG (Dropdown Phòng ban) — the open state of the department filter listbox on /kudos (F004/SCR004), using the local Supabase project as the data source.",
+  "mode": "auto",
+  "acceptanceCriteria": [
+    "FR-208 — each department option label renders centred",
+    "FR-209 — hovering an option shows a pointer cursor and keeps the highlight",
+    "FR-210 — clicking an option closes the dropdown and filters both HIGHLIGHT KUDOS and ALL KUDOS to that department",
+    "FR-211 — the selected option keeps its highlight and aria-selected=true when the menu is reopened",
+    "FR-212 — clicking the selected option again clears the filter and restores the full board",
+    "FR-213 — the department listbox is bounded to exactly 348px and scrolls internally without pushing page layout"
+  ],
+  "touchpoints": [
+    "app/kudos/_components/kudos-filter-menu.tsx",
+    "e2e/kudos-live-board.spec.ts",
+    "e2e/fixtures/kudos-constants.ts",
+    "e2e/capture-department-dropdown-visual.spec.ts",
+    "playwright.config.ts"
+  ],
+  "blastRadius": [
+    "The hashtag filter listbox on /kudos renders the same shared component, so centring and cursor changes reach it too (by design — one Figma component)",
+    "K-3 asserts the hashtag listbox's 13 options and exact text",
+    "The /kudos board's filter behaviour in kudos-board.tsx and kudos-filter-bar.tsx (read-only, deliberately untouched)"
+  ],
+  "contracts": [
+    "KudosFilterMenu props (testId, options, selectedId, onSelect, scrollable) — unchanged",
+    "data-testid hooks filter-department / filter-menu-department / kudos-card / kudos-receiver — unchanged",
+    "public.departments read path via fetchFilterOptions() — unchanged"
+  ]
+}

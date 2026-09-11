@@ -1,0 +1,39 @@
+{
+  "commands": [
+    {
+      "command": "npm run test:e2e -- e2e/kudos-live-board.spec.ts --project=anon -g \"K-26|K-27|K-28|K-29|K-30\"",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Scoped GREEN, 6 passed (1.7m). Same command produced exit 1 before the fix (K-26 text-align/cursor, K-27 320 != 348).",
+      "ts": "2026-09-11T14:45:00+07:00"
+    },
+    {
+      "command": "npm run test:e2e -- e2e/kudos-live-board.spec.ts --project=anon",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Full-file regression, 30 passed (1.5m). K-3 green, so the shared hashtag listbox did not regress.",
+      "ts": "2026-09-11T14:47:00+07:00"
+    },
+    {
+      "command": "npm run test:e2e -- --project=department-dropdown-visual-capture",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "Visual capture, 1 passed. Asserted inline: menu box height exactly 348, one option row exactly 56 — rows do not flex-shrink inside the scroll container.",
+      "ts": "2026-09-11T14:58:00+07:00"
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "tsc --noEmit clean.",
+      "ts": "2026-09-11T14:50:00+07:00"
+    },
+    {
+      "command": "npm run lint",
+      "exitCode": 0,
+      "status": "pass",
+      "summary": "0 errors; 31 pre-existing warnings, none new.",
+      "ts": "2026-09-11T14:50:30+07:00"
+    }
+  ]
+}
